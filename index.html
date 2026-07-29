@@ -705,6 +705,16 @@ let musketeerSmokeTimer = 0;
 
 let playerSlowTimer = 0;
 
+let playerBleedTimer = 0;
+
+let playerBurnTimer = 0;
+
+let playerFreezeTimer = 0;
+
+let darknessTimer = 0;
+
+let toxicClouds = [];
+
 let ouchFireTimer = 0;
 
 let smokeClouds = [];
@@ -1530,25 +1540,39 @@ function generateDungeon() {
 
         }
 
-        // Weighted projectile-focused enemy roster: Mage 25%, Skeletal Mage 15%,
-        // Slime Kin 10%, Skeleton Archer 40%, Demon Spawn 10%.
+        // Weighted projectile-focused enemy roster. Weights preserve the supplied spawn-rate ratios.
         let enemyProfiles = [
-            {type: "mage", weight: 25, health: 85, speed: 0.7, width: 32, height: 36, projectileSpeed: 4.2, projectileDamage: 11, projectileColor: "#9d5cff"},
-            {type: "skeletalMage", weight: 15, health: 70, speed: 0.78, width: 30, height: 34, projectileSpeed: 6.2, projectileDamage: 10, projectileColor: "#e7dfc7"},
-            {type: "slimeKin", weight: 10, health: 55, speed: 1.45, width: 22, height: 22, projectileSpeed: 2.7, projectileDamage: 34, projectileColor: "#73df79", effect: "slow"},
-            {type: "skeletonArcher", weight: 40, health: 65, speed: 0.85, width: 28, height: 34, projectileSpeed: 6.8, projectileDamage: 20, projectileColor: "#e8e2d0"},
-            {type: "demonSpawn", weight: 10, health: 115, speed: 0.92, width: 34, height: 34, projectileSpeed: 4.8, projectileDamage: 26, projectileColor: "#ff6a42", effect: "ouchFire", damageByHealth: true}
+            {type: "bonecaster", weight: 20, health: 72, speed: 1.2, width: 30, height: 36, projectileSpeed: 5.5, projectileDamage: 10, projectileColor: "#69bcff", effect: "soulDrain"},
+            {type: "bloodCultist", weight: 18, health: 80, speed: 1.0, width: 30, height: 36, projectileSpeed: 6, projectileDamage: 13, projectileColor: "#c51f38", effect: "bleed"},
+            {type: "eye", weight: 8, health: 115, speed: 0.8, width: 42, height: 34, projectileSpeed: 7, projectileDamage: 14, projectileColor: "#c878ff", effect: "homing"},
+            {type: "plagueRat", weight: 15, health: 65, speed: 1.8, width: 36, height: 24, projectileSpeed: 4, projectileDamage: 12, projectileColor: "#65d94e", effect: "poisonCloud"},
+            {type: "flameWraith", weight: 12, health: 76, speed: 1.5, width: 30, height: 38, projectileSpeed: 6.5, projectileDamage: 14, projectileColor: "#58baff", effect: "burn"},
+            {type: "shadowArcher", weight: 10, health: 70, speed: 1.3, width: 28, height: 40, projectileSpeed: 9, projectileDamage: 16, projectileColor: "#15131d", effect: "piercing"},
+            {type: "crystalCrawler", weight: 10, health: 120, speed: 0.7, width: 38, height: 28, projectileSpeed: 5, projectileDamage: 14, projectileColor: "#75f4ff", effect: "splinter"},
+            {type: "voidPriest", weight: 5, health: 110, speed: 0.6, width: 32, height: 42, projectileSpeed: 3.5, projectileDamage: 16, projectileColor: "#28143d", effect: "gravity"},
+            {type: "mimicMage", weight: 6, health: 100, speed: 1.0, width: 36, height: 30, projectileSpeed: 5, projectileDamage: 12, projectileColor: "#f5bd3e", effect: "greed"},
+            {type: "frostWitch", weight: 8, health: 78, speed: 0.9, width: 30, height: 38, projectileSpeed: 5, projectileDamage: 13, projectileColor: "#bff5ff", effect: "freeze"},
+            {type: "cursedKnight", weight: 4, health: 145, speed: 1.1, width: 34, height: 40, projectileSpeed: 6, projectileDamage: 18, projectileColor: "#d83e58", effect: "boomerang"},
+            {type: "lantern", weight: 7, health: 84, speed: 1.4, width: 28, height: 34, projectileSpeed: 4.5, projectileDamage: 10, projectileColor: "#ffce55", effect: "darkness"},
+            {type: "rottingShaman", weight: 8, health: 92, speed: 0.8, width: 30, height: 38, projectileSpeed: 4, projectileDamage: 12, projectileColor: "#6fc95c", effect: "summon"},
+            {type: "hive", weight: 5, health: 105, speed: 1.6, width: 38, height: 34, projectileSpeed: 7, projectileDamage: 12, projectileColor: "#d9c64a", effect: "swarm"},
+            {type: "bloodOrb", weight: 3, health: 125, speed: 0.5, width: 34, height: 34, projectileSpeed: 3, projectileDamage: 20, projectileColor: "#d62c3b", effect: "explosion"},
+            {type: "jester", weight: 4, health: 95, speed: 2.0, width: 30, height: 38, projectileSpeed: 8, projectileDamage: 14, projectileColor: "#ff6ccf", effect: "ricochet"}
         ];
 
         for(let count = 0; count < randomBetween(3, 5); count++) {
 
-            let roll = randomBetween(1, 100);
-
             let total = 0;
+
+            for(let candidate of enemyProfiles) total += candidate.weight;
+
+            let roll = randomBetween(1, total);
 
             let profile = enemyProfiles[0];
 
-            for(let candidate of enemyProfiles) { total += candidate.weight; if(roll <= total) { profile = candidate; break; } }
+            let cumulativeWeight = 0;
+
+            for(let candidate of enemyProfiles) { cumulativeWeight += candidate.weight; if(roll <= cumulativeWeight) { profile = candidate; break; } }
 
             let position = randomOpenPosition(room, profile.width, profile.height);
 
@@ -1755,6 +1779,8 @@ function movePlayer() {
         moveLength > 0 &&
 
         dashTimer <= 0 &&
+
+        playerFreezeTimer <= 0 &&
 
         bruiserChargeTimer <= 0 &&
 
@@ -3170,6 +3196,61 @@ function startMusketeerTeleport() {
 }
 
 
+function spawnEnemyFragments(bolt, count, color) {
+
+    for(let fragment = 0; fragment < count; fragment++) {
+
+        let angle = Math.PI * 2 * fragment / count;
+
+        enemyProjectiles.push({x: bolt.x, y: bolt.y, vx: Math.cos(angle) * 3.8, vy: Math.sin(angle) * 3.8, damage: Math.max(3, Math.round((bolt.damage || 10) * 0.45)), color: color || bolt.color, effect: "", life: 45});
+
+    }
+
+}
+
+
+function resolveEnemyBoltImpact(bolt) {
+
+    if(bolt.effect === "poisonCloud") toxicClouds.push({room: currentRoom, x: bolt.x - 28, y: bolt.y - 28, width: 56, height: 56, life: 180});
+
+    if(bolt.effect === "splinter") spawnEnemyFragments(bolt, 3, "#b7ffff");
+
+    if(bolt.effect === "swarm") spawnEnemyFragments(bolt, 5, "#eee45a");
+
+    if(bolt.effect === "explosion") {
+
+        explosions.push({x: bolt.x, y: bolt.y, life: 20});
+
+        if(Math.hypot(bolt.x - (player.x + player.width / 2), bolt.y - (player.y + player.height / 2)) < 85) damagePlayer(10);
+
+    }
+
+    if(bolt.effect === "summon") {
+
+        let minion = {x: bolt.x - 10, y: bolt.y - 10, width: 20, height: 20};
+
+        if(!getCurrentWalls().some(function(wall) { return checkCollision(minion, wall); })) enemies.push({x: minion.x, y: minion.y, width: 20, height: 20, speed: 1.35, health: 24, maxHealth: 24, room: currentRoom, type: "plagueMinion", hitFlash: 0, alive: true, attackCooldown: 40, attackTimer: 0, attackRange: 260, projectileSpeed: 4, projectileDamage: 7, projectileColor: "#80de62"});
+
+    }
+
+}
+
+
+function applyEnemyBoltEffect(effect) {
+
+    if(effect === "slow" || effect === "soulDrain" || effect === "greed") playerSlowTimer = effect === "soulDrain" ? 105 : 150;
+
+    if(effect === "bleed") playerBleedTimer = 180;
+
+    if(effect === "burn") playerBurnTimer = 180;
+
+    if(effect === "freeze") playerFreezeTimer = 45;
+
+    if(effect === "darkness") darknessTimer = 180;
+
+}
+
+
 function updateProjectiles() {
 
     if(laserTimer > 0) laserTimer--;
@@ -3479,6 +3560,44 @@ function updateProjectiles() {
 
         let bolt = enemyProjectiles[i];
 
+        let centerX = player.x + player.width / 2;
+
+        let centerY = player.y + player.height / 2;
+
+        if(bolt.effect === "homing") {
+
+            let aim = Math.atan2(centerY - bolt.y, centerX - bolt.x);
+
+            let speed = Math.hypot(bolt.vx, bolt.vy);
+
+            bolt.vx += (Math.cos(aim) * speed - bolt.vx) * 0.055;
+
+            bolt.vy += (Math.sin(aim) * speed - bolt.vy) * 0.055;
+
+        }
+
+        if(bolt.effect === "gravity" && Math.hypot(centerX - bolt.x, centerY - bolt.y) < 170 && playerClass !== "owen") {
+
+            let pull = Math.atan2(bolt.y - centerY, bolt.x - centerX);
+
+            player.x += Math.cos(pull) * 0.65;
+
+            player.y += Math.sin(pull) * 0.65;
+
+        }
+
+        if(bolt.effect === "boomerang" && bolt.life < 55 && bolt.originX !== undefined) {
+
+            let returnAngle = Math.atan2(bolt.originY - bolt.y, bolt.originX - bolt.x);
+
+            let returnSpeed = Math.hypot(bolt.vx, bolt.vy);
+
+            bolt.vx = Math.cos(returnAngle) * returnSpeed;
+
+            bolt.vy = Math.sin(returnAngle) * returnSpeed;
+
+        }
+
         bolt.x += bolt.vx;
 
         bolt.y += bolt.vy;
@@ -3490,10 +3609,6 @@ function updateProjectiles() {
             return bolt.x >= wall.x && bolt.x <= wall.x + wall.width && bolt.y >= wall.y && bolt.y <= wall.y + wall.height;
 
         });
-
-        let centerX = player.x + player.width / 2;
-
-        let centerY = player.y + player.height / 2;
 
         let toBoltX = bolt.x - centerX;
 
@@ -3526,13 +3641,23 @@ function updateProjectiles() {
 
         }
 
-        if(!(playerClass === "musketeer" && musketeerSmokeTimer > 0) && !(playerClass === "stealth" && ninjaInvisibilityTimer > 0) && Math.hypot(bolt.x - centerX, bolt.y - centerY) < 18) {
+        if(!bolt.alreadyHitPlayer && !(playerClass === "musketeer" && musketeerSmokeTimer > 0) && !(playerClass === "stealth" && ninjaInvisibilityTimer > 0) && Math.hypot(bolt.x - centerX, bolt.y - centerY) < 18) {
 
             if(damagePlayer(bolt.damage || 22)) {
 
-                if(bolt.effect === "slow") playerSlowTimer = 150;
+                applyEnemyBoltEffect(bolt.effect);
 
                 if(bolt.effect === "ouchFire") ouchFireTimer = 180;
+
+            }
+
+            resolveEnemyBoltImpact(bolt);
+
+            if(bolt.effect === "piercing" && !bolt.alreadyHitPlayer) {
+
+                bolt.alreadyHitPlayer = true;
+
+                continue;
 
             }
 
@@ -3542,7 +3667,29 @@ function updateProjectiles() {
 
         }
 
-        if(hitWall || bolt.life <= 0 || bolt.x < 0 || bolt.x > canvas.width || bolt.y < 0 || bolt.y > canvas.height) enemyProjectiles.splice(i, 1);
+        if(hitWall && bolt.effect === "ricochet" && (bolt.bounces || 0) < 3) {
+
+            bolt.vx *= -1;
+
+            bolt.vy *= -1;
+
+            bolt.bounces = (bolt.bounces || 0) + 1;
+
+            bolt.x -= bolt.vx;
+
+            bolt.y -= bolt.vy;
+
+            continue;
+
+        }
+
+        if(hitWall || bolt.life <= 0 || bolt.x < 0 || bolt.x > canvas.width || bolt.y < 0 || bolt.y > canvas.height) {
+
+            resolveEnemyBoltImpact(bolt);
+
+            enemyProjectiles.splice(i, 1);
+
+        }
 
     }
 
@@ -4698,7 +4845,7 @@ function updateEnemies() {
 
                 let damage = Math.round(baseDamage * ENEMY_DAMAGE_MULTIPLIER);
 
-                enemyProjectiles.push({x: enemyCenterX, y: enemyCenterY, vx: Math.cos(angle) * enemy.projectileSpeed, vy: Math.sin(angle) * enemy.projectileSpeed, damage: damage, color: enemy.projectileColor, effect: enemy.effect, life: 105});
+                enemyProjectiles.push({x: enemyCenterX, y: enemyCenterY, originX: enemyCenterX, originY: enemyCenterY, vx: Math.cos(angle) * enemy.projectileSpeed, vy: Math.sin(angle) * enemy.projectileSpeed, damage: damage, color: enemy.projectileColor, effect: enemy.effect, life: enemy.effect === "boomerang" ? 125 : 105});
 
             }
 
@@ -4814,6 +4961,38 @@ function updateDamageCooldown() {
     if(musketeerSmokeTimer > 0) musketeerSmokeTimer--;
 
     if(playerSlowTimer > 0) playerSlowTimer--;
+
+    if(playerBleedTimer > 0) {
+
+        playerBleedTimer--;
+
+        if(playerBleedTimer % 45 === 0) damagePlayer(3);
+
+    }
+
+    if(playerBurnTimer > 0) {
+
+        playerBurnTimer--;
+
+        if(playerBurnTimer % 40 === 0) damagePlayer(3);
+
+    }
+
+    if(playerFreezeTimer > 0) playerFreezeTimer--;
+
+    if(darknessTimer > 0) darknessTimer--;
+
+    for(let index = toxicClouds.length - 1; index >= 0; index--) {
+
+        let cloud = toxicClouds[index];
+
+        cloud.life--;
+
+        if(cloud.room === currentRoom && checkCollision(player, cloud)) playerSlowTimer = Math.max(playerSlowTimer, 30);
+
+        if(cloud.life <= 0) toxicClouds.splice(index, 1);
+
+    }
 
     if(ouchFireTimer > 0) ouchFireTimer--;
 
@@ -5961,6 +6140,111 @@ function drawNewEnemy(enemy) {
 
     ctx.save();
 
+    // New roster: compact pixel silhouettes with a unique body, eye, and weapon motif per enemy.
+    const designs = {
+        bonecaster: ["#e8e3cf", "#63bcff"], bloodCultist: ["#5c1724", "#ef4453"], eye: ["#8e609b", "#e6d6ff"],
+        plagueRat: ["#557542", "#94ff55"], flameWraith: ["#256fb5", "#ff8a35"], shadowArcher: ["#20202a", "#976cff"],
+        crystalCrawler: ["#315e78", "#82f6ff"], voidPriest: ["#2d1e49", "#090914"], mimicMage: ["#9b652d", "#ffdc5a"],
+        frostWitch: ["#bcdff0", "#f1ffff"], cursedKnight: ["#3a3d50", "#ff3d4d"], lantern: ["#55545c", "#ffcc54"],
+        rottingShaman: ["#557348", "#94d968"], hive: ["#6d5b21", "#ffe761"], bloodOrb: ["#8f2636", "#ff5a67"], jester: ["#713b78", "#ff80d6"], plagueMinion: ["#3b6437", "#a6ef72"]
+    };
+
+    let palette = designs[enemy.type];
+
+    if(palette) {
+
+        let body = palette[0], glow = palette[1];
+
+        ctx.fillStyle = enemy.hitFlash > 0 ? "#ffffff" : body;
+
+        ctx.shadowColor = glow;
+
+        ctx.shadowBlur = 8;
+
+        if(enemy.type === "eye") {
+
+            ctx.fillRect(x + 3, y + 8, enemy.width - 6, enemy.height - 14);
+
+            ctx.fillStyle = glow;
+
+            ctx.fillRect(x + enemy.width / 2 - 7, y + 13, 14, 9);
+
+            ctx.fillStyle = "#12101b";
+
+            ctx.fillRect(x + enemy.width / 2 - 2, y + 14, 4, 7);
+
+            for(let small = 0; small < 3; small++) ctx.fillRect(x + small * 12 + 2, y + (small % 2) * 6, 4, 4);
+
+        } else if(enemy.type === "plagueRat" || enemy.type === "crystalCrawler") {
+
+            ctx.fillRect(x + 5, y + 9, enemy.width - 9, enemy.height - 12);
+
+            for(let leg = 0; leg < 4; leg++) ctx.fillRect(x + 5 + leg * 7, y + enemy.height - 7, 4, 7);
+
+            ctx.fillStyle = glow;
+
+            ctx.fillRect(x + enemy.width - 12, y + 10, 5, 5);
+
+            ctx.fillRect(x + 8, y + 5, 7, 5);
+
+        } else if(enemy.type === "bloodOrb" || enemy.type === "hive") {
+
+            ctx.beginPath();
+
+            ctx.arc(x + enemy.width / 2, y + enemy.height / 2, Math.min(enemy.width, enemy.height) / 2 - 3, 0, Math.PI * 2);
+
+            ctx.fill();
+
+            ctx.fillStyle = glow;
+
+            ctx.fillRect(x + enemy.width / 2 - 4, y + enemy.height / 2 - 4, 8, 8);
+
+            if(enemy.type === "hive") for(let bug = 0; bug < 5; bug++) ctx.fillRect(x + (bug * 7) % enemy.width, y + 3 + (bug % 3) * 8, 3, 3);
+
+        } else if(enemy.type === "lantern") {
+
+            ctx.strokeStyle = "#85858c";
+
+            ctx.lineWidth = 3;
+
+            ctx.strokeRect(x + 5, y + 8, enemy.width - 10, enemy.height - 10);
+
+            ctx.fillStyle = glow;
+
+            ctx.fillRect(x + 9, y + 13, enemy.width - 18, 12);
+
+            ctx.fillStyle = "#17131b";
+
+            ctx.fillRect(x + enemy.width / 2 - 2, y + 16, 4, 4);
+
+        } else {
+
+            ctx.fillRect(x + 5, y + 16, enemy.width - 10, enemy.height - 18);
+
+            ctx.fillRect(x + 8, y + 5, enemy.width - 16, 13);
+
+            ctx.fillStyle = glow;
+
+            ctx.fillRect(x + 10, y + 10, 4, 3);
+
+            ctx.fillRect(x + enemy.width - 14, y + 10, 4, 3);
+
+            if(enemy.type === "bloodCultist" || enemy.type === "voidPriest" || enemy.type === "frostWitch") ctx.fillRect(x + 4, y + 1, enemy.width - 8, 5);
+
+            if(enemy.type === "shadowArcher") { ctx.strokeStyle = glow; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x + enemy.width - 4, y + 22, 9, -Math.PI / 2, Math.PI / 2); ctx.stroke(); }
+
+            if(enemy.type === "bonecaster" || enemy.type === "rottingShaman") { ctx.fillStyle = glow; ctx.fillRect(x + enemy.width - 3, y + 14, 2, 20); }
+
+            if(enemy.type === "jester") { ctx.fillStyle = glow; ctx.fillRect(x + 4, y + 1, 6, 4); ctx.fillRect(x + enemy.width - 10, y + 1, 6, 4); }
+
+        }
+
+        ctx.restore();
+
+        return;
+
+    }
+
     if(enemy.type === "skeletalMage") {
 
         // A human skeleton in a torn mage robe: skull, spine, ribs, arms, and legs.
@@ -6164,6 +6448,30 @@ function drawNewEnemy(enemy) {
 
 function drawSlimePuddles() {
 
+    for(let cloud of toxicClouds) {
+
+        if(cloud.room !== currentRoom) continue;
+
+        ctx.save();
+
+        ctx.globalAlpha = Math.min(0.55, cloud.life / 180);
+
+        ctx.fillStyle = "#5cae3c";
+
+        ctx.shadowColor = "#91ef5e";
+
+        ctx.shadowBlur = 12;
+
+        ctx.beginPath();
+
+        ctx.arc(cloud.x + cloud.width / 2, cloud.y + cloud.height / 2, cloud.width / 2, 0, Math.PI * 2);
+
+        ctx.fill();
+
+        ctx.restore();
+
+    }
+
     for(let puddle of slimePuddles) {
 
         if(puddle.room !== currentRoom) continue;
@@ -6318,7 +6626,7 @@ function drawEnemies() {
 
         }
 
-        else if(["skeletalMage", "slimeKin", "skeletonArcher", "demonSpawn"].includes(enemy.type)) {
+        else if(["skeletalMage", "slimeKin", "skeletonArcher", "demonSpawn", "bonecaster", "bloodCultist", "eye", "plagueRat", "flameWraith", "shadowArcher", "crystalCrawler", "voidPriest", "mimicMage", "frostWitch", "cursedKnight", "lantern", "rottingShaman", "hive", "bloodOrb", "jester", "plagueMinion"].includes(enemy.type)) {
 
             drawNewEnemy(enemy);
 
@@ -8646,7 +8954,7 @@ function drawLighting() {
 
     ctx.fillStyle =
 
-        "rgba(0,0,0,0.28)";
+        darknessTimer > 0 ? "rgba(0,0,0,0.62)" : "rgba(0,0,0,0.28)";
 
 
     ctx.fillRect(
@@ -8674,7 +8982,7 @@ function drawLighting() {
 
         player.height / 2,
 
-        220
+        darknessTimer > 0 ? 100 : 220
 
     );
 
@@ -10367,6 +10675,16 @@ function resetGame() {
     musketeerSmokeTimer = 0;
 
     playerSlowTimer = 0;
+
+    playerBleedTimer = 0;
+
+    playerBurnTimer = 0;
+
+    playerFreezeTimer = 0;
+
+    darknessTimer = 0;
+
+    toxicClouds = [];
 
     ouchFireTimer = 0;
 
