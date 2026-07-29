@@ -2129,7 +2129,7 @@ function releaseAttack() {
 
     // The mage fires continuously while the button is held, so releasing it
     // never creates a separate melee attack.
-    if(playerClass === "mage") {
+    if(playerClass === "mage" || playerClass === "cyborg") {
 
         attackHoldTime = 0;
 
@@ -2174,12 +2174,6 @@ function releaseAttack() {
         attackCooldown = 48;
 
         checkBruiserSweep();
-
-    }
-
-    else if(playerClass === "cyborg") {
-
-        fireEnergyBlast();
 
     }
 
