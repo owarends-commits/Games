@@ -75,6 +75,9 @@ let shieldRaised = false;
 // A parry is a brief opening immediately after the shield is raised.
 let parryTimer = 0;
 
+// Set only when the short parry window actually catches a projectile.
+let parryShineTimer = 0;
+
 let playerClass = "hero";
 
 let attackPressActive = false;
@@ -216,6 +219,16 @@ window.addEventListener("keydown", function(e) {
 
     if(keyName === "shift") {
 
+        if(playerClass === "owen") {
+
+            owenChestBeamActive = true;
+
+            e.preventDefault();
+
+            return;
+
+        }
+
         if(!shieldRaised) parryTimer = 15;
 
         shieldRaised = true;
@@ -312,6 +325,16 @@ window.addEventListener("keyup", function(e) {
 
     if(keyName === "shift") {
 
+        if(playerClass === "owen") {
+
+            owenChestBeamActive = false;
+
+            e.preventDefault();
+
+            return;
+
+        }
+
         shieldRaised = false;
 
         parryTimer = 0;
@@ -352,6 +375,14 @@ window.addEventListener("keyup", function(e) {
 
     }
 
+    if(e.code === "Space" && playerClass === "owen") {
+
+        owenFlying = false;
+
+        e.preventDefault();
+
+    }
+
     if(keyName === " ") {
 
         e.preventDefault();
@@ -372,6 +403,10 @@ window.addEventListener("blur", function() {
     ninjaKunai.state = "idle";
 
     cyborgThrusterActive = false;
+
+    owenFlying = false;
+
+    owenChestBeamActive = false;
 
 });
 
@@ -416,6 +451,12 @@ window.addEventListener("keydown", function(e) {
 
     }
 
+    else if(playerClass === "owen") {
+
+        owenFlying = true;
+
+    }
+
     e.preventDefault();
 
 });
@@ -452,15 +493,15 @@ function choosePlayerClass(x, y) {
 
     let cards = [
 
-        {type: "hero", x: 35, y: 190}, {type: "cyborg", x: 285, y: 190}, {type: "mage", x: 535, y: 190},
+        {type: "hero", x: 10, y: 170}, {type: "cyborg", x: 207, y: 170}, {type: "mage", x: 404, y: 170}, {type: "bruiser", x: 601, y: 170},
 
-        {type: "bruiser", x: 35, y: 360}, {type: "stealth", x: 285, y: 360}, {type: "musketeer", x: 535, y: 360}
+        {type: "stealth", x: 108, y: 340}, {type: "musketeer", x: 305, y: 340}, {type: "owen", x: 502, y: 340}
 
     ];
 
     for(let card of cards) {
 
-        if(x >= card.x && x <= card.x + 230 && y >= card.y && y <= card.y + 145) playerClass = card.type;
+        if(x >= card.x && x <= card.x + 189 && y >= card.y && y <= card.y + 135) playerClass = card.type;
 
     }
 
@@ -484,13 +525,21 @@ function configurePlayerClass() {
         stealth: {health: 60, speed: 2.35},
 
         // Fast, lightly armored long-range counterpart to the Cyborg.
-        musketeer: {health: 70, speed: 2.3}
+        musketeer: {health: 70, speed: 2.3},
+
+        // Owen is intentionally the fastest character in the roster.
+        owen: {health: 190, speed: 3.4}
 
     }[playerClass];
 
     player.maxHealth = stats.health + build.healthBonus;
 
     player.speed = stats.speed * build.speedMultiplier;
+
+    // Owen's collision body and sprite are deliberately taller than the roster.
+    player.width = playerClass === "owen" ? 34 : 28;
+
+    player.height = playerClass === "owen" ? 42 : 28;
 
     magePowerMax = 100 + build.arcaneBonus;
 
@@ -675,6 +724,30 @@ const cyborgFuelMax = 180;
 let cyborgThrusterActive = false;
 
 let cyborgGatlingTimer = 0;
+
+let cyborgThrusterBeamTimer = 0;
+
+let cyborgBeamEndX = 0;
+
+let cyborgBeamEndY = 0;
+
+// Owen's DEV powers: endless flight, a chest beam, and temporary ground cracks.
+let owenFlying = false;
+
+let owenChestBeamActive = false;
+
+let owenChestBeamTimer = 0;
+
+let owenBeamEndX = 0;
+
+let owenBeamEndY = 0;
+
+let owenBeamCooldown = 0;
+
+let owenGroundCracks = [];
+
+// Brief remains used for enemies disintegrated by the Cyborg's thruster beam.
+let ashBursts = [];
 
 let fireballs = [];
 
@@ -1419,6 +1492,20 @@ function generateDungeon() {
         // Denser, varied layouts leave the middle route clear while providing cover.
         addRoomCoverLayout(room);
 
+        // Sparse pressure plates: a room may have one or two, including boss rooms.
+        // Safe rooms continue above before reaching this point and remain hazard-free.
+        let spikeCount = Math.random() < 0.30 ? 1 : 0;
+
+        if(Math.random() < 0.07) spikeCount++;
+
+        for(let spikeIndex = 0; spikeIndex < spikeCount; spikeIndex++) {
+
+            let spikePosition = randomOpenPosition(room, 30, 30);
+
+            traps.push({room: room, x: spikePosition.x, y: spikePosition.y, width: 30, height: 30, damage: 5, cooldown: 0, activeTimer: 0});
+
+        }
+
         // Room 7 is reserved for the Slime King and his summons.
         if(room === 7) {
 
@@ -1466,18 +1553,6 @@ function generateDungeon() {
             let position = randomOpenPosition(room, profile.width, profile.height);
 
             enemies.push({x: position.x, y: position.y, width: profile.width, height: profile.height, speed: profile.speed, health: profile.health, maxHealth: profile.health, room: room, type: profile.type, hitFlash: 0, alive: true, attackCooldown: randomBetween(34, ENEMY_ATTACK_COOLDOWN), attackTimer: 0, attackRange: 390, projectileSpeed: profile.projectileSpeed * PROJECTILE_SPEED_MULTIPLIER, projectileDamage: profile.projectileDamage, projectileColor: profile.projectileColor, effect: profile.effect, damageByHealth: profile.damageByHealth});
-
-        }
-
-        if(Math.random() < 0.48) {
-
-            let trapPosition = randomOpenPosition(room, 26, 26);
-
-            let trapTypes = [{type: "spikes", damage: 16}, {type: "fire", damage: 12}, {type: "thorns", damage: 6}];
-
-            let trap = trapTypes[randomBetween(0, trapTypes.length - 1)];
-
-            traps.push({room: room, x: trapPosition.x, y: trapPosition.y, width: 26, height: 26, type: trap.type, damage: trap.damage, cooldown: 0});
 
         }
 
@@ -2052,7 +2127,7 @@ function updateNinjaKunai() {
 
 function updateCharge() {
 
-    if(playerClass === "mage" || playerClass === "cyborg") return;
+    if(playerClass === "mage" || playerClass === "cyborg" || playerClass === "owen") return;
 
     if(shieldRaised) return;
 
@@ -2231,6 +2306,14 @@ function normalAttack() {
 
     }
 
+    if(playerClass === "owen") {
+
+        owenPunch();
+
+        return;
+
+    }
+
     if(playerClass === "musketeer") {
 
         fireMusketShot();
@@ -2349,7 +2432,7 @@ function releaseBow() {
 }
 
 
-function damageEnemy(enemy, amount, scoreValue) {
+function damageEnemy(enemy, amount, scoreValue, deathEffect) {
 
     let bruiserRage = 1;
 
@@ -2374,6 +2457,24 @@ function damageEnemy(enemy, amount, scoreValue) {
         enemy.health = 0;
 
         enemy.alive = false;
+
+        if(deathEffect === "ash") {
+
+            let centerX = enemy.x + enemy.width / 2;
+
+            let centerY = enemy.y + enemy.height / 2;
+
+            for(let particle = 0; particle < 12; particle++) {
+
+                let angle = Math.PI * 2 * particle / 12 + Math.random() * 0.35;
+
+                let speed = 0.7 + Math.random() * 1.9;
+
+                ashBursts.push({x: centerX, y: centerY, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 0.7, life: 26 + Math.floor(Math.random() * 13), maxLife: 38, size: 2 + Math.floor(Math.random() * 3)});
+
+            }
+
+        }
 
         if(enemy.type === "slimePawn") {
 
@@ -2466,11 +2567,69 @@ function updateCyborgGatling() {
 
     let centerY = player.y + player.height / 2;
 
-    // Rapid automatic minimum-damage bolts, paced just below the previous every-frame rate.
-    cyborgShots.push({x: centerX, y: centerY, vx: Math.cos(player.angle) * 11 * PROJECTILE_SPEED_MULTIPLIER, vy: Math.sin(player.angle) * 11 * PROJECTILE_SPEED_MULTIPLIER, angle: player.angle, damage: 3});
+    if(cyborgThrusterActive && cyborgFuel > 0) {
+
+        fireCyborgThrusterBeam(centerX, centerY);
+
+    }
+
+    else {
+
+        // The gatling receives an exact 25% damage buff while remaining minimum-damage fire.
+        cyborgShots.push({x: centerX, y: centerY, vx: Math.cos(player.angle) * 11 * PROJECTILE_SPEED_MULTIPLIER, vy: Math.sin(player.angle) * 11 * PROJECTILE_SPEED_MULTIPLIER, angle: player.angle, damage: 3.75});
+
+    }
 
     // Half the former firing rate while keeping the weapon automatic.
     cyborgGatlingTimer = 5;
+
+}
+
+
+function fireCyborgThrusterBeam(startX, startY) {
+
+    cyborgBeamEndX = startX;
+
+    cyborgBeamEndY = startY;
+
+    let hitEnemies = new Set();
+
+    for(let distance = 0; distance <= 430; distance += 4) {
+
+        let x = startX + Math.cos(player.angle) * distance;
+
+        let y = startY + Math.sin(player.angle) * distance;
+
+        if(pointHitsWall(x, y)) break;
+
+        cyborgBeamEndX = x;
+
+        cyborgBeamEndY = y;
+
+        for(let enemy of enemies) {
+
+            if(!enemy.alive || enemy.room !== currentRoom || hitEnemies.has(enemy)) continue;
+
+            let hitX = Math.max(enemy.x, Math.min(x, enemy.x + enemy.width));
+
+            let hitY = Math.max(enemy.y, Math.min(y, enemy.y + enemy.height));
+
+            if(Math.hypot(x - hitX, y - hitY) < 8) {
+
+                // Thruster beam damage reduced by a further 20%.
+                damageEnemy(enemy, 25.92, 180, "ash");
+
+                enemy.pulseTimer = 18;
+
+                hitEnemies.add(enemy);
+
+            }
+
+        }
+
+    }
+
+    cyborgThrusterBeamTimer = 5;
 
 }
 
@@ -2515,6 +2674,146 @@ function updateCyborgThruster() {
         cyborgFuel = Math.min(cyborgFuelMax, cyborgFuel + 0.5);
 
     }
+
+}
+
+
+function owenPunch() {
+
+    if(attackCooldown > 0) return;
+
+    let centerX = player.x + player.width / 2;
+
+    let centerY = player.y + player.height * 0.42;
+
+    let crackX = centerX + Math.cos(player.angle) * 105;
+
+    let crackY = centerY + Math.sin(player.angle) * 105;
+
+    attackTimer = 14;
+
+    attackHitboxTimer = 8;
+
+    attackCooldown = 20;
+
+    owenGroundCracks.push({x: crackX, y: crackY, angle: player.angle, life: 24, maxLife: 24});
+
+    screenShake = Math.max(screenShake, 10);
+
+    for(let enemy of enemies) {
+
+        if(!enemy.alive || enemy.room !== currentRoom) continue;
+
+        let dx = enemy.x + enemy.width / 2 - centerX;
+
+        let dy = enemy.y + enemy.height / 2 - centerY;
+
+        let distance = Math.hypot(dx, dy);
+
+        let angleDifference = Math.abs(normalizeAngle(Math.atan2(dy, dx) - player.angle));
+
+        if(distance <= 150 && angleDifference <= Math.PI / 3.5) {
+
+            // Common enemies are deleted in one hit; bosses still take a heavy blow.
+            damageEnemy(enemy, enemy.isBoss ? 85 : 999, 200);
+
+        }
+
+    }
+
+}
+
+
+function updateOwenPowers() {
+
+    if(owenChestBeamTimer > 0) owenChestBeamTimer--;
+
+    if(owenBeamCooldown > 0) owenBeamCooldown--;
+
+    for(let index = owenGroundCracks.length - 1; index >= 0; index--) {
+
+        owenGroundCracks[index].life--;
+
+        if(owenGroundCracks[index].life <= 0) owenGroundCracks.splice(index, 1);
+
+    }
+
+    if(playerClass !== "owen") return;
+
+    if(owenFlying) {
+
+        let oldX = player.x;
+
+        let oldY = player.y;
+
+        player.x += Math.cos(player.angle) * 5.4;
+
+        player.y += Math.sin(player.angle) * 5.4;
+
+        if(getCurrentWalls().some(function(wall) { return checkCollision(player, wall); })) {
+
+            player.x = oldX;
+
+            player.y = oldY;
+
+        }
+
+    }
+
+    if(owenChestBeamActive && owenBeamCooldown <= 0) fireOwenChestBeam();
+
+}
+
+
+function fireOwenChestBeam() {
+
+    let startX = player.x + player.width / 2;
+
+    let startY = player.y + player.height * 0.37;
+
+    owenBeamEndX = startX;
+
+    owenBeamEndY = startY;
+
+    let hitEnemies = new Set();
+
+    // Triple the former range: the beam can cut across an entire dungeon lane.
+    for(let distance = 0; distance <= 1560; distance += 4) {
+
+        let x = startX + Math.cos(player.angle) * distance;
+
+        let y = startY + Math.sin(player.angle) * distance;
+
+        if(pointHitsWall(x, y)) break;
+
+        owenBeamEndX = x;
+
+        owenBeamEndY = y;
+
+        for(let enemy of enemies) {
+
+            if(!enemy.alive || enemy.room !== currentRoom || hitEnemies.has(enemy)) continue;
+
+            let hitX = Math.max(enemy.x, Math.min(x, enemy.x + enemy.width));
+
+            let hitY = Math.max(enemy.y, Math.min(y, enemy.y + enemy.height));
+
+            if(Math.hypot(x - hitX, y - hitY) < 9) {
+
+                // The beam disintegrates regular enemies and remains strong against bosses.
+                damageEnemy(enemy, enemy.isBoss ? 95 : 999, 220, "ash");
+
+                hitEnemies.add(enemy);
+
+            }
+
+        }
+
+    }
+
+    owenChestBeamTimer = 8;
+
+    owenBeamCooldown = 7;
 
 }
 
@@ -2875,6 +3174,24 @@ function updateProjectiles() {
 
     if(laserTimer > 0) laserTimer--;
 
+    if(cyborgThrusterBeamTimer > 0) cyborgThrusterBeamTimer--;
+
+    for(let index = ashBursts.length - 1; index >= 0; index--) {
+
+        let ash = ashBursts[index];
+
+        ash.x += ash.vx;
+
+        ash.y += ash.vy;
+
+        ash.vy += 0.045;
+
+        ash.life--;
+
+        if(ash.life <= 0) ashBursts.splice(index, 1);
+
+    }
+
     for(let i = smokeClouds.length - 1; i >= 0; i--) {
 
         smokeClouds[i].life--;
@@ -3192,6 +3509,8 @@ function updateProjectiles() {
         if(shieldRaised && parryTimer > 0 && forward > 0 && forward < 56 && lateral < 32) {
 
             enemyProjectiles.splice(i, 1);
+
+            parryShineTimer = 12;
 
             continue;
 
@@ -3816,17 +4135,17 @@ function updateTraps() {
 
         if(trap.room !== currentRoom) continue;
 
-        if(trap.cooldown > 0) {
+        if(trap.cooldown > 0) trap.cooldown--;
 
-            trap.cooldown--;
+        if(trap.activeTimer > 0) trap.activeTimer--;
 
-            continue;
-
-        }
+        if(trap.cooldown > 0) continue;
 
         if(checkCollision(player, trap)) {
 
-            damagePlayer(trap.damage);
+            damagePlayer(5);
+
+            trap.activeTimer = 14;
 
             trap.cooldown = 38;
 
@@ -3838,7 +4157,7 @@ function updateTraps() {
 
             if(!enemy.alive || enemy.room !== currentRoom || !checkCollision(enemy, trap)) continue;
 
-            enemy.health -= trap.damage;
+            enemy.health -= 5;
 
             enemy.hitFlash = 8;
 
@@ -3851,6 +4170,8 @@ function updateTraps() {
                 score += enemy.type === "mage" ? 175 : 100;
 
             }
+
+            trap.activeTimer = 14;
 
             trap.cooldown = 30;
 
@@ -3985,9 +4306,41 @@ function spawnSlimePawn(king) {
 
     let offsets = [{x: -48, y: 6}, {x: 48, y: 6}, {x: 0, y: 48}, {x: 0, y: -42}];
 
-    let offset = offsets[randomBetween(0, offsets.length - 1)];
+    let offset = offsets.find(function(candidate) {
+
+        let pawn = {x: king.x + king.width / 2 + candidate.x - 11, y: king.y + king.height / 2 + candidate.y - 11, width: 22, height: 22};
+
+        return !getCurrentWalls().some(function(wall) { return checkCollision(pawn, wall); });
+
+    });
+
+    if(!offset) return false;
 
     enemies.push({x: king.x + king.width / 2 + offset.x - 11, y: king.y + king.height / 2 + offset.y - 11, width: 22, height: 22, speed: 1.25, health: 42, maxHealth: 42, room: king.room, type: "slimePawn", hitFlash: 0, alive: true, attackCooldown: 35, attackTimer: 0, attackRange: 54});
+
+    return true;
+
+}
+
+
+function findSlimeKingLanding(king, target) {
+
+    let desiredX = Math.max(25, Math.min(710, target.x - 18));
+
+    let desiredY = Math.max(30, Math.min(500, target.y - 18));
+
+    // Walk backward from the target toward the King's current clear tile until the full body fits.
+    for(let step = 0; step <= 12; step++) {
+
+        let progress = step / 12;
+
+        let candidate = {x: desiredX + (king.x - desiredX) * progress, y: desiredY + (king.y - desiredY) * progress, width: king.width, height: king.height};
+
+        if(!getCurrentWalls().some(function(wall) { return checkCollision(candidate, wall); })) return candidate;
+
+    }
+
+    return {x: king.x, y: king.y};
 
 }
 
@@ -4000,9 +4353,9 @@ function updateSlimeKing(king, target) {
 
     if(pawnsAlive < 2 && king.spawnCooldown <= 0) {
 
-        spawnSlimePawn(king);
-
-        king.spawnCooldown = 120;
+        // Only start the summon cooldown when a clear spawn position was found.
+        // This prevents a blocked room layout from putting the fight into a bad state.
+        king.spawnCooldown = spawnSlimePawn(king) ? 120 : 20;
 
     }
 
@@ -4026,7 +4379,19 @@ function updateSlimeKing(king, target) {
 
             screenShake = Math.max(screenShake, 14);
 
-            if(Math.hypot(player.x + player.width / 2 - kingCenterX, player.y + player.height / 2 - kingCenterY) <= 125) damagePlayer(42);
+            // The leap is powerful but gives a fair dodge window.  It must also
+            // strike the Ninja clone when one is active rather than the hidden player.
+            let targetCenterX = target.x + target.width / 2;
+
+            let targetCenterY = target.y + target.height / 2;
+
+            if(Math.hypot(targetCenterX - kingCenterX, targetCenterY - kingCenterY) <= 100) {
+
+                if(target === player) damagePlayer(25);
+
+                else assassinClone = null;
+
+            }
 
         }
 
@@ -4046,13 +4411,15 @@ function updateSlimeKing(king, target) {
 
     king.jumpStartY = king.y;
 
-    king.jumpTargetX = Math.max(25, Math.min(710, target.x - 18));
+    let landing = findSlimeKingLanding(king, target);
 
-    king.jumpTargetY = Math.max(30, Math.min(500, target.y - 18));
+    king.jumpTargetX = landing.x;
+
+    king.jumpTargetY = landing.y;
 
     king.jumpTimer = 36;
 
-    king.attackCooldown = 150;
+    king.attackCooldown = 180;
 
 }
 
@@ -4362,6 +4729,9 @@ function updateEnemies() {
 
 function damagePlayer(amount = 15) {
 
+    // Owen's DEV status makes him fully immune to damage, including traps and boss attacks.
+    if(playerClass === "owen") return false;
+
     // Mage dashes are an evasive blink: no damage can land until the dash ends.
     if(playerClass === "mage" && dashTimer > 0) {
 
@@ -4378,7 +4748,8 @@ function damagePlayer(amount = 15) {
 
 
     // Bruiser, Cyborg and Mage have sturdy shields; Stealth trades defense for speed.
-    if(shieldRaised) {
+    // Cyborg's shield is also active for the duration of a powered thruster burst.
+    if(shieldRaised || (playerClass === "cyborg" && cyborgThrusterActive && cyborgFuel > 0)) {
 
         let block = playerClass === "hero" ? 0.5 : playerClass === "stealth" ? 0.25 : 0.75;
 
@@ -4415,6 +4786,8 @@ function damagePlayer(amount = 15) {
 function updateDamageCooldown() {
 
     if(parryTimer > 0) parryTimer--;
+
+    if(parryShineTimer > 0) parryShineTimer--;
 
     if(bruiserChargeCooldown > 0) bruiserChargeCooldown--;
 
@@ -5241,59 +5614,40 @@ function drawTraps() {
 
         ctx.save();
 
-        if(trap.type === "spikes") {
+        // Recessed floor plate until someone steps on it, then the spikes snap out briefly.
+        ctx.fillStyle = "#1c2632";
 
-            ctx.fillStyle = "#aab3bd";
+        ctx.fillRect(trap.x, trap.y, trap.width, trap.height);
 
-            for(let spike = 0; spike < 4; spike++) {
+        ctx.fillStyle = "#536171";
 
-                ctx.beginPath();
+        ctx.fillRect(trap.x + 3, trap.y + 3, trap.width - 6, trap.height - 6);
 
-                ctx.moveTo(trap.x + spike * 7, trap.y + 25);
+        let extension = trap.activeTimer > 0 ? 25 : 0;
 
-                ctx.lineTo(trap.x + spike * 7 + 4, trap.y + 4);
+        if(trap.activeTimer > 0) {
 
-                ctx.lineTo(trap.x + spike * 7 + 7, trap.y + 25);
+            ctx.shadowColor = "#e9f5ff";
 
-                ctx.fill();
-
-            }
+            ctx.shadowBlur = 10;
 
         }
 
-        else if(trap.type === "fire") {
+        ctx.fillStyle = "#eff8ff";
 
-            ctx.fillStyle = "#ff5e24";
+        for(let spike = 0; spike < 4 && trap.activeTimer > 0; spike++) {
 
-            ctx.shadowColor = "#ff9a28";
-
-            ctx.shadowBlur = 14;
+            let spikeX = trap.x + spike * 7 + 1;
 
             ctx.beginPath();
 
-            ctx.arc(trap.x + 13, trap.y + 14, 10 + Math.sin(Date.now() * 0.01) * 3, 0, Math.PI * 2);
+            ctx.moveTo(spikeX, trap.y + 27);
+
+            ctx.lineTo(spikeX + 3, trap.y + 27 - extension);
+
+            ctx.lineTo(spikeX + 6, trap.y + 27);
 
             ctx.fill();
-
-        }
-
-        else {
-
-            ctx.strokeStyle = "#688d35";
-
-            ctx.lineWidth = 4;
-
-            ctx.beginPath();
-
-            ctx.moveTo(trap.x + 2, trap.y + 22);
-
-            ctx.lineTo(trap.x + 10, trap.y + 4);
-
-            ctx.lineTo(trap.x + 17, trap.y + 22);
-
-            ctx.lineTo(trap.x + 24, trap.y + 5);
-
-            ctx.stroke();
 
         }
 
@@ -6346,7 +6700,7 @@ function drawCyborg() {
 
     }
 
-    if(shieldRaised) {
+    if(shieldRaised || (playerClass === "cyborg" && cyborgThrusterActive && cyborgFuel > 0)) {
 
         ctx.strokeStyle = "#42ff79";
 
@@ -6696,6 +7050,130 @@ function drawMusketeer() {
 }
 
 
+function drawOwen() {
+
+    let x = player.x;
+
+    let y = player.y;
+
+    let flashing = damageCooldown > 0 && Math.floor(damageCooldown / 5) % 2 === 0;
+
+    ctx.save();
+
+    ctx.fillStyle = "rgba(0,0,0,0.36)";
+
+    ctx.beginPath();
+
+    ctx.ellipse(x + 17, y + 43, 18, 5, 0, 0, Math.PI * 2);
+
+    ctx.fill();
+
+    // A constant, unstable red aura makes Owen's DEV power visible even while idle.
+    let pulse = 0.55 + Math.sin(Date.now() * 0.012) * 0.45;
+
+    ctx.strokeStyle = "#ff3440";
+
+    ctx.shadowColor = "#ff111c";
+
+    ctx.shadowBlur = 15;
+
+    ctx.lineWidth = 2;
+
+    ctx.globalAlpha = 0.6 + pulse * 0.4;
+
+    for(let arc = 0; arc < 3; arc++) {
+
+        let startX = x + 4 + ((Math.floor(Date.now() / 55) + arc * 11) % 26);
+
+        let startY = y + 8 + ((Math.floor(Date.now() / 70) + arc * 7) % 28);
+
+        ctx.beginPath();
+
+        ctx.moveTo(startX, startY);
+
+        ctx.lineTo(startX - 5 + arc * 4, startY + 7);
+
+        ctx.lineTo(startX + 2, startY + 13);
+
+        ctx.stroke();
+
+    }
+
+    ctx.globalAlpha = 1;
+
+    if(owenFlying) {
+
+        ctx.fillStyle = "#ff4f3f";
+
+        ctx.shadowColor = "#ff813d";
+
+        ctx.shadowBlur = 14;
+
+        ctx.fillRect(x + 5, y + 39, 8, 15);
+
+        ctx.fillRect(x + 21, y + 39, 8, 15);
+
+        ctx.fillStyle = "#ffd35a";
+
+        ctx.fillRect(x + 7, y + 42, 4, 10);
+
+        ctx.fillRect(x + 23, y + 42, 4, 10);
+
+    }
+
+    // Tall, broad 8-bit DEV character with brown hair and oversized shoulders.
+    ctx.fillStyle = "#1d2434";
+
+    ctx.fillRect(x + 5, y + 29, 9, 13);
+
+    ctx.fillRect(x + 20, y + 29, 9, 13);
+
+    ctx.fillStyle = flashing ? "#ffffff" : "#446aa0";
+
+    ctx.fillRect(x + 3, y + 17, 28, 16);
+
+    ctx.fillStyle = "#668bc0";
+
+    ctx.fillRect(x + 7, y + 19, 20, 10);
+
+    ctx.fillStyle = "#d69a67";
+
+    ctx.fillRect(x, y + 19, 6, 13);
+
+    ctx.fillRect(x + 28, y + 19, 6, 13);
+
+    ctx.fillRect(x + 10, y + 7, 14, 12);
+
+    ctx.fillStyle = "#5a301f";
+
+    ctx.fillRect(x + 8, y + 3, 18, 7);
+
+    ctx.fillRect(x + 10, y + 1, 12, 4);
+
+    // Pulsing lightning-red eyes.
+    ctx.fillStyle = pulse > 0.75 ? "#fff0d0" : "#ff3a3a";
+
+    ctx.shadowColor = "#ff101b";
+
+    ctx.shadowBlur = 8 + pulse * 14;
+
+    ctx.fillRect(x + 12, y + 11, 3, 2);
+
+    ctx.fillRect(x + 20, y + 11, 3, 2);
+
+    ctx.fillStyle = "#ff3d38";
+
+    ctx.shadowColor = "#ff2525";
+
+    ctx.shadowBlur = owenChestBeamActive ? 18 : 5;
+
+    ctx.fillRect(x + 15, y + 23, 4, 4);
+
+    ctx.restore();
+
+}
+
+
 function drawPlayer() {
 
     let hiddenBySmoke = playerClass === "musketeer" && musketeerSmokeTimer > 0;
@@ -6730,7 +7208,11 @@ function drawPlayer() {
 
     else if(playerClass === "musketeer") drawMusketeer();
 
+    else if(playerClass === "owen") drawOwen();
+
     else drawKnight();
+
+    if(parryShineTimer > 0) drawParryShine();
 
     if(running) ctx.restore();
 
@@ -7029,6 +7511,82 @@ function drawClassAttackAnimation() {
 
     }
 
+    else if(playerClass === "owen") {
+
+        ctx.fillStyle = "#d69a67";
+
+        ctx.shadowColor = "#ffb06a";
+
+        ctx.shadowBlur = 14;
+
+        ctx.fillRect(15, -11, 24, 22);
+
+        ctx.fillStyle = "#fff0c4";
+
+        ctx.fillRect(35, -5, 15, 10);
+
+        ctx.strokeStyle = "#ff9e4a";
+
+        ctx.lineWidth = 3;
+
+        ctx.beginPath();
+
+        ctx.moveTo(47, -20);
+
+        ctx.lineTo(57, 0);
+
+        ctx.lineTo(47, 20);
+
+        ctx.stroke();
+
+    }
+
+    ctx.restore();
+
+}
+
+
+function drawParryShine() {
+
+    let centerX = player.x + player.width / 2;
+
+    let centerY = player.y + player.height / 2;
+
+    let flash = parryShineTimer / 12;
+
+    ctx.save();
+
+    ctx.translate(centerX, centerY);
+
+    ctx.rotate(player.angle);
+
+    ctx.globalAlpha = Math.min(1, flash * 1.5);
+
+    ctx.strokeStyle = "#ffe36b";
+
+    ctx.shadowColor = "#ffd23f";
+
+    ctx.shadowBlur = 18;
+
+    ctx.lineWidth = 4;
+
+    // The flash is positioned just in front of the character, directly on the raised shield.
+    ctx.strokeRect(12, -13, 10, 26);
+
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+
+    ctx.moveTo(7, 0);
+
+    ctx.lineTo(28, 0);
+
+    ctx.moveTo(17, -18);
+
+    ctx.lineTo(17, 18);
+
+    ctx.stroke();
+
     ctx.restore();
 
 }
@@ -7180,6 +7738,68 @@ function drawAttack() {
 // DASH EFFECT
 // ======================================================
 
+function drawOwenGroundCracks() {
+
+    for(let crack of owenGroundCracks) {
+
+        ctx.save();
+
+        ctx.translate(crack.x, crack.y);
+
+        ctx.rotate(crack.angle);
+
+        ctx.globalAlpha = crack.life / crack.maxLife;
+
+        ctx.strokeStyle = "#160d0b";
+
+        ctx.shadowColor = "#ff643d";
+
+        ctx.shadowBlur = 9;
+
+        ctx.lineWidth = 4;
+
+        ctx.beginPath();
+
+        ctx.moveTo(-34, 0);
+
+        ctx.lineTo(-12, -5);
+
+        ctx.lineTo(2, 4);
+
+        ctx.lineTo(30, 0);
+
+        ctx.moveTo(-8, -3);
+
+        ctx.lineTo(-15, -14);
+
+        ctx.moveTo(8, 3);
+
+        ctx.lineTo(16, 14);
+
+        ctx.stroke();
+
+        // Red lightning races through the opened ground for the life of the impact.
+        ctx.strokeStyle = "#ff2634";
+
+        ctx.shadowColor = "#ff0d1a";
+
+        ctx.shadowBlur = 18;
+
+        ctx.lineWidth = 2;
+
+        drawLightningSegment(-42, -5, -8, 1);
+
+        drawLightningSegment(-8, 1, 18, -3);
+
+        drawLightningSegment(18, -3, 45, 2);
+
+        ctx.restore();
+
+    }
+
+}
+
+
 function drawProjectiles() {
 
     ctx.save();
@@ -7295,6 +7915,138 @@ function drawProjectiles() {
         ctx.fillRect(shot.x - 6, shot.y - 1, 5, 2);
 
     }
+
+    if(cyborgThrusterBeamTimer > 0) {
+
+        let centerX = player.x + player.width / 2;
+
+        let centerY = player.y + player.height / 2;
+
+        ctx.strokeStyle = "#3defff";
+
+        ctx.shadowColor = "#159dff";
+
+        ctx.shadowBlur = 22;
+
+        ctx.lineWidth = 9;
+
+        ctx.beginPath();
+
+        ctx.moveTo(centerX, centerY);
+
+        ctx.lineTo(cyborgBeamEndX, cyborgBeamEndY);
+
+        ctx.stroke();
+
+        ctx.strokeStyle = "#efffff";
+
+        ctx.shadowBlur = 0;
+
+        ctx.lineWidth = 3;
+
+        ctx.beginPath();
+
+        ctx.moveTo(centerX, centerY);
+
+        ctx.lineTo(cyborgBeamEndX, cyborgBeamEndY);
+
+        ctx.stroke();
+
+    }
+
+    // Rendering follows the held Shift state, while damage is still pulsed separately.
+    // This keeps the chest beam as one solid, continuous line instead of flickering.
+    if(playerClass === "owen" && owenChestBeamActive) {
+
+        let startX = player.x + player.width / 2;
+
+        let startY = player.y + player.height * 0.37;
+
+        ctx.strokeStyle = "#ff2e38";
+
+        ctx.shadowColor = "#ff0718";
+
+        ctx.shadowBlur = 24;
+
+        ctx.lineWidth = 11;
+
+        ctx.beginPath();
+
+        ctx.moveTo(startX, startY);
+
+        ctx.lineTo(owenBeamEndX, owenBeamEndY);
+
+        ctx.stroke();
+
+        ctx.strokeStyle = "#fff2d1";
+
+        ctx.shadowBlur = 0;
+
+        ctx.lineWidth = 3;
+
+        ctx.beginPath();
+
+        ctx.moveTo(startX, startY);
+
+        ctx.lineTo(owenBeamEndX, owenBeamEndY);
+
+        ctx.stroke();
+
+        // Electrical red forks flicker along the otherwise solid beam core.
+        let beamDX = owenBeamEndX - startX;
+
+        let beamDY = owenBeamEndY - startY;
+
+        let beamLength = Math.hypot(beamDX, beamDY) || 1;
+
+        let normalX = -beamDY / beamLength;
+
+        let normalY = beamDX / beamLength;
+
+        ctx.strokeStyle = "#ff5260";
+
+        ctx.shadowColor = "#ff111f";
+
+        ctx.shadowBlur = 16;
+
+        ctx.lineWidth = 2;
+
+        for(let fork = 1; fork <= 4; fork++) {
+
+            let progress = ((Date.now() / 85 + fork * 0.23) % 1) * 0.72 + 0.12;
+
+            let forkX = startX + beamDX * progress;
+
+            let forkY = startY + beamDY * progress;
+
+            let side = fork % 2 === 0 ? 1 : -1;
+
+            ctx.beginPath();
+
+            ctx.moveTo(forkX, forkY);
+
+            ctx.lineTo(forkX + normalX * 11 * side + beamDX / beamLength * 6, forkY + normalY * 11 * side + beamDY / beamLength * 6);
+
+            ctx.lineTo(forkX + normalX * 20 * side, forkY + normalY * 20 * side);
+
+            ctx.stroke();
+
+        }
+
+    }
+
+    // Beam kills leave a fast, drifting pile of ash instead of a normal body.
+    for(let ash of ashBursts) {
+
+        ctx.globalAlpha = Math.max(0, ash.life / ash.maxLife);
+
+        ctx.fillStyle = ash.life > 16 ? "#c8d3db" : "#747b84";
+
+        ctx.fillRect(Math.round(ash.x), Math.round(ash.y), ash.size, ash.size);
+
+    }
+
+    ctx.globalAlpha = 1;
 
     for(let pellet of shotgunPellets) {
 
@@ -8226,7 +8978,11 @@ function drawUI() {
 
                             ? "WASD: Move | LMB: Musket | Hold LMB: Piercing shotgun | Space: Smoke teleport"
 
-                            : "WASD: Move | LMB: Sword | E: Bow | Space: Grapple | Shift: Shield (50% block)",
+                            : playerClass === "owen"
+
+                                ? "WASD: Move | LMB: DEV punch | Space: Fly | Hold Shift: Chest beam"
+
+                                : "WASD: Move | LMB: Sword | E: Bow | Space: Grapple | Shift: Shield (50% block)",
 
         15,
 
@@ -8360,6 +9116,8 @@ function drawGame() {
 
     drawWalls();
 
+    drawOwenGroundCracks();
+
     drawDoors();
 
     drawTorches();
@@ -8424,6 +9182,8 @@ function drawLobby() {
     drawFloor();
 
     drawWalls();
+
+    drawOwenGroundCracks();
 
     drawDoors();
 
@@ -9056,7 +9816,7 @@ function drawStartScreen() {
 
     ctx.fillStyle = "#b8860b";
 
-    ctx.font = "52px Georgia";
+    ctx.font = "44px Georgia";
 
     ctx.textAlign = "center";
 
@@ -9067,32 +9827,34 @@ function drawStartScreen() {
 
         400,
 
-        85
+        70
 
     );
 
-    drawTitleSkull(694, 57, 1.6);
+    drawTitleSkull(710, 47, 1.25);
 
 
     ctx.fillStyle = "white";
 
     ctx.font = "20px Arial";
 
-    ctx.fillText("Choose a class for a 25-room run", 400, 135);
+    ctx.fillText("Choose a class for a 25-room run", 400, 115);
 
     let classes = [
 
-        {name: "HERO", type: "hero", color: "#b8860b", x: 35, y: 190, stats: "100 HP | 1.7 SPD | 50% block", description: "Balanced sword, bow, and grapple"},
+        {name: "HERO", type: "hero", color: "#b8860b", x: 10, y: 170, stats: "100 HP | 1.7 SPD", description: "Sword, bow, grapple"},
 
-        {name: "CYBORG", type: "cyborg", color: "#37e8e2", x: 285, y: 190, stats: "125 HP | 1.6 SPD | 75% block", description: "Laser, energy blast, strong shield"},
+        {name: "CYBORG", type: "cyborg", color: "#37e8e2", x: 207, y: 170, stats: "125 HP | 1.6 SPD", description: "Gatling and thruster"},
 
-        {name: "MAGE", type: "mage", color: "#d86bff", x: 535, y: 190, stats: "75 HP | 1.75 SPD | 75% block", description: "Fire, frost, lightning cone caster"},
+        {name: "MAGE", type: "mage", color: "#d86bff", x: 404, y: 170, stats: "75 HP | 1.75 SPD", description: "Elemental caster"},
 
-        {name: "BRUISER", type: "bruiser", color: "#e56345", x: 35, y: 360, stats: "175 HP | 1.35 SPD | 75% block", description: "Rage: up to 2x damage at 10 HP"},
+        {name: "BRUISER", type: "bruiser", color: "#e56345", x: 601, y: 170, stats: "175 HP | 1.35 SPD", description: "Rage and charges"},
 
-        {name: "NINJA", type: "stealth", color: "#5966a8", x: 285, y: 360, stats: "60 HP | 2.35 SPD | 25% block", description: "Shuriken cone and kunai teleport"},
+        {name: "NINJA", type: "stealth", color: "#5966a8", x: 108, y: 340, stats: "60 HP | 2.35 SPD", description: "Shuriken teleport"},
 
-        {name: "MUSKETEER", type: "musketeer", color: "#ffb347", x: 535, y: 360, stats: "70 HP | 2.3 SPD | Long range", description: "Quick musket and piercing shotgun"}
+        {name: "MUSKETEER", type: "musketeer", color: "#ffb347", x: 305, y: 340, stats: "70 HP | 2.3 SPD", description: "Musket and shotgun"},
+
+        {name: "OWEN", type: "owen", color: "#ff4f3f", x: 502, y: 340, stats: "190 HP | 3.4 SPD", description: "DEV: punch, fly, chest beam"}
 
     ];
 
@@ -9102,27 +9864,27 @@ function drawStartScreen() {
 
         ctx.fillStyle = selected ? "#26303b" : "#171717";
 
-        ctx.fillRect(option.x, option.y, 230, 145);
+        ctx.fillRect(option.x, option.y, 189, 135);
 
         ctx.strokeStyle = option.color;
 
         ctx.lineWidth = selected ? 4 : 2;
 
-        ctx.strokeRect(option.x, option.y, 230, 145);
+        ctx.strokeRect(option.x, option.y, 189, 135);
 
         ctx.fillStyle = option.color;
 
-        ctx.font = "25px Arial";
+        ctx.font = "20px Arial";
 
-        ctx.fillText(option.name, option.x + 115, option.y + 32);
+        ctx.fillText(option.name, option.x + 94, option.y + 30);
 
         ctx.fillStyle = "white";
 
-        ctx.font = "13px Arial";
+        ctx.font = "12px Arial";
 
-        ctx.fillText(option.stats, option.x + 115, option.y + 65);
+        ctx.fillText(option.stats, option.x + 94, option.y + 62);
 
-        ctx.fillText(option.description, option.x + 115, option.y + 98);
+        ctx.fillText(option.description, option.x + 94, option.y + 92);
 
     }
 
@@ -9582,6 +10344,8 @@ function resetGame() {
 
     parryTimer = 0;
 
+    parryShineTimer = 0;
+
     grapplingHook.state = "idle";
 
     ninjaKunai.state = "idle";
@@ -9621,6 +10385,28 @@ function resetGame() {
     cyborgThrusterActive = false;
 
     cyborgGatlingTimer = 0;
+
+    cyborgThrusterBeamTimer = 0;
+
+    cyborgBeamEndX = 0;
+
+    cyborgBeamEndY = 0;
+
+    owenFlying = false;
+
+    owenChestBeamActive = false;
+
+    owenChestBeamTimer = 0;
+
+    owenBeamEndX = 0;
+
+    owenBeamEndY = 0;
+
+    owenBeamCooldown = 0;
+
+    owenGroundCracks = [];
+
+    ashBursts = [];
 
     fireballs = [];
 
@@ -9741,6 +10527,8 @@ function gameLoop() {
 
         updateCyborgThruster();
 
+        updateOwenPowers();
+
         updateDash();
 
         updateBruiserDash();
@@ -9777,6 +10565,8 @@ function gameLoop() {
         updateCyborgGatling();
 
         updateCyborgThruster();
+
+        updateOwenPowers();
 
 
         updateDash();
