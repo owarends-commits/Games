@@ -1,0 +1,758 @@
+<title>Extrecated Item Modeler</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600&family=IBM+Plex+Sans+Condensed:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: an inspection bench. Item shelf left, the 3D bench centre (edit or player view), inspector right, status strip below. Same committed dark look as the Map Designer. */
+:root {
+  --bg: #0b0d0c; --panel: #131715; --panel2: #1a1f1c; --panel3: #222823; --line: #2c332e; --fg: #dcd6c6; --dim: #8f8d81; --mute: #5d5f57;
+  --accent: #b5562c; --accent2: #d07a44; --warn: #c9a23a; --ok: #7fa35a; --cam: #59a6c9; --note: #c9a23a; --exam: #6fb6d6;
+  --display: "Chakra Petch", "Arial Narrow", sans-serif; --body: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; background: var(--bg); color: var(--fg); }
+body { font-family: var(--body); font-size: 14px; margin: 0; padding-left: max(8px, env(safe-area-inset-left, 0px)); padding-right: max(8px, env(safe-area-inset-right, 0px)); padding-block: 8px; overflow: hidden; }
+button, select, input, textarea { font: inherit; color: inherit; }
+textarea { background: var(--panel2); border: 1px solid var(--line); padding: 5px 7px; width: 100%; resize: vertical; }
+.app { height: 100%; display: grid; grid-template-columns: 220px minmax(0, 1fr) 330px; grid-template-rows: auto minmax(0, 1fr) auto; gap: 8px; }
+@media (max-width: 980px) { body { overflow: auto; } .app { height: auto; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto 64vh auto auto; } .shelf { max-height: 240px; } }
+header.top { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; background: var(--panel); border: 1px solid var(--line); padding: 6px 10px; }
+.brand { font-family: var(--display); font-weight: 600; letter-spacing: .08em; font-size: 17px; white-space: nowrap; }
+.brand span { color: var(--accent); }
+.sep { width: 1px; height: 22px; background: var(--line); }
+.seg { display: inline-flex; border: 1px solid var(--line); flex-wrap: wrap; }
+.seg button { all: unset; cursor: pointer; padding: 4px 9px; font-family: var(--mono); font-size: 12px; letter-spacing: .05em; color: var(--dim); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: #150b05; }
+.seg button:focus-visible, .btn:focus-visible, .shape:focus-visible, .itm:focus-visible { outline: 2px solid var(--warn); outline-offset: 1px; }
+.btn { all: unset; cursor: pointer; padding: 5px 11px; border: 1px solid var(--line); background: var(--panel2); font-size: 13px; white-space: nowrap; }
+.btn:hover { border-color: var(--dim); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #150b05; font-weight: 600; }
+.btn.small { padding: 2px 7px; font-size: 12px; }
+.btn.danger { color: #e08a72; }
+.btn[disabled] { opacity: .4; pointer-events: none; }
+label.inl { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--dim); font-family: var(--mono); }
+select, input[type="number"], input[type="text"] { background: var(--panel2); border: 1px solid var(--line); padding: 3px 6px; min-width: 0; }
+input[type="number"] { width: 64px; font-family: var(--mono); font-size: 12.5px; }
+input[type="color"] { width: 34px; height: 24px; border: 1px solid var(--line); background: var(--panel2); padding: 0; }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+
+.shelf { background: var(--panel); border: 1px solid var(--line); display: grid; grid-template-rows: auto minmax(0, 1fr) auto; min-height: 0; }
+.shelf h3, .pane h3 { font-family: var(--display); font-weight: 600; font-size: 14px; letter-spacing: .08em; margin: 0; }
+.shelfHead { padding: 8px 10px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; }
+.items { overflow-y: auto; padding: 8px; display: grid; gap: 6px; align-content: start; }
+.itm { all: unset; cursor: pointer; display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px; align-items: center; padding: 5px; background: var(--panel2); border: 1px solid var(--line); }
+.itm[aria-selected="true"] { border-color: var(--accent); background: #24180f; }
+.itm img { width: 64px; height: 48px; image-rendering: pixelated; background: #050606; display: block; }
+.itm b { display: block; font-weight: 500; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.itm small { color: var(--mute); font-family: var(--mono); font-size: 10.5px; }
+.shelfFoot { padding: 8px; border-top: 1px solid var(--line); display: grid; gap: 6px; }
+
+.bench { position: relative; background: #070908; border: 1px solid var(--line); min-height: 0; overflow: hidden; display: grid; grid-template-rows: auto minmax(0, 1fr); }
+.bar { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; padding: 6px 8px; background: var(--panel); border-bottom: 1px solid var(--line); }
+.shape { all: unset; cursor: pointer; display: inline-grid; place-items: center; width: 34px; height: 30px; border: 1px solid var(--line); background: var(--panel2); color: var(--dim); }
+.shape:hover { color: var(--fg); border-color: var(--dim); }
+.shape svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+.view { position: relative; min-height: 0; }
+.view canvas.main { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+.view canvas.main.pixel { image-rendering: pixelated; }
+.pinLabel { position: absolute; transform: translate(10px, -50%); font-family: var(--mono); font-size: 11px; padding: 2px 6px; background: rgba(7,9,8,.88); border: 1px solid var(--line); pointer-events: none; white-space: nowrap; max-width: 240px; overflow: hidden; text-overflow: ellipsis; }
+.pinLabel.note { color: var(--note); border-color: #5a4a1e; }
+.pinLabel.examine { color: var(--exam); border-color: #24485a; }
+.hint { position: absolute; left: 8px; bottom: 8px; right: 8px; font-family: var(--mono); font-size: 11.5px; color: var(--dim); pointer-events: none; text-shadow: 0 1px 0 #000; white-space: pre-line; }
+.ruler { position: absolute; right: 10px; top: 10px; font-family: var(--mono); font-size: 11px; color: var(--dim); pointer-events: none; text-align: right; }
+/* player view: the in-game inspection screen */
+.pv { position: absolute; inset: 0; pointer-events: none; display: grid; grid-template-rows: auto 1fr auto; }
+.pv .pvTop { padding: 14px 18px; display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+.pv .pvName { font-family: var(--display); font-weight: 600; font-size: 20px; letter-spacing: .1em; color: #e8dfc8; text-shadow: 0 2px 0 #000; }
+.pv .pvKey { font-family: var(--mono); font-size: 11px; color: #8f8d81; text-align: right; line-height: 1.5; }
+.pv .pvBox { margin: 0 auto 16px; width: min(560px, calc(100% - 32px)); background: rgba(6,7,7,.9); border: 1px solid #3a3a34; border-top: 2px solid #8a6a3a; padding: 10px 14px; font-family: var(--mono); font-size: 13px; color: #e6e0cf; line-height: 1.5; min-height: 64px; }
+.pv .pvBox em { color: var(--exam); font-style: normal; }
+
+.side { display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(--panel); border: 1px solid var(--line); min-height: 0; }
+.tabs { display: flex; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.tabs button { all: unset; cursor: pointer; padding: 8px 10px; font-family: var(--mono); font-size: 11.5px; letter-spacing: .08em; color: var(--dim); border-bottom: 2px solid transparent; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
+.pane { overflow-y: auto; padding: 10px; display: grid; gap: 10px; align-content: start; min-height: 0; }
+.label { font-family: var(--mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+.form { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 6px 8px; align-items: center; }
+.form > label { font-size: 12.5px; color: var(--dim); }
+.form .row { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; min-width: 0; }
+.muted { color: var(--dim); font-size: 12.5px; margin: 0; line-height: 1.45; }
+.list { display: grid; gap: 4px; }
+.list .it { display: flex; align-items: center; gap: 6px; padding: 5px 7px; background: var(--panel2); border: 1px solid var(--line); font-size: 12.5px; min-width: 0; cursor: pointer; }
+.list .it[aria-selected="true"] { border-color: var(--accent); }
+.list .it span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.swatch { width: 14px; height: 14px; border: 1px solid var(--line); flex: none; }
+.dot { width: 9px; height: 9px; transform: rotate(45deg); flex: none; }
+.texrow { display: grid; grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); gap: 4px; }
+.texrow button { all: unset; cursor: pointer; aspect-ratio: 1; border: 1px solid var(--line); background-size: cover; image-rendering: pixelated; position: relative; }
+.texrow button[aria-pressed="true"] { outline: 2px solid var(--warn); outline-offset: 1px; }
+.texrow button.none { display: grid; place-items: center; font-family: var(--mono); font-size: 10px; color: var(--dim); background: var(--panel2); }
+footer.status { grid-column: 1 / -1; display: flex; gap: 14px; flex-wrap: wrap; font-family: var(--mono); font-size: 11.5px; color: var(--dim); background: var(--panel); border: 1px solid var(--line); padding: 5px 10px; }
+footer.status b { color: var(--fg); font-weight: 500; }
+/* painter */
+.modal { position: fixed; inset: 0; background: rgba(5,6,6,.84); display: grid; place-items: center; z-index: 50; padding: max(10px, env(safe-area-inset-top, 0px)) max(10px, env(safe-area-inset-right, 0px)) max(10px, env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px)); }
+.sheet { background: var(--panel); border: 1px solid var(--line); border-top: 2px solid var(--accent); width: min(980px, 100%); max-height: 100%; overflow: auto; display: grid; gap: 10px; padding: 12px; }
+.sheet header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.sheet h2 { font-family: var(--display); font-weight: 600; letter-spacing: .08em; font-size: 18px; margin: 0; flex: 1; }
+.texgrid { display: grid; grid-template-columns: minmax(0, auto) minmax(220px, 1fr); gap: 14px; }
+@media (max-width: 760px) { .texgrid { grid-template-columns: minmax(0, 1fr); } }
+#pCanvas { width: min(448px, 80vw); height: min(448px, 80vw); image-rendering: pixelated; background: repeating-conic-gradient(#1c1c1c 0 25%, #2e2e2e 0 50%) 0 0 / 16px 16px; cursor: crosshair; border: 1px solid var(--line); touch-action: none; max-width: 100%; }
+.palette { display: grid; grid-template-columns: repeat(8, 26px); gap: 4px; }
+.palette button { all: unset; width: 26px; height: 26px; border: 1px solid var(--line); cursor: pointer; }
+.palette button[aria-pressed="true"] { outline: 2px solid var(--warn); outline-offset: 1px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">EXTRECATED <span>ITEM MODELER</span></div>
+    <div class="sep"></div>
+    <div class="seg" role="group" aria-label="Mode">
+      <button id="mEdit" aria-pressed="true">EDIT</button><button id="mPlayer" aria-pressed="false">PLAYER VIEW</button>
+    </div>
+    <button class="btn" id="undo" title="Ctrl+Z">Undo</button>
+    <button class="btn" id="redo" title="Ctrl+Y">Redo</button>
+    <div style="flex:1"></div>
+    <button class="btn" id="openPaint">Texture painter</button>
+    <button class="btn primary" id="sendBtn">Send to Claude</button>
+  </header>
+
+  <aside class="shelf">
+    <div class="shelfHead"><h3>ITEMS</h3><span class="muted" id="itemCount"></span></div>
+    <div class="items" id="items"></div>
+    <div class="shelfFoot">
+      <select id="newFrom" aria-label="New item from"></select>
+      <div style="display:flex; gap:6px; flex-wrap:wrap"><button class="btn small" id="newItem">New item</button><button class="btn small" id="dupItem">Duplicate</button><button class="btn small danger" id="delItem">Delete</button></div>
+    </div>
+  </aside>
+
+  <section class="bench">
+    <div class="bar" id="bar">
+      <span class="label">ADD</span><span id="shapes" style="display:flex; gap:4px; flex-wrap:wrap"></span>
+      <div class="sep"></div>
+      <div class="seg" role="group" aria-label="Transform">
+        <button data-tm="translate" aria-pressed="true" title="W">MOVE</button><button data-tm="rotate" aria-pressed="false" title="E">ROTATE</button><button data-tm="scale" aria-pressed="false" title="R">SIZE</button><button data-tm="pin" aria-pressed="false" title="P">PIN NOTE</button>
+      </div>
+      <label class="inl"><input type="checkbox" id="snap" checked> SNAP</label>
+      <label class="inl"><input type="checkbox" id="hand"> HAND</label>
+      <label class="inl"><input type="checkbox" id="ps1"> PS1</label>
+      <button class="btn small" id="focusBtn" title="F">Frame</button>
+    </div>
+    <div class="view" id="view">
+      <canvas class="main" id="cv" aria-label="3D item view"></canvas>
+      <div id="labels"></div>
+      <div class="ruler" id="ruler"></div>
+      <div class="pv" id="pv" hidden>
+        <div class="pvTop"><div class="pvName" id="pvName"></div><div class="pvKey">DRAG · TURN THE ITEM<br>WHEEL · CLOSER<br>CLICK A GLINT · EXAMINE</div></div>
+        <div></div>
+        <div class="pvBox" id="pvBox"></div>
+      </div>
+      <div class="hint" id="hint"></div>
+    </div>
+  </section>
+
+  <aside class="side">
+    <div class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="item" aria-selected="true">ITEM</button>
+      <button role="tab" data-tab="part" aria-selected="false">PARTS</button>
+      <button role="tab" data-tab="pins" aria-selected="false">NOTES &amp; EXAMINE</button>
+      <button role="tab" data-tab="file" aria-selected="false">FILE</button>
+    </div>
+    <div class="pane" id="pane-item"></div>
+    <div class="pane" id="pane-part" hidden></div>
+    <div class="pane" id="pane-pins" hidden></div>
+    <div class="pane" id="pane-file" hidden></div>
+  </aside>
+
+  <footer class="status" id="status"></footer>
+</div>
+
+<!-- texture painter -->
+<div class="modal" id="paint" hidden>
+  <div class="sheet" role="dialog" aria-labelledby="pTitle">
+    <header><h2 id="pTitle">TEXTURE PAINTER</h2>
+      <label class="inl">NAME <input type="text" id="pName" value="My texture" style="width:150px"></label>
+      <label class="inl">SIZE <select id="pSize"><option>16</option><option selected>32</option><option>64</option><option>128</option></select></label>
+      <button class="btn primary" id="pSave">Save and use</button><button class="btn" id="pClose">Close</button></header>
+    <div class="texgrid">
+      <canvas id="pCanvas" width="32" height="32"></canvas>
+      <div style="display:grid; gap:12px; align-content:start">
+        <div class="seg" role="group" aria-label="Brush"><button data-brush="pen" aria-pressed="true">PEN</button><button data-brush="fill" aria-pressed="false">FILL</button><button data-brush="pick" aria-pressed="false">PICK</button><button data-brush="grime" aria-pressed="false">GRIME</button><button data-brush="erase" aria-pressed="false">ERASE</button></div>
+        <div><div class="label" style="margin-bottom:6px">Palette</div><div class="palette" id="palette"></div>
+          <div style="display:flex; gap:8px; margin-top:8px; align-items:center"><input type="color" id="pColor"><span class="muted">Current colour</span></div></div>
+        <div><div class="label" style="margin-bottom:6px">Start from</div><div style="display:flex; flex-wrap:wrap; gap:4px" id="pStart"></div></div>
+        <div><div class="label" style="margin-bottom:6px">Bring in a picture</div><input type="file" id="pFile" accept="image/*"><p class="muted" style="margin-top:6px">Labels, photos, engravings. The picture is shrunk to the size above, pixel for pixel, the way the game shows it.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.js"></script>
+<script>
+"use strict";
+// =====================================================================================================
+// Units: metres in the data, centimetres in the inspector. +Y up. Long items lie along X (muzzle / lens toward -X).
+// A part is a unit shape scaled by its size d, rotated by r (degrees, XYZ), placed at p.
+// Pins are stored on a part, in that part's unit space, so they move and turn with it.
+// =====================================================================================================
+const $ = id => document.getElementById(id);
+const uid = p => p + Math.random().toString(36).slice(2, 8);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const rad = d => d * Math.PI / 180, deg = r => r * 180 / Math.PI;
+const cm = v => Math.round(v * 1000) / 10;          // metres -> cm (1 decimal)
+const r3 = v => Math.round(v * 10000) / 10000;
+
+// ----------------------------------------------------------------------------------- built-in item textures (32 px)
+function rnd(seed) { let a = seed; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function mk(fn, s = 32) { const c = document.createElement("canvas"); c.width = c.height = s; const g = c.getContext("2d"); fn(g, s); return c; }
+function noise(g, s, amt, seed) { const r = rnd(seed); const d = g.getImageData(0, 0, s, s); for (let i = 0; i < d.data.length; i += 4) { const n = (r() - .5) * amt; d.data[i] += n; d.data[i + 1] += n; d.data[i + 2] += n; } g.putImageData(d, 0, 0); }
+function streaks(g, s, col, n, seed, vertical) { const r = rnd(seed); g.fillStyle = col; for (let i = 0; i < n; i++) { const a = Math.floor(r() * s), b = Math.floor(r() * s), L = 3 + Math.floor(r() * s * .6); vertical ? g.fillRect(a, b, 1, L) : g.fillRect(b, a, L, 1); } }
+const TEXGEN = {
+  "Brushed metal": (g, s) => { g.fillStyle = "#8c9096"; g.fillRect(0, 0, s, s); streaks(g, s, "#a6aab0", 40, 1); streaks(g, s, "#6e7278", 30, 2); noise(g, s, 8, 3); },
+  "Blued steel": (g, s) => { g.fillStyle = "#2a2e36"; g.fillRect(0, 0, s, s); streaks(g, s, "#3c4250", 30, 4); noise(g, s, 10, 5); g.fillStyle = "#5a5e66"; for (let i = 0; i < 6; i++) g.fillRect(rnd(i)() * s | 0, rnd(i + 9)() * s | 0, 2, 1); },
+  "Brass": (g, s) => { g.fillStyle = "#b08a3a"; g.fillRect(0, 0, s, s); streaks(g, s, "#d0aa58", 30, 6); streaks(g, s, "#7a5a24", 16, 7); noise(g, s, 10, 8); },
+  "Chrome": (g, s) => { const gr = g.createLinearGradient(0, 0, 0, s); gr.addColorStop(0, "#e8ecf0"); gr.addColorStop(.45, "#8a9098"); gr.addColorStop(.55, "#cfd4da"); gr.addColorStop(1, "#5a6068"); g.fillStyle = gr; g.fillRect(0, 0, s, s); noise(g, s, 6, 9); },
+  "Rust": (g, s) => { g.fillStyle = "#6a3a22"; g.fillRect(0, 0, s, s); noise(g, s, 46, 10); const r = rnd(11); for (let i = 0; i < 40; i++) { g.fillStyle = r() < .5 ? "#8a4a26" : "#3e2416"; g.fillRect(r() * s | 0, r() * s | 0, 2, 2); } },
+  "Black plastic": (g, s) => { g.fillStyle = "#1c1d20"; g.fillRect(0, 0, s, s); noise(g, s, 10, 12); },
+  "Rubber grip": (g, s) => { g.fillStyle = "#18181a"; g.fillRect(0, 0, s, s); g.fillStyle = "#2a2a2e"; for (let y = 0; y < s; y += 4) for (let x = (y / 4) % 2 * 2; x < s; x += 4) g.fillRect(x, y, 2, 2); },
+  "Wood": (g, s) => { const r = rnd(13); for (let y = 0; y < s; y++) { const t = Math.sin(y * .7 + Math.sin(y * .13) * 3) * 14; g.fillStyle = `rgb(${118 + t},${80 + t * .8},${50 + t * .5})`; g.fillRect(0, y, s, 1); } noise(g, s, 10, 14); g.fillStyle = "#4a3020"; g.fillRect(r() * s | 0, 0, 1, s); },
+  "Dark walnut": (g, s) => { for (let y = 0; y < s; y++) { const t = Math.sin(y * .9 + Math.sin(y * .2) * 2) * 10; g.fillStyle = `rgb(${70 + t},${44 + t * .7},${28 + t * .4})`; g.fillRect(0, y, s, 1); } noise(g, s, 10, 15); },
+  "Checkered grip": (g, s) => { g.fillStyle = "#4a2e1c"; g.fillRect(0, 0, s, s); g.strokeStyle = "#2a1a10"; for (let i = -s; i < s * 2; i += 3) { g.beginPath(); g.moveTo(i, 0); g.lineTo(i + s, s); g.moveTo(i, s); g.lineTo(i + s, 0); g.stroke(); } noise(g, s, 8, 16); },
+  "Leather": (g, s) => { g.fillStyle = "#5a3424"; g.fillRect(0, 0, s, s); noise(g, s, 30, 17); g.fillStyle = "#3e2216"; const r = rnd(18); for (let i = 0; i < 24; i++) g.fillRect(r() * s | 0, r() * s | 0, 1 + (r() * 3 | 0), 1); },
+  "Black leather": (g, s) => { g.fillStyle = "#1e1a18"; g.fillRect(0, 0, s, s); noise(g, s, 18, 19); },
+  "Paper": (g, s) => { g.fillStyle = "#e6dfcc"; g.fillRect(0, 0, s, s); noise(g, s, 10, 20); },
+  "Lined paper": (g, s) => { g.fillStyle = "#e8e2d0"; g.fillRect(0, 0, s, s); g.fillStyle = "#9ab0c8"; for (let y = 5; y < s; y += 4) g.fillRect(0, y, s, 1); g.fillStyle = "#c86a6a"; g.fillRect(4, 0, 1, s); noise(g, s, 6, 21); },
+  "Cardboard": (g, s) => { g.fillStyle = "#a88454"; g.fillRect(0, 0, s, s); noise(g, s, 16, 22); g.fillStyle = "#8a6a40"; for (let x = 0; x < s; x += 3) g.fillRect(x, 0, 1, s); },
+  "Pill label": (g, s) => { g.fillStyle = "#f2efe6"; g.fillRect(0, 0, s, s); g.fillStyle = "#2a2a2a"; for (let y = 6; y < s - 4; y += 4) g.fillRect(3, y, s - 6 - ((y * 7) % 9), 1); g.fillStyle = "#c83a2a"; g.fillRect(0, 0, s, 3); },
+  "Cloth": (g, s) => { g.fillStyle = "#6a6458"; g.fillRect(0, 0, s, s); for (let y = 0; y < s; y += 2) { g.fillStyle = "rgba(0,0,0,.18)"; g.fillRect(0, y, s, 1); } for (let x = 0; x < s; x += 2) { g.fillStyle = "rgba(255,255,255,.06)"; g.fillRect(x, 0, 1, s); } },
+  "Knurled": (g, s) => { g.fillStyle = "#3a3c40"; g.fillRect(0, 0, s, s); g.fillStyle = "#5a5e64"; for (let y = 0; y < s; y += 2) for (let x = (y / 2) % 2; x < s; x += 2) g.fillRect(x, y, 1, 1); },
+  "Bone": (g, s) => { g.fillStyle = "#d8cfb4"; g.fillRect(0, 0, s, s); noise(g, s, 18, 23); },
+  "Photo": (g, s) => { g.fillStyle = "#f0ece0"; g.fillRect(0, 0, s, s); g.fillStyle = "#5a6a7a"; g.fillRect(2, 2, s - 4, s * .72 | 0); g.fillStyle = "#c8a070"; g.fillRect(s * .3 | 0, s * .3 | 0, 4, 9); g.fillRect(s * .6 | 0, s * .36 | 0, 3, 7); noise(g, s, 8, 24); },
+};
+const BUILTIN = {};
+for (const [k, fn] of Object.entries(TEXGEN)) BUILTIN["b:" + k] = { id: "b:" + k, name: k, canvas: mk(fn), builtin: true };
+const userTex = {};
+function texById(id) { return id ? (BUILTIN[id] || userTex[id] || null) : null; }
+
+// ----------------------------------------------------------------------------------- shapes
+const SHAPES = {
+  box: { name: "Box", icon: '<path d="M4 8l8-4 8 4v8l-8 4-8-4z M4 8l8 4 8-4M12 12v8"/>' },
+  cyl: { name: "Cylinder", icon: '<ellipse cx="12" cy="6" rx="7" ry="2.5"/><path d="M5 6v12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V6"/>' },
+  cone: { name: "Cone", icon: '<path d="M12 3l7 15c0 1.4-3.1 2.5-7 2.5S5 19.4 5 18z"/>' },
+  sphere: { name: "Sphere", icon: '<circle cx="12" cy="12" r="8"/><ellipse cx="12" cy="12" rx="8" ry="3"/>' },
+  torus: { name: "Ring", icon: '<ellipse cx="12" cy="12" rx="8" ry="5"/><ellipse cx="12" cy="12" rx="3.5" ry="1.8"/>' },
+  tube: { name: "Tube", icon: '<ellipse cx="12" cy="6" rx="7" ry="2.5"/><ellipse cx="12" cy="6" rx="3.5" ry="1.2"/><path d="M5 6v12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V6"/>' },
+  wedge: { name: "Wedge", icon: '<path d="M4 18h16V8z M4 18l4-2"/>' },
+  card: { name: "Card / paper", icon: '<path d="M5 7l12-2 2 12-12 2z"/>' },
+  capsule: { name: "Capsule", icon: '<rect x="7" y="3" width="10" height="18" rx="5"/>' },
+};
+const geoCache = {};
+function unitGeo(s, seg, k) {
+  seg = clamp(seg | 0 || 8, 3, 32); k = +(k ?? .3);
+  const key = s + "|" + seg + "|" + k; if (geoCache[key]) return geoCache[key];
+  let g;
+  if (s === "box" || s === "card") g = new THREE.BoxGeometry(1, 1, 1);
+  else if (s === "cyl") g = new THREE.CylinderGeometry(.5, .5, 1, seg);
+  else if (s === "cone") g = new THREE.CylinderGeometry(.5 * clamp(k, 0, .95) * 0, .5, 1, seg);
+  else if (s === "sphere") g = new THREE.SphereGeometry(.5, seg, Math.max(3, Math.round(seg * .66)));
+  else if (s === "torus") { const t = clamp(k, .04, .9) * .5; g = new THREE.TorusGeometry(.5 - t / 2, t / 2, Math.max(3, Math.round(seg * .5)), seg); }
+  else if (s === "tube") { const ri = .5 * (1 - clamp(k, .04, .95)); g = new THREE.LatheGeometry([new THREE.Vector2(ri, -.5), new THREE.Vector2(.5, -.5), new THREE.Vector2(.5, .5), new THREE.Vector2(ri, .5), new THREE.Vector2(ri, -.5)], seg); }
+  else if (s === "capsule") { const pts = []; const n = Math.max(3, seg / 2 | 0); for (let i = 0; i <= n; i++) { const a = -Math.PI / 2 + i / n * Math.PI / 2; pts.push(new THREE.Vector2(Math.cos(a) * .5, -.25 + Math.sin(a) * .25)); } for (let i = 0; i <= n; i++) { const a = i / n * Math.PI / 2; pts.push(new THREE.Vector2(Math.cos(a) * .5, .25 + Math.sin(a) * .25)); } g = new THREE.LatheGeometry(pts, seg); }
+  else if (s === "wedge") { g = new THREE.BufferGeometry(); const v = [-.5, -.5, -.5, .5, -.5, -.5, .5, -.5, .5, -.5, -.5, .5, -.5, .5, .5, .5, .5, .5]; const idx = [0, 1, 2, 0, 2, 3, 3, 2, 5, 3, 5, 4, 0, 4, 5, 0, 5, 1, 0, 3, 4, 1, 5, 2]; g.setAttribute("position", new THREE.Float32BufferAttribute(v, 3)); g.setIndex(idx); g = g.toNonIndexed(); g.computeVertexNormals(); const uv = []; for (let i = 0; i < g.attributes.position.count; i++) { const p = g.attributes.position; uv.push(p.getX(i) + .5, p.getY(i) + p.getZ(i) * .5 + .5); } g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); }
+  if (s === "cone") { g.dispose(); g = new THREE.ConeGeometry(.5, 1, seg); }
+  geoCache[key] = g; return g;
+}
+const MATS = { matte: "Matte", metal: "Metal", glossy: "Glossy", glass: "Glass / see-through", glow: "Glows" };
+
+// ----------------------------------------------------------------------------------- templates: the items already in Chapter One
+const C = v => v / 100;
+function PT(name, s, p, d, c, o = {}) { return { id: uid("p"), name, s, p: p.map(C), d: d.map(C), r: o.r || [0, 0, 0], c, t: o.t || "", tr: o.tr || 1, mat: o.mat || "matte", seg: o.seg || 10, k: o.k ?? .3, note: o.note || "" }; }
+const X = [0, 0, 90];      // a cylinder lying along X
+const TEMPLATES = {
+  blank: { name: "Blank item", key: "new_item", cat: "misc", desc: "", parts: () => [PT("Body", "box", [0, 2, 0], [6, 4, 4], "#8a8478")] },
+  flashlight: { name: "Flashlight", key: "flashlight", cat: "tool", desc: "A heavy metal flashlight. The beam is yellow and doesn't reach far.",
+    parts: () => [PT("Body", "cyl", [0, 0, 0], [3.4, 16, 3.4], "#2a2c30", { r: X, t: "b:Knurled", tr: 3, mat: "metal", seg: 12 }),
+      PT("Neck", "cone", [-8.6, 0, 0], [4.6, 1.8, 4.6], "#2a2c30", { r: [0, 0, -90], mat: "metal", seg: 12 }),
+      PT("Head", "cyl", [-10.6, 0, 0], [4.6, 2.6, 4.6], "#33363b", { r: X, t: "b:Brushed metal", mat: "metal", seg: 12 }),
+      PT("Lens", "cyl", [-12, 0, 0], [3.9, .3, 3.9], "#fff0b8", { r: X, mat: "glass", seg: 12 }),
+      PT("Bezel ring", "torus", [-11.9, 0, 0], [4.6, 4.6, 4.6], "#9a9ea4", { r: [0, 90, 0], mat: "metal", seg: 14, k: .12 }),
+      PT("Tail cap", "cyl", [8.5, 0, 0], [3.7, 1.2, 3.7], "#18181a", { r: X, t: "b:Rubber grip", seg: 12 }),
+      PT("Switch", "box", [-5, 1.85, 0], [1.6, .5, 1], "#18181a", { t: "b:Rubber grip" }),
+      PT("Lanyard loop", "torus", [9.4, 0, 0], [1.4, 1.4, 1.4], "#5a5e64", { mat: "metal", seg: 8, k: .3 })],
+    pins: [{ part: "Switch", lp: [0, .5, 0], kind: "examine", text: "The switch clicks. Nothing, until there are batteries in it." }] },
+  flashlight_dead: { name: "Flashlight (no batteries)", key: "flashlight_dead", cat: "tool", desc: "A heavy metal flashlight. Clicks. Nothing.", from: "flashlight", lens: "#3a3a36" },
+  batteries: { name: "D Batteries", key: "batteries", cat: "tool", desc: "Two D batteries. A full charge for the flashlight.",
+    parts: () => [0, 1].flatMap(i => { const z = i * 3.6 - 1.8; return [PT("Cell " + (i + 1), "cyl", [0, 1.7, z], [3.3, 5.6, 3.3], "#1e1e22", { r: X, mat: "glossy", seg: 12 }), PT("Gold band " + (i + 1), "cyl", [-1.2, 1.7, z], [3.35, 2.6, 3.35], "#c9922a", { r: X, mat: "metal", seg: 12 }), PT("Terminal " + (i + 1), "cyl", [-3.05, 1.7, z], [1, .5, 1], "#c8ccd2", { r: X, mat: "metal", seg: 8 })]; }) },
+  battery_half: { name: "Battery (half charge)", key: "battery_half", cat: "tool", desc: "From Louis's coat pocket. Half a charge, maybe.",
+    parts: () => [PT("Cell", "cyl", [0, 1.7, 0], [3.3, 5.6, 3.3], "#2a2a2e", { r: X, mat: "glossy", seg: 12 }), PT("Band", "cyl", [-1.2, 1.7, 0], [3.35, 2.6, 3.35], "#8a8a8a", { r: X, mat: "metal", seg: 12 }), PT("Terminal", "cyl", [-3.05, 1.7, 0], [1, .5, 1], "#c8ccd2", { r: X, mat: "metal", seg: 8 })] },
+  revolver: { name: "Old Revolver", key: "revolver", cat: "weapon", desc: "Five shots. It has never been fired outside the store.",
+    parts: () => [PT("Grip", "box", [6.2, -3.8, 0], [2.8, 7, 3], "#4a2e1c", { r: [0, 0, -16], t: "b:Checkered grip", tr: 2 }),
+      PT("Frame", "box", [1.4, .4, 0], [6.4, 3.4, 1.9], "#2a2e36", { t: "b:Blued steel", mat: "metal" }),
+      PT("Cylinder", "cyl", [-.6, .9, 0], [3.6, 3.8, 3.6], "#2e323a", { r: X, t: "b:Blued steel", mat: "metal", seg: 6 }),
+      PT("Barrel", "cyl", [-7.6, 1.7, 0], [1.4, 9.2, 1.4], "#2a2e36", { r: X, t: "b:Blued steel", mat: "metal", seg: 10 }),
+      PT("Under-lug", "box", [-5.8, 1, 0], [6.4, .7, .9], "#2a2e36", { t: "b:Blued steel", mat: "metal" }),
+      PT("Front sight", "box", [-11.8, 2.6, 0], [.5, .7, .25], "#2a2e36", { mat: "metal" }),
+      PT("Hammer", "box", [4.6, 2.6, 0], [.9, 1.6, .55], "#3a3e46", { r: [0, 0, 24], mat: "metal" }),
+      PT("Trigger guard", "torus", [1.8, -1.7, 0], [2.8, 2.8, 2.8], "#2a2e36", { mat: "metal", k: .14, seg: 12 }),
+      PT("Trigger", "box", [1.6, -1.5, 0], [.35, 1.6, .35], "#3a3e46", { r: [0, 0, -12], mat: "metal" })],
+    pins: [{ part: "Barrel", lp: [0, .5, .5], kind: "examine", text: "A five-shot .38. The bluing is worn pale at the muzzle." }, { part: "Grip", lp: [0, 0, .5], kind: "note", text: "Wood grips, old and dark. Keep it plain: no brand marks." }] },
+  ammo: { name: ".38 Rounds", key: "ammo", cat: "ammo", desc: "Loose .38 cartridges.",
+    parts: () => [PT("Box", "box", [0, 1.8, 0], [5.6, 3.6, 3.2], "#a88454", { t: "b:Cardboard" }), PT("Box label", "card", [0, 2, 1.62], [4.4, 2.2, .05], "#e8e2d0", { t: "b:Paper" }),
+      ...[0, 1, 2].flatMap(i => [PT("Round " + (i + 1), "cyl", [-1.4 + i * 1.6, .48, 3.6 + (i % 2) * .5], [.95, 2.4, .95], "#c09040", { r: X, mat: "metal", seg: 8 }), PT("Bullet " + (i + 1), "cone", [-3 + i * 1.6, .48, 3.6 + (i % 2) * .5], [.9, .9, .9], "#6a6a70", { r: [0, 0, 90], mat: "metal", seg: 8 })])] },
+  medicine: { name: "Pills", key: "medicine", cat: "health", desc: "An orange prescription bottle, a few left. Takes the edge off. (Heals a little.)",
+    parts: () => [PT("Bottle", "cyl", [0, 3, 0], [3.3, 6, 3.3], "#d8701c", { mat: "glass", seg: 14 }), PT("Cap", "cyl", [0, 6.5, 0], [3.6, 1.1, 3.6], "#f2f0ea", { seg: 14 }),
+      PT("Label", "cyl", [0, 2.9, 0], [3.36, 3.4, 3.36], "#f2efe6", { t: "b:Pill label", seg: 14 }), PT("Pill A", "capsule", [.4, .7, .3], [.6, 1.4, .6], "#f4f4f0", { r: [70, 0, 30], seg: 8 }), PT("Pill B", "capsule", [-.5, .7, -.2], [.6, 1.4, .6], "#f4f4f0", { r: [80, 40, 0], seg: 8 })],
+    pins: [{ part: "Label", lp: [0, 0, .5], kind: "examine", text: "TAKE ONE AS NEEDED FOR PAIN. REFILLS: 0." }] },
+  rosary: { name: "Louis's Rosary", key: "rosary", cat: "keepsake", desc: "Worn smooth. A paper tag: \"Rose's. For keeping.\"",
+    parts: () => { const out = []; for (let i = 0; i < 24; i++) { const a = i / 24 * Math.PI * 2; out.push(PT("Bead " + (i + 1), "sphere", [Math.cos(a) * 6, .45, Math.sin(a) * 5 - 2], [.9, .9, .9], i % 6 === 0 ? "#3a2418" : "#6a4630", { mat: "glossy", seg: 8 })); }
+      for (let i = 0; i < 4; i++) out.push(PT("Tail bead " + (i + 1), "sphere", [0, .45, 3.6 + i * 1.3], [.9, .9, .9], "#6a4630", { mat: "glossy", seg: 8 }));
+      out.push(PT("Centre", "cyl", [0, .4, 3], [1.6, .5, 1.6], "#b09050", { mat: "metal", seg: 10 }), PT("Cross upright", "box", [0, .35, 9.6], [.5, .5, 4], "#b09050", { mat: "metal" }), PT("Cross bar", "box", [0, .35, 8.7], [2.4, .5, .5], "#b09050", { mat: "metal" }),
+        PT("Paper tag", "card", [2, .3, 9.2], [2.4, .05, 1.5], "#e8e2d0", { r: [0, 25, 0], t: "b:Paper" })); return out; },
+    pins: [{ part: "Paper tag", lp: [0, .5, 0], kind: "examine", text: "A paper tag on the cross, in Louis's hand: \"Rose's. For keeping.\"" }] },
+  truck_keys: { name: "Truck keys", key: "truck_keys", cat: "key", desc: "A ring of keys on a red fob, from Louis's safe.",
+    parts: () => [PT("Ring", "torus", [0, .2, 0], [3, 3, 3], "#a8acb2", { r: [90, 0, 0], mat: "metal", k: .1, seg: 16 }),
+      PT("Ignition key head", "cyl", [2.9, .2, .4], [2.4, .25, 2.4], "#1c1c1e", { seg: 12 }), PT("Ignition key blade", "box", [5.6, .2, .4], [3.6, .22, 1.1], "#b0b4ba", { mat: "metal" }),
+      PT("Door key head", "cyl", [1.6, .25, 2.6], [2.2, .25, 2.2], "#b0b4ba", { mat: "metal", seg: 12 }), PT("Door key blade", "box", [2.4, .25, 5], [1, .22, 3.6], "#b0b4ba", { r: [0, 20, 0], mat: "metal" }),
+      PT("Fob", "box", [-3.2, .5, -.6], [3.6, 1, 2.2], "#9a1e1a", { r: [0, -20, 0], mat: "glossy" }), PT("Fob strap", "torus", [-1.3, .3, -.2], [1.4, 1.4, 1.4], "#9a1e1a", { r: [90, 0, 0], k: .3, seg: 10 })],
+    pins: [{ part: "Fob", lp: [0, .5, 0], kind: "examine", text: "A red rubber fob, cracked with age. FERMIN in faded marker." }] },
+  house_keys: { name: "House keys", key: "house_keys", cat: "key", desc: "Front door and back door. The brass one sticks.",
+    parts: () => [PT("Ring", "torus", [0, .2, 0], [2.6, 2.6, 2.6], "#a8acb2", { r: [90, 0, 0], mat: "metal", k: .1, seg: 16 }),
+      PT("Brass key head", "cyl", [2.6, .2, 0], [2.2, .25, 2.2], "#c09a48", { mat: "metal", seg: 12 }), PT("Brass key blade", "box", [5.1, .2, 0], [3.2, .22, 1], "#c09a48", { mat: "metal" }),
+      PT("Steel key head", "cyl", [-.6, .25, 2.4], [2.2, .25, 2.2], "#b0b4ba", { mat: "metal", seg: 12 }), PT("Steel key blade", "box", [-1.2, .25, 4.8], [1, .22, 3.2], "#b0b4ba", { r: [0, -12, 0], mat: "metal" })] },
+  journal: { name: "Norah's journal", key: "journal", cat: "document", desc: "Addie's week, Pickle, work, Louis and the porch step.",
+    parts: () => [PT("Cover", "box", [0, .9, 0], [13, 1.8, 19], "#5a3424", { t: "b:Leather" }), PT("Pages", "box", [.35, .9, 0], [12.6, 1.4, 18.4], "#e6dfcc", { t: "b:Lined paper", tr: 2 }),
+      PT("Strap", "box", [5.4, .9, 0], [1.2, 1.9, 19.1], "#3e2216", { t: "b:Leather" }), PT("Ribbon", "card", [-2, .1, 9.8], [.6, .04, 3], "#8a1e1e", { r: [0, 8, 0] })] },
+  photo: { name: "Photo", key: "photo", cat: "document", desc: "An instant photo, a little curled.",
+    parts: () => [PT("Print", "card", [0, .05, 0], [8.8, .08, 10.7], "#f0ece0", { t: "b:Photo" })] },
+};
+function fromTemplate(k) {
+  const T = TEMPLATES[k]; const base = T.from ? TEMPLATES[T.from] : T;
+  const item = { id: uid("i"), name: T.name, key: T.key, cat: T.cat, desc: T.desc || base.desc || "", examine: "", notes: "", parts: base.parts(), pins: [], pose: { yaw: -30, pitch: 22, zoom: 1 } };
+  if (T.lens) { const l = item.parts.find(p => p.name === "Lens"); if (l) { l.c = T.lens; l.mat = "glossy"; } }
+  for (const pn of base.pins || []) { const part = item.parts.find(p => p.name === pn.part); if (part) item.pins.push({ id: uid("n"), part: part.id, lp: pn.lp, kind: pn.kind, text: pn.text }); }
+  return item;
+}
+
+// ----------------------------------------------------------------------------------- document, history, saving
+let doc = null, cur = null, selParts = new Set(), pinSel = null, mode = "edit", tmode = "translate", tab = "item";
+function newDoc() { const d = { app: "extrecated-item-modeler", version: 1, items: [], textures: [] }; for (const k of ["flashlight", "flashlight_dead", "batteries", "battery_half", "revolver", "ammo", "medicine", "rosary", "house_keys", "truck_keys", "journal", "photo"]) d.items.push(fromTemplate(k)); return d; }
+function item() { return doc.items.find(i => i.id === cur) || doc.items[0]; }
+function partById(id) { return item().parts.find(p => p.id === id); }
+let undoS = [], redoS = []; const UNDO_MAX = 500;
+const stateJSON = () => JSON.stringify({ items: doc.items, cur });
+function snapshot() { const s = stateJSON(); if (undoS[undoS.length - 1] === s) return; undoS.push(s); if (undoS.length > UNDO_MAX) undoS.shift(); redoS = []; }
+function restoreState(s) { const j = JSON.parse(s); doc.items = j.items; cur = j.cur; selParts.clear(); pinSel = null; rebuild(); renderAll(); }
+$("undo").onclick = () => { const c = stateJSON(); while (undoS.length && undoS[undoS.length - 1] === c) undoS.pop(); if (!undoS.length) { flash("Nothing left to undo."); return; } redoS.push(c); restoreState(undoS.pop()); };
+$("redo").onclick = () => { const c = stateJSON(); while (redoS.length && redoS[redoS.length - 1] === c) redoS.pop(); if (!redoS.length) { flash("Nothing to redo."); return; } undoS.push(c); restoreState(redoS.pop()); };
+let saveT = 0;
+function persist() { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem("extrecatedItems", JSON.stringify(doc)); } catch (e) {} }, 400); }
+function hydrate() {
+  for (const t of doc.textures) { if (userTex[t.id] && userTex[t.id].src === t.data) continue; const c = document.createElement("canvas"); c.width = c.height = t.size; const img = new Image(); img.onload = () => { c.getContext("2d").drawImage(img, 0, 0); for (const k in texCache) delete texCache[k]; rebuild(); renderAll(); }; img.src = t.data; userTex[t.id] = { id: t.id, name: t.name, canvas: c, src: t.data }; }
+}
+function changed(noRebuild) { persist(); if (!noRebuild) rebuild(); renderAll(true); thumbDirty.add(cur); }
+
+// ----------------------------------------------------------------------------------- three.js scene
+const cv = $("cv"); let renderer, scene, cam, orbit, tc, root, partsGroup, pivot, pinGroup, handGroup, grid, keyL, fillL, rimL, amb;
+const meshOf = new Map();
+function init3D() {
+  renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: false }); renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+  scene = new THREE.Scene(); cam = new THREE.PerspectiveCamera(40, 1, .005, 50); cam.position.set(.18, .14, .26);
+  orbit = new THREE.OrbitControls(cam, cv); orbit.enableDamping = true; orbit.dampingFactor = .15; orbit.minDistance = .03; orbit.maxDistance = 3; orbit.zoomSpeed = 1.3;
+  amb = new THREE.AmbientLight(0x9098a8, .55); scene.add(amb);
+  keyL = new THREE.DirectionalLight(0xfff0d8, .9); keyL.position.set(.4, .7, .5); scene.add(keyL);
+  fillL = new THREE.DirectionalLight(0x8090c0, .35); fillL.position.set(-.6, .2, -.3); scene.add(fillL);
+  rimL = new THREE.DirectionalLight(0xffd8a0, 0); rimL.position.set(-.3, .4, -.8); scene.add(rimL);
+  root = new THREE.Group(); scene.add(root); partsGroup = new THREE.Group(); root.add(partsGroup); pinGroup = new THREE.Group(); root.add(pinGroup);
+  pivot = new THREE.Object3D(); partsGroup.add(pivot);
+  grid = new THREE.GridHelper(.6, 60, 0x4a5644, 0x222a24); grid.material.transparent = true; grid.material.opacity = .7; scene.add(grid);
+  const g10 = new THREE.GridHelper(.6, 6, 0x6a7a5a, 0x3a4636); g10.position.y = .0002; grid.add(g10);
+  handGroup = buildHand(); handGroup.visible = false; scene.add(handGroup);
+  tc = new THREE.TransformControls(cam, cv); tc.setSize(.8); scene.add(tc);
+  tc.addEventListener("dragging-changed", e => { orbit.enabled = !e.value; if (e.value) startGroupDrag(); else endGroupDrag(); });
+  tc.addEventListener("objectChange", applyGroupDrag);
+  setupPointer(); resize(); new ResizeObserver(resize).observe($("view"));
+  (function loop() { requestAnimationFrame(loop); frame(); })();
+}
+// Norah's hand, roughly to scale (palm 9 cm wide, middle finger tip 18.5 cm from the wrist), for judging sizes
+function buildHand() {
+  const g = new THREE.Group(); const m = new THREE.MeshLambertMaterial({ color: 0xd8b49a, transparent: true, opacity: .45 });
+  const add = (w, h, d, x, y, z, rz = 0) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); b.rotation.z = rz; g.add(b); };
+  add(.09, .02, .1, 0, .01, 0); [-.033, -.011, .011, .033].forEach((x, i) => add(.018, .016, [.075, .085, .08, .065][i], x, .01, -.05 - [.075, .085, .08, .065][i] / 2));
+  add(.02, .018, .06, .055, .01, .01, 0); g.children[g.children.length - 1].rotation.y = -.6; g.position.set(.16, 0, .06); return g;
+}
+function resize() {
+  const r = $("view").getBoundingClientRect(); const w = Math.max(64, r.width), h = Math.max(48, r.height);
+  if ($("ps1").checked) { renderer.setPixelRatio(1); renderer.setSize(320, Math.round(320 * h / w), false); } else { renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1)); renderer.setSize(w, h, false); }
+  cv.classList.toggle("pixel", $("ps1").checked); cam.aspect = w / h; cam.updateProjectionMatrix();
+}
+$("ps1").onchange = resize;
+const texCache = {};
+function tex3(id, rep) {
+  const t = texById(id); if (!t) return null; const k = id + "|" + (t.src || "") + "|" + rep;
+  if (!texCache[k]) { const tx = new THREE.CanvasTexture(t.canvas); tx.magFilter = tx.minFilter = THREE.NearestFilter; tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.repeat.set(rep, rep); texCache[k] = tx; }
+  return texCache[k];
+}
+function material(p) {
+  const map = p.t ? tex3(p.t, p.tr || 1) : null; const col = new THREE.Color(map ? "#ffffff" : p.c);
+  if (map && p.tint) col.set(p.c);
+  if (p.mat === "glow") return new THREE.MeshBasicMaterial({ color: col, map });
+  if (p.mat === "glass") return new THREE.MeshPhongMaterial({ color: col, map, transparent: true, opacity: .55, shininess: 90, specular: 0x666666, side: THREE.DoubleSide, depthWrite: false });
+  if (p.mat === "metal") return new THREE.MeshPhongMaterial({ color: col, map, shininess: 60, specular: 0x8a8a8a, flatShading: true });
+  if (p.mat === "glossy") return new THREE.MeshPhongMaterial({ color: col, map, shininess: 40, specular: 0x444444 });
+  return new THREE.MeshLambertMaterial({ color: col, map, side: p.s === "card" ? THREE.DoubleSide : THREE.FrontSide });
+}
+function placeMesh(m, p) { m.position.set(...p.p); m.rotation.set(rad(p.r[0]), rad(p.r[1]), rad(p.r[2])); m.scale.set(Math.max(1e-4, p.d[0]), Math.max(1e-4, p.d[1]), Math.max(1e-4, p.d[2])); }
+function rebuild() {
+  if (!renderer) return;
+  tc.detach(); for (const m of meshOf.values()) { partsGroup.remove(m); if (m.material) m.material.dispose(); } meshOf.clear();
+  for (const p of item().parts) { const m = new THREE.Mesh(unitGeo(p.s, p.seg, p.k), material(p)); placeMesh(m, p); m.userData.pid = p.id; partsGroup.add(m); meshOf.set(p.id, m); }
+  rebuildPins(); attachTC();
+}
+function rebuildPins() {
+  for (const c of [...pinGroup.children]) pinGroup.remove(c);
+  for (const pin of item().pins) {
+    const s = new THREE.Mesh(new THREE.OctahedronGeometry(.0035, 0), new THREE.MeshBasicMaterial({ color: pin.kind === "examine" ? 0x6fb6d6 : 0xc9a23a, depthTest: false, transparent: true }));
+    s.renderOrder = 999; s.userData.pin = pin.id; pinGroup.add(s);
+  }
+}
+function pinWorld(pin) { const m = meshOf.get(pin.part); if (!m) return null; return m.localToWorld(new THREE.Vector3(...pin.lp)); }
+
+// ---------- transforming one part or many: a pivot at the group's centre carries them
+let dragStart = null;
+function attachTC() {
+  tc.detach(); if (!renderer || mode !== "edit" || tmode === "pin") return;
+  const ms = [...selParts].map(id => meshOf.get(id)).filter(Boolean); if (!ms.length) return;
+  if (ms.length === 1) { tc.attach(ms[0]); }
+  else { const c = new THREE.Vector3(); ms.forEach(m => c.add(m.position)); c.divideScalar(ms.length); pivot.position.copy(c); pivot.rotation.set(0, 0, 0); pivot.scale.set(1, 1, 1); pivot.updateMatrix(); tc.attach(pivot); }
+  tc.setMode(tmode); tc.setSpace(selParts.size > 1 || tmode === "scale" ? "local" : "world");
+  const sn = $("snap").checked; tc.setTranslationSnap(sn ? .0025 : null); tc.setRotationSnap(sn ? rad(15) : null); tc.setScaleSnap(sn ? .0025 : null);
+}
+function startGroupDrag() {
+  snapshot();
+  if (tc.object === pivot) { pivot.updateMatrix(); dragStart = { inv: pivot.matrix.clone().invert(), parts: [...selParts].map(id => { const m = meshOf.get(id); m.updateMatrix(); return { id, M: m.matrix.clone() }; }) }; }
+  else dragStart = null;
+}
+function syncFromMesh(p, m) {
+  p.p = [m.position.x, m.position.y, m.position.z].map(r3);
+  const e = new THREE.Euler().setFromQuaternion(m.quaternion, "XYZ"); p.r = [deg(e.x), deg(e.y), deg(e.z)].map(v => Math.round(v * 10) / 10);
+  p.d = [m.scale.x, m.scale.y, m.scale.z].map(v => r3(Math.abs(v)));
+}
+function applyGroupDrag() {
+  if (tc.object === pivot && dragStart) {
+    pivot.updateMatrix(); const D = pivot.matrix.clone().multiply(dragStart.inv);
+    for (const s of dragStart.parts) { const m = meshOf.get(s.id); const M = D.clone().multiply(s.M); M.decompose(m.position, m.quaternion, m.scale); syncFromMesh(partById(s.id), m); }
+  } else if (tc.object) { const m = tc.object; const p = partById(m.userData.pid); if (p) syncFromMesh(p, m); }
+  renderPartPane(true); updateStatus();
+}
+function endGroupDrag() { dragStart = null; changed(true); attachTC(); }
+
+// ---------- pointer: select parts, drop pins; in player view, turn the item
+let down = null, turning = null, pvHit = null;
+function ndc(e) { const r = cv.getBoundingClientRect(); return new THREE.Vector2((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height * 2 - 1)); }
+function setupPointer() {
+  const ray = new THREE.Raycaster();
+  cv.addEventListener("pointerdown", e => {
+    down = { x: e.clientX, y: e.clientY, shift: e.shiftKey };
+    if (mode === "player" && e.button === 0) { turning = { x: e.clientX, y: e.clientY, yaw: root.rotation.y, pitch: root.rotation.x }; cv.setPointerCapture(e.pointerId); }
+  });
+  cv.addEventListener("pointermove", e => {
+    if (turning) { root.rotation.y = turning.yaw + (e.clientX - turning.x) * .012; root.rotation.x = clamp(turning.pitch + (e.clientY - turning.y) * .01, -1.4, 1.4); idleT = 0; }
+  });
+  cv.addEventListener("pointerup", e => {
+    const d = down; down = null; const wasTurn = turning; turning = null;
+    if (!d || e.button !== 0 || Math.hypot(e.clientX - d.x, e.clientY - d.y) > 5) return;
+    if (tc.dragging) return;
+    ray.setFromCamera(ndc(e), cam);
+    if (mode === "player") { // click a glint: read it
+      let best = null; for (const s of pinGroup.children) { const pin = item().pins.find(p => p.id === s.userData.pin); if (!pin || pin.kind !== "examine") continue; const sp = s.getWorldPosition(new THREE.Vector3()).project(cam); const r = cv.getBoundingClientRect(); const px = (sp.x + 1) / 2 * r.width, py = (1 - sp.y) / 2 * r.height; const dd = Math.hypot(px - (e.clientX - r.left), py - (e.clientY - r.top)); if (dd < 22 && (!best || dd < best.d)) best = { d: dd, pin }; }
+      pvShow(best ? best.pin : null); return;
+    }
+    const hits = ray.intersectObjects([...meshOf.values()], false);
+    if (tmode === "pin") {
+      if (!hits.length) { flash("Click on the model to pin a note to it."); return; }
+      const h = hits[0]; const m = h.object; const lp = m.worldToLocal(h.point.clone()); snapshot();
+      const pin = { id: uid("n"), part: m.userData.pid, lp: [lp.x, lp.y, lp.z].map(r3), kind: "note", text: "" }; item().pins.push(pin); pinSel = pin.id; changed(true); rebuildPins(); showTab("pins"); setTimeout(() => { const ta = document.querySelector(`[data-pin-text="${pin.id}"]`); if (ta) ta.focus(); }, 30); return;
+    }
+    if (!hits.length) { if (!d.shift) { selParts.clear(); attachTC(); renderAll(); } return; }
+    const id = hits[0].object.userData.pid;
+    if (d.shift) { selParts.has(id) ? selParts.delete(id) : selParts.add(id); } else { selParts.clear(); selParts.add(id); }
+    attachTC(); renderAll(); if (tab !== "part") showTab("part");
+  });
+  cv.addEventListener("wheel", e => { if (mode === "player") { e.preventDefault(); pvZoom = clamp(pvZoom * (e.deltaY > 0 ? 1.1 : 1 / 1.1), .35, 2.5); } }, { passive: false });
+}
+
+// ---------- the frame loop: player-view turntable, pin positions, labels
+let idleT = 0, pvZoom = 1, lastT = performance.now();
+function frame() {
+  if (!renderer) return; const now = performance.now(); const dt = Math.min(.05, (now - lastT) / 1000); lastT = now;
+  if (mode === "player") {
+    idleT += dt; if (!turning && idleT > 1.6) root.rotation.y += dt * .45;
+    const r = itemRadius(); const dist = r * 3.1 * pvZoom; cam.position.set(0, r * .15, dist); cam.lookAt(0, 0, 0);
+  } else orbit.update();
+  for (const s of pinGroup.children) { const pin = item().pins.find(p => p.id === s.userData.pin); const w = pin && pinWorld(pin); if (w) { s.position.copy(pinGroup.worldToLocal(w.clone())); s.visible = mode === "edit" || pin.kind === "examine"; const k = cam.position.distanceTo(w) * 1.6; s.scale.setScalar(k * (mode === "player" ? .8 + .3 * Math.sin(now / 250) : 1)); } }
+  renderer.render(scene, cam); drawLabels();
+}
+function itemRadius() { const b = new THREE.Box3(); for (const m of meshOf.values()) b.expandByObject(m); if (b.isEmpty()) return .05; const s = new THREE.Vector3(); b.getSize(s); return Math.max(.02, s.length() / 2); }
+function itemCenter() { const b = new THREE.Box3(); for (const m of meshOf.values()) b.expandByObject(m); const c = new THREE.Vector3(); if (!b.isEmpty()) b.getCenter(c); return c; }
+function drawLabels() {
+  const L = $("labels"); const r = cv.getBoundingClientRect(); let html = "";
+  if (mode === "edit") for (const pin of item().pins) { const w = pinWorld(pin); if (!w || !pin.text) continue; const p = w.clone().project(cam); if (p.z > 1) continue; const x = (p.x + 1) / 2 * r.width, y = (1 - p.y) / 2 * r.height; html += `<div class="pinLabel ${pin.kind}" style="left:${x}px;top:${y}px">${esc(pin.text.length > 40 ? pin.text.slice(0, 39) + "…" : pin.text)}</div>`; }
+  if (L.__h !== html) { L.innerHTML = html; L.__h = html; }
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+function frameItem() { const c = itemCenter(); const r = itemRadius(); orbit.target.copy(c); const dir = cam.position.clone().sub(orbit.target).normalize(); if (dir.lengthSq() < .5) dir.set(.5, .4, .7).normalize(); cam.position.copy(c).add(dir.multiplyScalar(r * 3.2)); }
+$("focusBtn").onclick = frameItem;
+
+// ---------- player view: the item as the game shows it in the inventory and on pickup
+function setMode(m) {
+  mode = m; $("mEdit").setAttribute("aria-pressed", m === "edit"); $("mPlayer").setAttribute("aria-pressed", m === "player");
+  $("pv").hidden = m !== "player"; $("bar").style.visibility = m === "player" ? "hidden" : "visible";
+  const it = item();
+  if (m === "player") {
+    scene.background = new THREE.Color(0x020203); grid.visible = false; handGroup.visible = false; amb.intensity = .22; keyL.intensity = 1.15; fillL.intensity = .12; rimL.intensity = .8;
+    const c = itemCenter(); partsGroup.position.set(-c.x, -c.y, -c.z); pinGroup.position.copy(partsGroup.position);
+    root.rotation.set(rad(it.pose.pitch || 0), rad(it.pose.yaw || 0), 0); pvZoom = it.pose.zoom || 1; idleT = 0; orbit.enabled = false; tc.detach(); $("pvName").textContent = (it.name || "").toUpperCase(); pvShow(null);
+  } else {
+    scene.background = new THREE.Color(0x101412); grid.visible = true; handGroup.visible = $("hand").checked; amb.intensity = .55; keyL.intensity = .9; fillL.intensity = .35; rimL.intensity = 0;
+    partsGroup.position.set(0, 0, 0); pinGroup.position.set(0, 0, 0); root.rotation.set(0, 0, 0); orbit.enabled = true; attachTC();
+  }
+  $("hint").textContent = hintText(); renderItemPane();
+}
+function pvShow(pin) { const it = item(); $("pvBox").innerHTML = pin ? `<em>EXAMINE</em> · ${esc(pin.text)}` : esc(it.desc || "") + (it.examine ? `<br><em>EXAMINE</em> · ${esc(it.examine)}` : ""); }
+$("mEdit").onclick = () => setMode("edit"); $("mPlayer").onclick = () => setMode("player");
+
+// ----------------------------------------------------------------------------------- UI: shelf, inspector
+function showTab(t) { tab = t; for (const b of $("tabs").children) b.setAttribute("aria-selected", b.dataset.tab === t); for (const k of ["item", "part", "pins", "file"]) $("pane-" + k).hidden = k !== t; }
+$("tabs").onclick = e => { const b = e.target.closest("button"); if (b) showTab(b.dataset.tab); };
+function field(form, label, el) { const l = document.createElement("label"); l.textContent = label; const w = document.createElement("div"); w.className = "row"; [].concat(el).forEach(x => w.appendChild(x)); form.append(l, w); }
+function btn(t, fn, cls = "btn small") { const b = document.createElement("button"); b.className = cls; b.textContent = t; b.onclick = fn; return b; }
+function inp(type, val, on, attrs = {}) { const i = document.createElement("input"); i.type = type; i.value = val ?? ""; Object.assign(i, attrs); i.onchange = () => on(i); return i; }
+function selEl(opts, val, on) { const s = document.createElement("select"); for (const [v, l] of opts) { const o = document.createElement("option"); o.value = v; o.textContent = l; s.appendChild(o); } s.value = val; s.onchange = () => on(s.value); return s; }
+const CATS = [["key", "Key item"], ["weapon", "Weapon"], ["ammo", "Ammo"], ["health", "Health"], ["tool", "Tool"], ["document", "Document / photo"], ["keepsake", "Keepsake"], ["misc", "Other"]];
+
+function renderShelf() {
+  const box = $("items"); box.innerHTML = "";
+  for (const it of doc.items) {
+    const b = document.createElement("button"); b.className = "itm"; b.setAttribute("aria-selected", it.id === cur); b.setAttribute("role", "option");
+    const img = document.createElement("img"); img.alt = ""; img.src = thumbs[it.id] || ""; const d = document.createElement("div");
+    d.innerHTML = `<b>${esc(it.name || "Untitled")}</b><small>${esc(it.key || "")} · ${it.parts.length} parts${it.pins.length ? " · " + it.pins.length + " notes" : ""}</small>`;
+    b.append(img, d); b.onclick = () => { if (it.id === cur) return; cur = it.id; selParts.clear(); pinSel = null; rebuild(); frameItem(); if (mode === "player") setMode("player"); renderAll(); persist(); }; box.appendChild(b);
+  }
+  $("itemCount").textContent = doc.items.length;
+}
+function renderItemPane() {
+  const pane = $("pane-item"); if (pane.contains(document.activeElement)) return; pane.innerHTML = ""; const it = item();
+  const h = document.createElement("h3"); h.textContent = "ITEM"; pane.appendChild(h);
+  const f = document.createElement("div"); f.className = "form";
+  const set = (k, v) => { snapshot(); it[k] = v; changed(true); renderShelf(); if (mode === "player") { $("pvName").textContent = (it.name || "").toUpperCase(); pvShow(null); } };
+  field(f, "Name", inp("text", it.name, i => set("name", i.value), { style: "width:100%" }));
+  field(f, "Game id", inp("text", it.key, i => set("key", i.value.trim().toLowerCase().replace(/[^a-z0-9_]+/g, "_")), { style: "width:100%", title: "The id the game uses (flashlight, truck_keys...)" }));
+  field(f, "Kind", selEl(CATS, it.cat, v => set("cat", v)));
+  pane.appendChild(f);
+  const lab = t => { const l = document.createElement("div"); l.className = "label"; l.textContent = t; return l; };
+  const ta = (k, rows, ph) => { const t = document.createElement("textarea"); t.rows = rows; t.value = it[k] || ""; t.placeholder = ph; t.onchange = () => set(k, t.value.trim()); return t; };
+  pane.append(lab("Description (shown under the item)"), ta("desc", 2, "A heavy metal flashlight..."));
+  pane.append(lab("Examine text (when she turns it over)"), ta("examine", 2, "Optional: what Norah notices when the player looks closer"));
+  pane.append(lab("Notes for Claude"), ta("notes", 3, "e.g. make it look older; the fob should be cracked; this needs a glint where the light catches it"));
+  const pl = lab("Inventory pose"); pane.appendChild(pl);
+  const p = document.createElement("p"); p.className = "muted"; p.textContent = mode === "player" ? "Turn the item to how it should first face the player, then save the pose." : `Turned ${Math.round(it.pose.yaw)}° · tilted ${Math.round(it.pose.pitch)}° · zoom ${(+it.pose.zoom).toFixed(2)}. Switch to PLAYER VIEW to set it.`; pane.appendChild(p);
+  if (mode === "player") pane.appendChild(btn("Save this pose", () => { snapshot(); it.pose = { yaw: Math.round(deg(root.rotation.y) % 360), pitch: Math.round(deg(root.rotation.x)), zoom: +pvZoom.toFixed(2) }; changed(true); flash("Saved the inventory pose."); renderItemPane(); }, "btn"));
+  const sz = itemSize(); const s2 = document.createElement("p"); s2.className = "muted"; s2.textContent = `Size: ${cm(sz.x)} × ${cm(sz.y)} × ${cm(sz.z)} cm (long × tall × deep).`; pane.appendChild(s2);
+}
+function itemSize() { const b = new THREE.Box3(); for (const m of meshOf.values()) b.expandByObject(m); const s = new THREE.Vector3(); if (!b.isEmpty()) b.getSize(s); return s; }
+
+function texPicker(p) {
+  const wrap = document.createElement("div"); wrap.className = "texrow";
+  const none = document.createElement("button"); none.className = "none"; none.textContent = "NONE"; none.setAttribute("aria-pressed", !p.t); none.title = "Flat colour"; none.onclick = () => setParts(q => { q.t = ""; }); wrap.appendChild(none);
+  for (const t of [...Object.values(userTex), ...Object.values(BUILTIN)]) {
+    const b = document.createElement("button"); b.style.backgroundImage = `url(${t.canvas.toDataURL()})`; b.title = (t.builtin ? "" : "★ ") + t.name; b.setAttribute("aria-pressed", p.t === t.id); b.onclick = () => setParts(q => { q.t = t.id; }); wrap.appendChild(b);
+  }
+  const paint = document.createElement("button"); paint.className = "none"; paint.textContent = "PAINT"; paint.title = "Paint a new texture for this part"; paint.onclick = () => openPaint(); wrap.appendChild(paint);
+  return wrap;
+}
+function selectedParts() { return item().parts.filter(p => selParts.has(p.id)); }
+function setParts(fn, rebuildAll = true) { snapshot(); for (const p of selectedParts()) fn(p); changed(!rebuildAll); if (!rebuildAll) { for (const p of selectedParts()) placeMesh(meshOf.get(p.id), p); attachTC(); } }
+function renderPartPane(soft) {
+  const pane = $("pane-part"); if (soft && pane.contains(document.activeElement)) return; pane.innerHTML = ""; const it = item();
+  const h = document.createElement("h3"); h.textContent = "PARTS"; pane.appendChild(h);
+  const list = document.createElement("div"); list.className = "list";
+  for (const p of it.parts) {
+    const r = document.createElement("div"); r.className = "it"; r.setAttribute("aria-selected", selParts.has(p.id)); r.tabIndex = 0;
+    const sw = document.createElement("span"); sw.className = "swatch"; sw.style.flex = "none"; sw.style.width = "14px"; sw.style.background = p.t ? `url(${texById(p.t)?.canvas.toDataURL()}) center/cover` : p.c;
+    const s = document.createElement("span"); s.textContent = `${p.name || SHAPES[p.s].name} · ${SHAPES[p.s].name.toLowerCase()}`;
+    r.append(sw, s); r.onclick = e => { if (e.shiftKey) { selParts.has(p.id) ? selParts.delete(p.id) : selParts.add(p.id); } else { selParts.clear(); selParts.add(p.id); } attachTC(); renderPartPane(); updateStatus(); };
+    list.appendChild(r);
+  }
+  pane.appendChild(list);
+  const ps = selectedParts();
+  if (!ps.length) { const m = document.createElement("p"); m.className = "muted"; m.innerHTML = "Click a part in the view or the list (Shift adds more). Add new parts with the shapes above the view.<br><br><b>W</b> move · <b>E</b> rotate · <b>R</b> size · <b>P</b> pin a note · <b>Ctrl+D</b> duplicate · <b>M</b> mirror · <b>Delete</b> remove."; pane.appendChild(m); return; }
+  const p = ps[0]; const many = ps.length > 1;
+  const lab = document.createElement("div"); lab.className = "label"; lab.textContent = many ? `${ps.length} parts: changes apply to all` : "Selected part"; pane.appendChild(lab);
+  const f = document.createElement("div"); f.className = "form";
+  if (!many) field(f, "Name", inp("text", p.name, i => setParts(q => { q.name = i.value; }), { style: "width:100%" }));
+  field(f, "Shape", selEl(Object.entries(SHAPES).map(([k, v]) => [k, v.name]), many ? "" : p.s, v => setParts(q => { q.s = v; if (v === "card") q.d[2] = Math.min(q.d[2], .001); })));
+  if (!many) {
+    const tri = (key, conv, back, step) => [0, 1, 2].map(k => inp("number", conv(p[key][k]), i => setParts(q => { q[key][k] = back(+i.value); }, false), { step, title: "xyz"[k] }));
+    field(f, "Position cm", tri("p", cm, v => r3(v / 100), .1)); field(f, "Size cm", tri("d", cm, v => r3(Math.max(.0005, v / 100)), .1)); field(f, "Rotation °", tri("r", v => Math.round(v * 10) / 10, v => v, 5));
+  }
+  field(f, "Colour", inp("color", p.c, i => setParts(q => { q.c = i.value; })));
+  field(f, "Finish", selEl(Object.entries(MATS), many ? "" : p.mat, v => setParts(q => { q.mat = v; })));
+  field(f, "Detail", [inp("range", p.seg, i => setParts(q => { q.seg = +i.value; }), { min: 3, max: 24, step: 1, title: "Sides on round shapes (low = more PS1)" })]);
+  if (["torus", "tube"].includes(p.s)) field(f, p.s === "torus" ? "Thickness" : "Wall", [inp("range", p.k, i => setParts(q => { q.k = +i.value; }), { min: .04, max: .9, step: .01 })]);
+  if (p.t) { field(f, "Tex. repeat", inp("number", p.tr || 1, i => setParts(q => { q.tr = Math.max(.25, +i.value); }), { step: .25, min: .25 })); const tint = document.createElement("input"); tint.type = "checkbox"; tint.checked = !!p.tint; tint.onchange = () => setParts(q => { q.tint = tint.checked; }); field(f, "Tint by colour", tint); }
+  pane.appendChild(f);
+  const tl = document.createElement("div"); tl.className = "label"; tl.textContent = "Texture"; pane.append(tl, texPicker(p));
+  if (!many) { const nl = document.createElement("div"); nl.className = "label"; nl.textContent = "Note for Claude on this part"; const ta = document.createElement("textarea"); ta.rows = 2; ta.value = p.note || ""; ta.placeholder = "e.g. this should be scratched brass"; ta.onchange = () => setParts(q => { q.note = ta.value.trim(); }, false); pane.append(nl, ta); }
+  const row = document.createElement("div"); row.style.display = "flex"; row.style.gap = "6px"; row.style.flexWrap = "wrap";
+  row.append(btn("Duplicate", dupParts), btn("Mirror", mirrorParts), btn("Delete", delParts, "btn small danger")); pane.appendChild(row);
+}
+function renderPinsPane(soft) {
+  const pane = $("pane-pins"); if (soft && pane.contains(document.activeElement)) return; pane.innerHTML = ""; const it = item();
+  const h = document.createElement("h3"); h.textContent = "NOTES & EXAMINE POINTS"; pane.appendChild(h);
+  const p = document.createElement("p"); p.className = "muted"; p.innerHTML = "Pick <b>PIN NOTE</b> (P) above the view and click anywhere on the model. A <span style='color:var(--note)'>note for Claude</span> tells me what to change. An <span style='color:var(--exam)'>examine point</span> is a glint the player can click in the inventory to read your text."; pane.appendChild(p);
+  if (!it.pins.length) { const e = document.createElement("p"); e.className = "muted"; e.textContent = "No pins on this item yet."; pane.appendChild(e); }
+  for (const pin of it.pins) {
+    const card = document.createElement("div"); card.style.cssText = "display:grid;gap:6px;padding:8px;background:var(--panel2);border:1px solid " + (pin.id === pinSel ? "var(--accent)" : "var(--line)");
+    const top = document.createElement("div"); top.style.cssText = "display:flex;gap:6px;align-items:center;flex-wrap:wrap";
+    const d = document.createElement("span"); d.className = "dot"; d.style.background = pin.kind === "examine" ? "var(--exam)" : "var(--note)";
+    const part = it.parts.find(q => q.id === pin.part); const s = document.createElement("span"); s.className = "muted"; s.style.flex = "1"; s.textContent = "on " + (part ? part.name : "?");
+    top.append(d, selEl([["note", "Note for Claude"], ["examine", "Examine point (in game)"]], pin.kind, v => { snapshot(); pin.kind = v; changed(true); rebuildPins(); renderPinsPane(); }), s,
+      btn("Show", () => { pinSel = pin.id; const w = pinWorld(pin); if (w) { orbit.target.copy(w); } renderPinsPane(); }), btn("✕", () => { snapshot(); it.pins = it.pins.filter(x => x !== pin); changed(true); rebuildPins(); renderPinsPane(); }, "btn small danger"));
+    const ta = document.createElement("textarea"); ta.rows = 2; ta.value = pin.text; ta.dataset.pinText = pin.id; ta.placeholder = pin.kind === "examine" ? "What the player reads, e.g. \"Engraved: R + L, 1971\"" : "What should change here"; ta.onchange = () => { snapshot(); pin.text = ta.value.trim(); changed(true); };
+    card.append(top, ta); pane.appendChild(card);
+  }
+  const all = []; for (const q of item().parts) if (q.note) all.push(q); if (all.length) { const l = document.createElement("div"); l.className = "label"; l.textContent = "Part notes"; pane.appendChild(l); for (const q of all) { const m = document.createElement("p"); m.className = "muted"; m.textContent = `${q.name}: ${q.note}`; pane.appendChild(m); } }
+}
+function renderFilePane() {
+  const pane = $("pane-file"); pane.innerHTML = "";
+  const h = document.createElement("h3"); h.textContent = "SAVE AND SHARE"; pane.appendChild(h);
+  const p = document.createElement("p"); p.className = "muted"; p.textContent = "Your items save in this browser as you work. To bring them into the game, use Send to Claude and attach the file in our chat. Each item's parts, textures, pose, examine points and notes go with it."; pane.appendChild(p);
+  const row = document.createElement("div"); row.style.cssText = "display:flex;gap:6px;flex-wrap:wrap";
+  const fileIn = document.createElement("input"); fileIn.type = "file"; fileIn.accept = ".json,application/json"; fileIn.hidden = true;
+  fileIn.onchange = async () => { const fl = fileIn.files[0]; if (!fl) return; try { const j = JSON.parse(await fl.text()); if (!Array.isArray(j.items)) throw 0; snapshot(); doc = { app: j.app || "extrecated-item-modeler", version: 1, items: j.items, textures: j.textures || [] }; cur = doc.items[0]?.id; hydrate(); rebuild(); frameItem(); renderAll(); persist(); for (const it of doc.items) thumbDirty.add(it.id); st.textContent = "Opened " + fl.name; } catch (e) { st.textContent = "That file isn't an Item Modeler file."; } };
+  row.append(btn("Send all items (.json)", () => exportFile(false), "btn primary"), btn("Send this item only", () => exportFile(true), "btn"), btn("Copy as text", copyText, "btn"), btn("Open a file", () => fileIn.click(), "btn"), fileIn);
+  pane.appendChild(row);
+  const st = document.createElement("p"); st.className = "muted"; st.id = "fileStatus"; pane.appendChild(st);
+  const l = document.createElement("div"); l.className = "label"; l.textContent = "Start over"; pane.appendChild(l);
+  pane.appendChild(btn("Reset to Chapter One's items", () => { snapshot(); doc = newDoc(); cur = doc.items[0].id; selParts.clear(); rebuild(); frameItem(); renderAll(); persist(); for (const it of doc.items) thumbDirty.add(it.id); }, "btn small danger"));
+}
+function renderAll(soft) { renderShelf(); renderItemPane(); renderPartPane(soft); renderPinsPane(soft); updateStatus(); }
+function updateStatus() {
+  const it = item(); const s = itemSize();
+  $("status").innerHTML = `<span>ITEM <b>${esc(it.name)}</b></span><span>SIZE <b>${cm(s.x)} × ${cm(s.y)} × ${cm(s.z)} cm</b></span><span>PARTS <b>${it.parts.length}</b></span><span>SELECTED <b>${selParts.size}</b></span><span>PINS <b>${it.pins.length}</b></span><span>UNDO <b>${undoS.length}/${UNDO_MAX}</b></span>`;
+  $("ruler").textContent = $("hand").checked ? "Hand: 9 cm palm · 18.5 cm long" : "Grid: 1 cm · bold lines 10 cm";
+}
+const HINTS = { translate: "Drag the arrows to move the selected part(s). Drag empty space to orbit, right-drag to pan, wheel to zoom.", rotate: "Drag the rings to turn the selected part(s). SNAP turns in 15° steps.", scale: "Drag the handles to resize. Sizes show in cm in PARTS.", pin: "Click on the model to pin a note there. Choose whether it's a note for Claude or an examine point the player can read." };
+function hintText() { return mode === "player" ? "" : HINTS[tmode]; }
+let flashT = 0; function flash(t) { $("hint").textContent = t; clearTimeout(flashT); flashT = setTimeout(() => $("hint").textContent = hintText(), 2600); }
+
+// ---------- part actions
+function addPart(s) {
+  if (mode !== "edit") setMode("edit"); snapshot(); const it = item(); const c = itemCenter(); const r = itemRadius();
+  const base = { box: [4, 4, 4], cyl: [3, 6, 3], cone: [3, 4, 3], sphere: [3, 3, 3], torus: [4, 4, 4], tube: [3, 5, 3], wedge: [4, 3, 4], card: [6, 8, .05], capsule: [2, 5, 2] }[s];
+  const p = PT(SHAPES[s].name + " " + (it.parts.filter(q => q.s === s).length + 1), s, [c.x * 100, (c.y + r * .2) * 100 + 2, c.z * 100], base, "#8a8478", { seg: 10 });
+  it.parts.push(p); selParts.clear(); selParts.add(p.id); changed(); showTab("part");
+}
+function dupParts() { const ps = selectedParts(); if (!ps.length) return; snapshot(); selParts.clear(); for (const p of ps) { const q = JSON.parse(JSON.stringify(p)); q.id = uid("p"); q.name = p.name + " copy"; q.p = [p.p[0] + .01, p.p[1], p.p[2] + .01]; item().parts.push(q); selParts.add(q.id); } changed(); }
+function mirrorParts() { const ps = selectedParts(); if (!ps.length) return; snapshot(); selParts.clear(); for (const p of ps) { const q = JSON.parse(JSON.stringify(p)); q.id = uid("p"); q.name = p.name + " (mirror)"; q.p = [p.p[0], p.p[1], -p.p[2]]; q.r = [-p.r[0], -p.r[1], p.r[2]]; item().parts.push(q); selParts.add(q.id); } changed(); flash("Mirrored across the item's centre line (front to back)."); }
+function delParts() { const ps = selectedParts(); if (!ps.length) return; snapshot(); const ids = new Set(ps.map(p => p.id)); const it = item(); it.parts = it.parts.filter(p => !ids.has(p.id)); it.pins = it.pins.filter(n => !ids.has(n.part)); selParts.clear(); changed(); }
+function setTMode(m) { tmode = m; for (const b of document.querySelectorAll("[data-tm]")) b.setAttribute("aria-pressed", b.dataset.tm === m); cv.style.cursor = m === "pin" ? "crosshair" : "default"; attachTC(); $("hint").textContent = hintText(); }
+document.querySelectorAll("[data-tm]").forEach(b => b.onclick = () => setTMode(b.dataset.tm));
+$("snap").onchange = attachTC; $("hand").onchange = () => { handGroup.visible = $("hand").checked && mode === "edit"; updateStatus(); };
+for (const [k, v] of Object.entries(SHAPES)) { const b = document.createElement("button"); b.className = "shape"; b.title = "Add " + v.name.toLowerCase(); b.setAttribute("aria-label", "Add " + v.name); b.innerHTML = `<svg viewBox="0 0 24 24">${v.icon}</svg>`; b.onclick = () => addPart(k); $("shapes").appendChild(b); }
+window.addEventListener("keydown", e => {
+  if (e.target.matches("input, select, textarea") || !$("paint").hidden) return;
+  const k = e.key.toLowerCase();
+  if ((e.ctrlKey || e.metaKey) && k === "z" && !e.shiftKey) { e.preventDefault(); $("undo").click(); return; }
+  if ((e.ctrlKey || e.metaKey) && (k === "y" || (k === "z" && e.shiftKey))) { e.preventDefault(); $("redo").click(); return; }
+  if ((e.ctrlKey || e.metaKey) && k === "d") { e.preventDefault(); dupParts(); return; }
+  if (mode !== "edit") return;
+  if (k === "w") setTMode("translate"); else if (k === "e") setTMode("rotate"); else if (k === "r") setTMode("scale"); else if (k === "p") setTMode("pin");
+  else if (k === "f") frameItem(); else if (k === "m") mirrorParts(); else if (k === "delete" || k === "backspace") delParts();
+  else if (k === "escape") { selParts.clear(); attachTC(); renderAll(); }
+});
+
+// ---------- items
+const tsel = $("newFrom"); for (const [k, t] of Object.entries(TEMPLATES)) { const o = document.createElement("option"); o.value = k; o.textContent = k === "blank" ? "New: blank" : "New from: " + t.name; tsel.appendChild(o); }
+$("newItem").onclick = () => { snapshot(); const it = fromTemplate(tsel.value); if (tsel.value === "blank") it.name = "New item"; doc.items.push(it); cur = it.id; selParts.clear(); rebuild(); frameItem(); renderAll(); persist(); thumbDirty.add(it.id); };
+$("dupItem").onclick = () => { snapshot(); const it = JSON.parse(JSON.stringify(item())); it.id = uid("i"); it.name += " copy"; it.key += "_copy"; doc.items.push(it); cur = it.id; rebuild(); renderAll(); persist(); thumbDirty.add(it.id); };
+$("delItem").onclick = () => { if (doc.items.length < 2) { flash("Keep at least one item."); return; } snapshot(); doc.items = doc.items.filter(i => i.id !== cur); cur = doc.items[0].id; selParts.clear(); rebuild(); frameItem(); renderAll(); persist(); };
+
+// ---------- thumbnails (a second small renderer)
+const thumbs = {}; const thumbDirty = new Set(); let tR = null, tScene = null, tCam = null;
+function renderThumb(it) {
+  if (!tR) { const c = document.createElement("canvas"); c.width = 128; c.height = 96; tR = new THREE.WebGLRenderer({ canvas: c, antialias: false, preserveDrawingBuffer: true }); tR.setSize(128, 96, false); tScene = new THREE.Scene(); tScene.background = new THREE.Color(0x050606); tScene.add(new THREE.AmbientLight(0x9098a8, .5)); const l = new THREE.DirectionalLight(0xfff0d8, 1); l.position.set(.4, .7, .5); tScene.add(l); tCam = new THREE.PerspectiveCamera(36, 4 / 3, .005, 20); }
+  const g = new THREE.Group(); for (const p of it.parts) { const m = new THREE.Mesh(unitGeo(p.s, p.seg, p.k), material(p)); placeMesh(m, p); g.add(m); } tScene.add(g);
+  const b = new THREE.Box3().setFromObject(g); const c = new THREE.Vector3(), s = new THREE.Vector3(); b.getCenter(c); b.getSize(s); const r = Math.max(.02, s.length() / 2);
+  g.position.sub(c); const outer = new THREE.Group(); tScene.remove(g); outer.add(g); outer.rotation.set(rad(it.pose.pitch || 20), rad(it.pose.yaw || -30), 0); tScene.add(outer);
+  tCam.position.set(0, r * .1, r * 2.9); tCam.lookAt(0, 0, 0); tR.render(tScene, tCam); thumbs[it.id] = tR.domElement.toDataURL(); tScene.remove(outer); g.traverse(m => { if (m.material) m.material.dispose(); });
+}
+setInterval(() => { if (!renderer || !thumbDirty.size) return; const id = [...thumbDirty][0]; thumbDirty.delete(id); const it = doc.items.find(i => i.id === id); if (it) { renderThumb(it); renderShelf(); } }, 250);
+
+// ----------------------------------------------------------------------------------- texture painter
+let pc = $("pCanvas"), pg = pc.getContext("2d"), brush = "pen", pcol = "#8a6a40";
+const PAL = ["#000000", "#1c1d20", "#3a3c40", "#6e7278", "#a6aab0", "#e8e4d8", "#ffffff", "#d8b49a", "#5a3424", "#8a5a34", "#b08a3a", "#d0aa58", "#7a1e1a", "#c83a2a", "#d8701c", "#e0c048", "#2e4a26", "#5a7a3a", "#2a3a5a", "#5a7a9a", "#6a4a7a", "#c8a070", "#9a8a70", "#4a4038"];
+function buildPalette() { const p = $("palette"); p.innerHTML = ""; for (const c of PAL) { const b = document.createElement("button"); b.style.background = c; b.title = c; b.setAttribute("aria-pressed", c === pcol); b.onclick = () => { pcol = c; $("pColor").value = c; buildPalette(); }; p.appendChild(b); } }
+$("pColor").oninput = e => { pcol = e.target.value; buildPalette(); };
+document.querySelectorAll("[data-brush]").forEach(b => b.onclick = () => { brush = b.dataset.brush; document.querySelectorAll("[data-brush]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
+function openPaint() {
+  $("paint").hidden = false; buildPalette(); const s = +$("pSize").value; pc.width = pc.height = s; pg.imageSmoothingEnabled = false;
+  const p = selectedParts()[0]; const t = p && texById(p.t); if (t) { pg.drawImage(t.canvas, 0, 0, s, s); $("pName").value = (t.builtin ? t.name + " (mine)" : t.name); } else { pg.fillStyle = p ? p.c : "#8a8478"; pg.fillRect(0, 0, s, s); }
+  const st = $("pStart"); st.innerHTML = ""; for (const t of Object.values(BUILTIN)) { const b = btn(t.name, () => { pg.imageSmoothingEnabled = false; pg.drawImage(t.canvas, 0, 0, pc.width, pc.height); }); st.appendChild(b); }
+}
+$("pSize").onchange = () => { const s = +$("pSize").value; const old = document.createElement("canvas"); old.width = pc.width; old.height = pc.height; old.getContext("2d").drawImage(pc, 0, 0); pc.width = pc.height = s; pg.imageSmoothingEnabled = false; pg.drawImage(old, 0, 0, s, s); };
+$("openPaint").onclick = openPaint; $("pClose").onclick = () => $("paint").hidden = true;
+let painting = false;
+function pxAt(e) { const r = pc.getBoundingClientRect(); return [Math.floor((e.clientX - r.left) / r.width * pc.width), Math.floor((e.clientY - r.top) / r.height * pc.height)]; }
+function hexOf(d) { return "#" + [d[0], d[1], d[2]].map(v => v.toString(16).padStart(2, "0")).join(""); }
+function paintAt(e) {
+  const [x, y] = pxAt(e); if (x < 0 || y < 0 || x >= pc.width || y >= pc.height) return;
+  if (brush === "pen") { pg.fillStyle = pcol; pg.fillRect(x, y, 1, 1); }
+  else if (brush === "erase") pg.clearRect(x, y, 1, 1);
+  else if (brush === "pick") { pcol = hexOf(pg.getImageData(x, y, 1, 1).data); $("pColor").value = pcol; buildPalette(); }
+  else if (brush === "grime") { for (let i = 0; i < 6; i++) { const dx = x + Math.round((Math.random() - .5) * 4), dy = y + Math.round((Math.random() - .5) * 4); const d = pg.getImageData(dx, dy, 1, 1).data; pg.fillStyle = `rgb(${d[0] * .8 | 0},${d[1] * .78 | 0},${d[2] * .74 | 0})`; pg.fillRect(dx, dy, 1, 1); } }
+  else if (brush === "fill") { const img = pg.getImageData(0, 0, pc.width, pc.height); const D = img.data; const i0 = (y * pc.width + x) * 4; const t = [D[i0], D[i0 + 1], D[i0 + 2], D[i0 + 3]]; const c = [parseInt(pcol.slice(1, 3), 16), parseInt(pcol.slice(3, 5), 16), parseInt(pcol.slice(5, 7), 16), 255]; if (t.every((v, k) => v === c[k])) return; const st = [[x, y]]; while (st.length) { const [px, py] = st.pop(); if (px < 0 || py < 0 || px >= pc.width || py >= pc.height) continue; const i = (py * pc.width + px) * 4; if (D[i] !== t[0] || D[i + 1] !== t[1] || D[i + 2] !== t[2] || D[i + 3] !== t[3]) continue; D[i] = c[0]; D[i + 1] = c[1]; D[i + 2] = c[2]; D[i + 3] = 255; st.push([px + 1, py], [px - 1, py], [px, py + 1], [px, py - 1]); } pg.putImageData(img, 0, 0); }
+}
+pc.addEventListener("pointerdown", e => { painting = true; pc.setPointerCapture(e.pointerId); paintAt(e); });
+pc.addEventListener("pointermove", e => { if (painting && (brush === "pen" || brush === "erase" || brush === "grime")) paintAt(e); });
+pc.addEventListener("pointerup", () => painting = false);
+$("pFile").onchange = () => { const f = $("pFile").files[0]; if (!f) return; const img = new Image(); img.onload = () => { pg.imageSmoothingEnabled = true; pg.clearRect(0, 0, pc.width, pc.height); const s = Math.min(img.width, img.height); pg.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, pc.width, pc.height); pg.imageSmoothingEnabled = false; URL.revokeObjectURL(img.src); $("pName").value = f.name.replace(/\.[^.]+$/, ""); }; img.src = URL.createObjectURL(f); };
+$("pSave").onclick = () => {
+  const id = uid("u"); const data = pc.toDataURL(); const name = $("pName").value.trim() || "My texture"; snapshot();
+  doc.textures.push({ id, name, size: pc.width, data }); const c = document.createElement("canvas"); c.width = c.height = pc.width; c.getContext("2d").drawImage(pc, 0, 0); userTex[id] = { id, name, canvas: c, src: data };
+  if (selParts.size) for (const p of selectedParts()) p.t = id; $("paint").hidden = true; changed(); flash(selParts.size ? "Saved and applied to the selected part." : "Saved. Pick it under Texture in PARTS.");
+};
+
+// ----------------------------------------------------------------------------------- export
+let downloads = null;
+(async () => { try { downloads = await window.claude?.use?.("downloads"); } catch (e) { downloads = null; } })();
+function exportJSON(one) {
+  const items = one ? [item()] : doc.items; const used = new Set(items.flatMap(i => i.parts.map(p => p.t)).filter(t => t && t.startsWith("u")));
+  const out = { app: "extrecated-item-modeler", version: 1, exported: new Date().toISOString(), units: "m", axes: "+Y up; long items along X, front toward -X",
+    items: items.map(i => ({ ...i, size_cm: (() => { const g = new THREE.Box3(); for (const p of i.parts) { const m = new THREE.Mesh(unitGeo(p.s, p.seg, p.k)); placeMesh(m, p); m.updateMatrixWorld(); g.expandByObject(m); } const s = new THREE.Vector3(); g.getSize(s); return [cm(s.x), cm(s.y), cm(s.z)]; })(),
+      pins: i.pins.map(n => ({ ...n, partName: i.parts.find(p => p.id === n.part)?.name || "" })) })),
+    textures: doc.textures.filter(t => used.has(t.id)), builtinTextures: [...new Set(items.flatMap(i => i.parts.map(p => p.t)).filter(t => t && t.startsWith("b:")))],
+    summary: items.map(i => `${i.name} (${i.key}): ${i.parts.length} parts, ${i.pins.filter(n => n.kind === "note").length} notes for Claude, ${i.pins.filter(n => n.kind === "examine").length} examine points`) };
+  return JSON.stringify(out, null, 1);
+}
+async function exportFile(one) {
+  showTab("file"); const st = $("fileStatus"); const name = one ? "item_" + (item().key || "item") : "extrecated_items";
+  if (!downloads) { st.textContent = "Saving files isn't available in this view. Use Copy as text and paste it to me instead."; return; }
+  try { await downloads.save({ filename: name + ".json", data: new Blob([exportJSON(one)], { type: "application/json" }) }); st.textContent = `Saved ${name}.json. Attach it in our chat and I'll build the items into the game.`; }
+  catch (e) { st.textContent = e && e.code === "declined" ? "Save cancelled." : "Couldn't save (" + (e && e.message || "unknown error") + "). Try Copy as text."; }
+}
+async function copyText() { const t = exportJSON(false); const st = $("fileStatus"); try { await navigator.clipboard.writeText(t); st.textContent = "Copied every item. Paste it into our chat."; } catch (e) { const ta = document.createElement("textarea"); ta.value = t; ta.rows = 6; $("pane-file").appendChild(ta); ta.select(); st.textContent = "Copy the text in the box below."; } }
+$("sendBtn").onclick = () => exportFile(false);
+
+// ----------------------------------------------------------------------------------- start
+(function start() {
+  try { const s = localStorage.getItem("extrecatedItems"); if (s) { const j = JSON.parse(s); if (Array.isArray(j.items) && j.items.length) doc = { app: "extrecated-item-modeler", version: 1, items: j.items, textures: j.textures || [] }; } } catch (e) {}
+  if (!doc) doc = newDoc(); cur = doc.items[0].id; hydrate();
+  if (!window.THREE || !THREE.TransformControls) { $("hint").textContent = "The 3D library didn't load. Check your connection and reload the page."; renderShelf(); return; }
+  init3D(); scene.background = new THREE.Color(0x101412); rebuild(); frameItem(); setTMode("translate"); renderAll(); renderFilePane(); showTab("item");
+  for (const it of doc.items) thumbDirty.add(it.id);
+})();
+</script>

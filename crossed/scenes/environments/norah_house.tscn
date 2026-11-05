@@ -1,0 +1,3510 @@
+[gd_scene load_steps=85 format=3]
+
+[ext_resource type="Material" path="res://materials/nh_carpet.tres" id="1_nh_carpet"]
+[ext_resource type="Material" path="res://materials/nh_lino.tres" id="2_nh_lino"]
+[ext_resource type="Material" path="res://materials/nh_tile.tres" id="3_nh_tile"]
+[ext_resource type="Material" path="res://materials/nh_stain.tres" id="4_nh_stain"]
+[ext_resource type="Material" path="res://materials/nh_ceiling.tres" id="5_nh_ceiling"]
+[ext_resource type="Material" path="res://materials/nh_siding.tres" id="6_nh_siding"]
+[ext_resource type="Material" path="res://materials/nh_wallpaper.tres" id="7_nh_wallpaper"]
+[ext_resource type="Material" path="res://materials/nh_wood.tres" id="8_nh_wood"]
+[ext_resource type="Material" path="res://materials/nh_glass.tres" id="9_nh_glass"]
+[ext_resource type="Material" path="res://materials/nh_roof.tres" id="10_nh_roof"]
+[ext_resource type="Material" path="res://materials/nh_couch.tres" id="11_nh_couch"]
+[ext_resource type="Material" path="res://materials/nh_blanket.tres" id="12_nh_blanket"]
+[ext_resource type="Material" path="res://materials/nh_wood_dark.tres" id="13_nh_wood_dark"]
+[ext_resource type="Material" path="res://materials/nh_tv.tres" id="14_nh_tv"]
+[ext_resource type="Material" path="res://materials/nh_screen.tres" id="15_nh_screen"]
+[ext_resource type="Material" path="res://materials/nh_metal.tres" id="16_nh_metal"]
+[ext_resource type="Material" path="res://materials/nh_fridge.tres" id="17_nh_fridge"]
+[ext_resource type="Material" path="res://materials/nh_drawing.tres" id="18_nh_drawing"]
+[ext_resource type="Material" path="res://materials/nh_counter.tres" id="19_nh_counter"]
+[ext_resource type="Material" path="res://materials/nh_bedding.tres" id="20_nh_bedding"]
+[ext_resource type="Material" path="res://materials/nh_lockbox.tres" id="21_nh_lockbox"]
+[ext_resource type="Material" path="res://materials/nh_porcelain.tres" id="22_nh_porcelain"]
+[ext_resource type="Material" path="res://materials/nh_rust.tres" id="23_nh_rust"]
+[ext_resource type="Material" path="res://materials/nh_frame.tres" id="24_nh_frame"]
+[ext_resource type="Material" path="res://materials/nh_photo_a.tres" id="25_nh_photo_a"]
+[ext_resource type="Material" path="res://materials/nh_photo_b.tres" id="26_nh_photo_b"]
+[ext_resource type="Material" path="res://materials/nh_photo_c.tres" id="27_nh_photo_c"]
+[ext_resource type="Material" path="res://materials/nh_grass.tres" id="28_nh_grass"]
+[ext_resource type="Material" path="res://materials/nh_dirt.tres" id="29_nh_dirt"]
+[ext_resource type="Material" path="res://materials/nh_porch.tres" id="30_nh_porch"]
+[ext_resource type="Material" path="res://materials/nh_porch_patch.tres" id="31_nh_porch_pat"]
+[ext_resource type="Material" path="res://materials/nh_bulb.tres" id="32_nh_bulb"]
+[ext_resource type="Material" path="res://materials/nh_car_maroon.tres" id="33_nh_car_maroo"]
+[ext_resource type="Material" path="res://materials/nh_tire.tres" id="34_nh_tire"]
+[ext_resource type="Material" path="res://materials/nh_lamp.tres" id="35_nh_lamp"]
+[ext_resource type="Material" path="res://materials/nh_bark.tres" id="36_nh_bark"]
+[ext_resource type="Material" path="res://materials/nh_tree.tres" id="37_nh_tree"]
+[ext_resource type="Material" path="res://materials/nh_trim.tres" id="38_nh_trim"]
+[ext_resource type="Material" path="res://materials/nh_curtain.tres" id="39_nh_curtain"]
+[ext_resource type="Material" path="res://materials/nh_curtain_bed.tres" id="40_nh_curtain_b"]
+[ext_resource type="Material" path="res://materials/nh_addie_school.tres" id="41_nh_addie_sch"]
+[ext_resource type="Material" path="res://materials/nh_addie_lake.tres" id="42_nh_addie_lak"]
+[ext_resource type="Material" path="res://materials/nh_addie_birthday.tres" id="43_nh_addie_bir"]
+[ext_resource type="Material" path="res://materials/nh_addie_baby.tres" id="44_nh_addie_bab"]
+[ext_resource type="Material" path="res://materials/nh_fridge_pickle.tres" id="45_nh_fridge_pi"]
+[ext_resource type="Material" path="res://materials/nh_fixture.tres" id="46_nh_fixture"]
+[ext_resource type="Material" path="res://materials/nh_switch.tres" id="47_nh_switch"]
+[ext_resource type="Material" path="res://materials/nh_coat.tres" id="48_nh_coat"]
+[ext_resource type="Material" path="res://materials/nh_kidpink.tres" id="49_nh_kidpink"]
+[ext_resource type="Material" path="res://materials/nh_pot_clay.tres" id="50_nh_pot_clay"]
+[ext_resource type="Material" path="res://materials/nh_plant.tres" id="51_nh_plant"]
+[ext_resource type="Material" path="res://materials/nh_mug2.tres" id="52_nh_mug2"]
+[ext_resource type="Material" path="res://materials/nh_plate.tres" id="53_nh_plate"]
+[ext_resource type="Material" path="res://materials/nh_cereal_box.tres" id="54_nh_cereal_bo"]
+[ext_resource type="Material" path="res://materials/nh_coffee.tres" id="55_nh_coffee"]
+[ext_resource type="Material" path="res://materials/nh_mug.tres" id="56_nh_mug"]
+[ext_resource type="Material" path="res://materials/nh_mail_bill.tres" id="57_nh_mail_bill"]
+[ext_resource type="Material" path="res://materials/nh_runner.tres" id="58_nh_runner"]
+[ext_resource type="Material" path="res://materials/nh_towel.tres" id="59_nh_towel"]
+[ext_resource type="Material" path="res://materials/nh_shower.tres" id="60_nh_shower"]
+[ext_resource type="Material" path="res://materials/nh_clock_red.tres" id="61_nh_clock_red"]
+[ext_resource type="Material" path="res://materials/nh_clothes.tres" id="62_nh_clothes"]
+[ext_resource type="Material" path="res://materials/nh_trim_ext.tres" id="63_nh_trim_ext"]
+[ext_resource type="Material" path="res://materials/nh_gutter.tres" id="64_nh_gutter"]
+[ext_resource type="Material" path="res://materials/nh_logs.tres" id="65_nh_logs"]
+[ext_resource type="Material" path="res://materials/nh_can.tres" id="66_nh_can"]
+[ext_resource type="Material" path="res://materials/nh_bike.tres" id="67_nh_bike"]
+[ext_resource type="Material" path="res://materials/nh_pole.tres" id="68_nh_pole"]
+[ext_resource type="Material" path="res://materials/nh_wire.tres" id="69_nh_wire"]
+[ext_resource type="Environment" path="res://environments/env_norah_yard.tres" id="70_env_norah_ya"]
+[ext_resource type="Material" path="res://materials/nh_cam_marker.tres" id="71_nh_cam_marke"]
+[ext_resource type="Material" path="res://materials/nh_cam_line.tres" id="72_nh_cam_line"]
+[ext_resource type="Environment" path="res://environments/env_norah_house.tres" id="73_env_norah_ho"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_1"]
+size = Vector2(0.2, 0.25)
+
+[sub_resource type="QuadMesh" id="QuadMesh_2"]
+size = Vector2(0.3, 0.22)
+
+[sub_resource type="QuadMesh" id="QuadMesh_3"]
+size = Vector2(0.22, 0.18)
+
+[sub_resource type="QuadMesh" id="QuadMesh_4"]
+size = Vector2(0.18, 0.22)
+
+[sub_resource type="QuadMesh" id="QuadMesh_5"]
+size = Vector2(0.4, 0.3)
+
+[sub_resource type="QuadMesh" id="QuadMesh_6"]
+size = Vector2(0.18, 0.22)
+
+[sub_resource type="QuadMesh" id="QuadMesh_7"]
+size = Vector2(0.1, 0.15)
+
+[sub_resource type="QuadMesh" id="QuadMesh_8"]
+size = Vector2(0.24, 0.2)
+
+[sub_resource type="QuadMesh" id="QuadMesh_9"]
+size = Vector2(0.2, 0.26)
+
+[sub_resource type="QuadMesh" id="QuadMesh_10"]
+size = Vector2(0.2, 0.3)
+
+[sub_resource type="QuadMesh" id="QuadMesh_11"]
+size = Vector2(0.22, 0.14)
+
+[node name="NorahHouse" type="Node3D"]
+
+[node name="Geometry" type="Node3D" parent="."]
+
+[node name="Floors" type="Node3D" parent="Geometry"]
+
+[node name="Walls" type="Node3D" parent="Geometry"]
+
+[node name="Ceilings" type="Node3D" parent="Geometry"]
+
+[node name="Roof" type="Node3D" parent="Geometry"]
+
+[node name="Props" type="Node3D" parent="."]
+
+[node name="Photos" type="Node3D" parent="."]
+
+[node name="Exterior" type="Node3D" parent="."]
+
+[node name="Lights" type="Node3D" parent="."]
+
+[node name="Cameras" type="Node3D" parent="."]
+
+[node name="CameraMarkers" type="Node3D" parent="."]
+visible = false
+
+[node name="B1" type="CSGBox3D" parent="Geometry/Floors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.02, -2.665)
+size = Vector3(4, 0.08, 5.33)
+material = ExtResource("1_nh_carpet")
+use_collision = true
+
+[node name="B2" type="CSGBox3D" parent="Geometry/Floors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.02, -4.25)
+size = Vector3(4, 0.08, 2.16)
+material = ExtResource("2_nh_lino")
+use_collision = true
+
+[node name="B3" type="CSGBox3D" parent="Geometry/Floors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.02, -2.75)
+size = Vector3(4, 0.08, 0.84)
+material = ExtResource("1_nh_carpet")
+use_collision = true
+
+[node name="B4" type="CSGBox3D" parent="Geometry/Floors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.915, -0.02, -1.165)
+size = Vector3(1.83, 0.08, 2.33)
+material = ExtResource("3_nh_tile")
+use_collision = true
+
+[node name="B5" type="CSGBox3D" parent="Geometry/Floors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.915, -0.02, -1.165)
+size = Vector3(2.17, 0.08, 2.33)
+material = ExtResource("1_nh_carpet")
+use_collision = true
+
+[node name="B6" type="CSGBox3D" parent="Geometry/Floors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.05, 0.0225, -2.7)
+size = Vector3(3.1, 0.005, 0.6)
+material = ExtResource("4_nh_stain")
+
+[node name="B7" type="CSGBox3D" parent="Geometry/Ceilings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.325, -2.665)
+size = Vector3(8, 0.05, 5.33)
+material = ExtResource("5_nh_ceiling")
+use_collision = true
+
+[node name="B8" type="CSGBox3D" parent="Geometry/Ceilings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2.2975, -3.95)
+size = Vector3(1.2, 0.005, 0.9)
+material = ExtResource("4_nh_stain")
+
+[node name="B9" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.045, 1.15, -4.25)
+size = Vector3(0.09, 2.3, 2.16)
+material = ExtResource("6_nh_siding")
+use_collision = true
+
+[node name="B10" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045, 1.15, -4.25)
+size = Vector3(0.09, 2.3, 2.16)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B11" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.045, 2.15, -2.67)
+size = Vector3(0.09, 0.3, 1)
+material = ExtResource("6_nh_siding")
+use_collision = true
+
+[node name="B12" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045, 2.15, -2.67)
+size = Vector3(0.09, 0.3, 1)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B13" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.045, 1.15, -1.885)
+size = Vector3(0.09, 2.3, 0.57)
+material = ExtResource("6_nh_siding")
+use_collision = true
+
+[node name="B14" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045, 1.15, -1.885)
+size = Vector3(0.09, 2.3, 0.57)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B15" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.045, 0.45, -1.05)
+size = Vector3(0.09, 0.9, 1.1)
+material = ExtResource("6_nh_siding")
+use_collision = true
+
+[node name="B16" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045, 0.45, -1.05)
+size = Vector3(0.09, 0.9, 1.1)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B17" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.045, 2.05, -1.05)
+size = Vector3(0.09, 0.5, 1.1)
+material = ExtResource("6_nh_siding")
+use_collision = true
+
+[node name="B18" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045, 2.05, -1.05)
+size = Vector3(0.09, 0.5, 1.1)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B19" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.045, 1.15, -0.25)
+size = Vector3(0.09, 2.3, 0.5)
+material = ExtResource("6_nh_siding")
+use_collision = true
+
+[node name="B20" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.045, 1.15, -0.25)
+size = Vector3(0.09, 2.3, 0.5)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B21" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.955, 1.15, -4.915)
+size = Vector3(0.09, 2.3, 0.83)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B22" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.045, 1.15, -4.915)
+size = Vector3(0.09, 2.3, 0.83)
+material = ExtResource("6_nh_siding")
+use_collision = true
+
+[node name="B23" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.955, 2.15, -4.165)
+size = Vector3(0.09, 0.3, 0.67)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B24" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.045, 2.15, -4.165)
+size = Vector3(0.09, 0.3, 0.67)
+material = ExtResource("6_nh_siding")
+use_collision = true
+
+[node name="B25" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.955, 1.15, -2.75)
+size = Vector3(0.09, 2.3, 2.16)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B26" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.045, 1.15, -2.75)
+size = Vector3(0.09, 2.3, 2.16)
+material = ExtResource("6_nh_siding")
+use_collision = true
+
+[node name="B27" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.955, 0.425, -1.17)
+size = Vector3(0.09, 0.85, 1)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B28" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.045, 0.425, -1.17)
+size = Vector3(0.09, 0.85, 1)
+material = ExtResource("6_nh_siding")
+use_collision = true
+
+[node name="B29" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.955, 2.1, -1.17)
+size = Vector3(0.09, 0.4, 1)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B30" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.045, 2.1, -1.17)
+size = Vector3(0.09, 0.4, 1)
+material = ExtResource("6_nh_siding")
+use_collision = true
+
+[node name="B31" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.955, 1.15, -0.335)
+size = Vector3(0.09, 2.3, 0.67)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B32" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.045, 1.15, -0.335)
+size = Vector3(0.09, 2.3, 0.67)
+material = ExtResource("6_nh_siding")
+use_collision = true
+
+[node name="B33" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 1.15, -5.375)
+size = Vector3(5.6, 2.3, 0.09)
+material = ExtResource("6_nh_siding")
+use_collision = true
+
+[node name="B34" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 1.15, -5.285)
+size = Vector3(5.6, 2.3, 0.09)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B35" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.15, 0.5, -5.375)
+size = Vector3(1.1, 1, 0.09)
+material = ExtResource("6_nh_siding")
+use_collision = true
+
+[node name="B36" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.15, 0.5, -5.285)
+size = Vector3(1.1, 1, 0.09)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B37" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.15, 2, -5.375)
+size = Vector3(1.1, 0.6, 0.09)
+material = ExtResource("6_nh_siding")
+use_collision = true
+
+[node name="B38" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.15, 2, -5.285)
+size = Vector3(1.1, 0.6, 0.09)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B39" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.35, 1.15, -5.375)
+size = Vector3(1.3, 2.3, 0.09)
+material = ExtResource("6_nh_siding")
+use_collision = true
+
+[node name="B40" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.35, 1.15, -5.285)
+size = Vector3(1.3, 2.3, 0.09)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B41" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.15, -0.045)
+size = Vector3(8, 2.3, 0.09)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B42" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.15, 0.045)
+size = Vector3(8, 2.3, 0.09)
+material = ExtResource("6_nh_siding")
+use_collision = true
+
+[node name="B43" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.15, -4.25)
+size = Vector3(0.12, 2.3, 2.16)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B44" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.15, -1.165)
+size = Vector3(0.12, 2.3, 2.33)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B45" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.25, 1.15, -3.17)
+size = Vector3(0.5, 2.3, 0.12)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B46" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9, 2.15, -3.17)
+size = Vector3(0.8, 0.3, 0.12)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B47" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.65, 1.15, -3.17)
+size = Vector3(2.7, 2.3, 0.12)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B48" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.29, 1.15, -2.33)
+size = Vector3(0.58, 2.3, 0.12)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B49" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.915, 2.15, -2.33)
+size = Vector3(0.67, 0.3, 0.12)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B50" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.71, 1.15, -2.33)
+size = Vector3(0.92, 2.3, 0.12)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B51" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 2.15, -2.33)
+size = Vector3(0.66, 0.3, 0.12)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B52" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.415, 1.15, -2.33)
+size = Vector3(1.17, 2.3, 0.12)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="B53" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.83, 1.15, -1.165)
+size = Vector3(0.12, 2.3, 2.33)
+material = ExtResource("7_nh_wallpaper")
+use_collision = true
+
+[node name="BathroomDoor" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.22, 1, -1.98)
+size = Vector3(0.04, 2, 0.64)
+material = ExtResource("8_nh_wood")
+use_collision = true
+
+[node name="BedroomDoor" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.85, 1, -2.41)
+size = Vector3(0.64, 2, 0.04)
+material = ExtResource("8_nh_wood")
+use_collision = true
+
+[node name="FrontDoor" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11, 1, -3.67)
+size = Vector3(0.04, 2, 1)
+material = ExtResource("8_nh_wood")
+
+[node name="BackDoor" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.02, 1, -3.515)
+size = Vector3(0.04, 2, 0.63)
+material = ExtResource("8_nh_wood")
+
+[node name="BedroomWindow" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1.375, -1.17)
+size = Vector3(0.04, 1.05, 1)
+material = ExtResource("9_nh_glass")
+
+[node name="LivingWindow" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, -1.05)
+size = Vector3(0.04, 0.9, 1.1)
+material = ExtResource("9_nh_glass")
+
+[node name="KitchenWindow" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.15, 1.35, -5.33)
+size = Vector3(1.1, 0.7, 0.04)
+material = ExtResource("9_nh_glass")
+
+[node name="B61" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.45, -2.665)
+size = Vector3(8.8, 0.2, 6.13)
+material = ExtResource("10_nh_roof")
+
+[node name="Couch" type="Node3D" parent="Props"]
+
+[node name="B62" type="CSGBox3D" parent="Props/Couch"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 0.21, -4.15)
+size = Vector3(0.8, 0.42, 1.8)
+material = ExtResource("11_nh_couch")
+use_collision = true
+
+[node name="B63" type="CSGBox3D" parent="Props/Couch"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.475, 0.425, -4.15)
+size = Vector3(0.25, 0.85, 1.8)
+material = ExtResource("11_nh_couch")
+use_collision = true
+
+[node name="B64" type="CSGBox3D" parent="Props/Couch"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 0.31, -5.125)
+size = Vector3(0.8, 0.62, 0.15)
+material = ExtResource("11_nh_couch")
+use_collision = true
+
+[node name="B65" type="CSGBox3D" parent="Props/Couch"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 0.31, -3.175)
+size = Vector3(0.8, 0.62, 0.15)
+material = ExtResource("11_nh_couch")
+use_collision = true
+
+[node name="B66" type="CSGBox3D" parent="Props/Couch"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.96, 0.445, -4.15)
+size = Vector3(0.68, 0.05, 0.8)
+material = ExtResource("12_nh_blanket")
+
+[node name="B67" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.325, 0.25, -4.1)
+size = Vector3(0.55, 0.5, 0.9)
+material = ExtResource("13_nh_wood_dark")
+use_collision = true
+
+[node name="B68" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.325, 0.74, -4.15)
+size = Vector3(0.45, 0.48, 0.7)
+material = ExtResource("14_nh_tv")
+use_collision = true
+
+[node name="TVScreen" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.09, 0.74, -4.15)
+size = Vector3(0.02, 0.32, 0.56)
+material = ExtResource("15_nh_screen")
+
+[node name="B70" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.125, 0.3, -4.8)
+size = Vector3(0.15, 0.6, 0.8)
+material = ExtResource("16_nh_metal")
+use_collision = true
+
+[node name="B71" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.625, 0.275, -0.975)
+size = Vector3(0.45, 0.55, 0.45)
+material = ExtResource("8_nh_wood")
+use_collision = true
+
+[node name="B72" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 0.015, -3)
+size = Vector3(1.2, 0.03, 1.4)
+material = ExtResource("12_nh_blanket")
+
+[node name="B73" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.425, 0.875, -4.925)
+size = Vector3(0.65, 1.75, 0.65)
+material = ExtResource("17_nh_fridge")
+use_collision = true
+
+[node name="B74" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.765, 1.025, -4.975)
+size = Vector3(0.01, 0.25, 0.25)
+material = ExtResource("18_nh_drawing")
+
+[node name="B75" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.765, 1.4, -4.835)
+size = Vector3(0.01, 0.3, 0.23)
+material = ExtResource("18_nh_drawing")
+
+[node name="B76" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.9, 0.45, -4.95)
+size = Vector3(2.2, 0.9, 0.6)
+material = ExtResource("19_nh_counter")
+use_collision = true
+
+[node name="B77" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.1, 0.885, -4.95)
+size = Vector3(0.6, 0.05, 0.4)
+material = ExtResource("16_nh_metal")
+
+[node name="B78" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.7, 0.36, -3.625)
+size = Vector3(0.8, 0.72, 0.65)
+material = ExtResource("8_nh_wood")
+use_collision = true
+
+[node name="B79" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.15, 0.45, -3.6)
+size = Vector3(0.3, 0.9, 0.3)
+material = ExtResource("13_nh_wood_dark")
+use_collision = true
+
+[node name="B80" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.25, 0.45, -3.6)
+size = Vector3(0.3, 0.9, 0.3)
+material = ExtResource("19_nh_counter")
+use_collision = true
+
+[node name="Bookshelf" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.75, 0.85, -4.9)
+size = Vector3(0.4, 1.7, 0.6)
+material = ExtResource("13_nh_wood_dark")
+use_collision = true
+
+[node name="B82" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.16, -0.875)
+size = Vector3(0.8, 0.32, 1.55)
+material = ExtResource("13_nh_wood_dark")
+use_collision = true
+
+[node name="B83" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.41, -0.875)
+size = Vector3(0.7, 0.18, 1.45)
+material = ExtResource("20_nh_bedding")
+use_collision = true
+
+[node name="B84" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.635, -0.07)
+size = Vector3(0.8, 0.63, 0.1)
+material = ExtResource("13_nh_wood_dark")
+use_collision = true
+
+[node name="B85" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.7, 0.275, -0.05)
+size = Vector3(0.5, 0.55, 0.1)
+material = ExtResource("8_nh_wood")
+
+[node name="B86" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.31, 0.3, -0.265)
+size = Vector3(0.38, 0.6, 0.37)
+material = ExtResource("8_nh_wood")
+use_collision = true
+
+[node name="Wardrobe" type="Node3D" parent="Props"]
+
+[node name="B87" type="CSGBox3D" parent="Props/Wardrobe"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.7, 0.95, -2)
+size = Vector3(0.5, 1.9, 0.5)
+material = ExtResource("8_nh_wood")
+use_collision = true
+
+[node name="B88" type="CSGBox3D" parent="Props/Wardrobe"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.325, 0.975, -2.21)
+size = Vector3(0.25, 1.75, 0.02)
+material = ExtResource("8_nh_wood")
+
+[node name="B89" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.69, 0.2, -0.325)
+size = Vector3(0.38, 0.4, 0.35)
+material = ExtResource("12_nh_blanket")
+use_collision = true
+
+[node name="Lockbox" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.825, 0.08, -1.2)
+size = Vector3(0.35, 0.12, 0.3)
+material = ExtResource("21_nh_lockbox")
+
+[node name="Tub" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.95, 0.36, -0.385)
+size = Vector3(1.6, 0.48, 0.53)
+material = ExtResource("22_nh_porcelain")
+use_collision = true
+
+[node name="B92" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.95, 0.6025, -0.39)
+size = Vector3(1.3, 0.005, 0.42)
+material = ExtResource("23_nh_rust")
+
+[node name="B93" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.375, 0.425, -1.675)
+size = Vector3(0.45, 0.85, 0.45)
+material = ExtResource("22_nh_porcelain")
+use_collision = true
+
+[node name="B94" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.075, 1.325, -1.675)
+size = Vector3(0.01, 0.55, 0.35)
+material = ExtResource("9_nh_glass")
+
+[node name="B95" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.525, 0.225, -1.5)
+size = Vector3(0.45, 0.45, 0.4)
+material = ExtResource("22_nh_porcelain")
+use_collision = true
+
+[node name="B96" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.775, 0.35, -2.925)
+size = Vector3(0.35, 0.7, 0.35)
+material = ExtResource("13_nh_wood_dark")
+use_collision = true
+
+[node name="Hall_SchoolPhoto" type="Node3D" parent="Photos"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.9, 1.55, -3.1)
+
+[node name="B97" type="CSGBox3D" parent="Photos/Hall_SchoolPhoto"]
+transform = Transform3D(0.9976, -0.0698, 0, 0.0698, 0.9976, 0, 0, 0, 1, 0, 0, 0)
+size = Vector3(0.24, 0.29, 0.02)
+material = ExtResource("24_nh_frame")
+
+[node name="B98" type="CSGBox3D" parent="Photos/Hall_SchoolPhoto"]
+transform = Transform3D(0.9976, -0.0698, 0, 0.0698, 0.9976, 0, 0, 0, 1, 0, 0, 0)
+size = Vector3(0.2, 0.25, 0.03)
+material = ExtResource("25_nh_photo_a")
+
+[node name="Hall_Lake" type="Node3D" parent="Photos"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 1.35, -3.1)
+
+[node name="B99" type="CSGBox3D" parent="Photos/Hall_Lake"]
+transform = Transform3D(0.9986, 0.0523, 0, -0.0523, 0.9986, 0, 0, 0, 1, 0, 0, 0)
+size = Vector3(0.34, 0.26, 0.02)
+material = ExtResource("24_nh_frame")
+
+[node name="B100" type="CSGBox3D" parent="Photos/Hall_Lake"]
+transform = Transform3D(0.9986, 0.0523, 0, -0.0523, 0.9986, 0, 0, 0, 1, 0, 0, 0)
+size = Vector3(0.3, 0.22, 0.03)
+material = ExtResource("26_nh_photo_b")
+
+[node name="Hall_Birthday" type="Node3D" parent="Photos"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.1, 1.6, -3.1)
+
+[node name="B101" type="CSGBox3D" parent="Photos/Hall_Birthday"]
+transform = Transform3D(0.9925, -0.1219, 0, 0.1219, 0.9925, 0, 0, 0, 1, 0, 0, 0)
+size = Vector3(0.26, 0.22, 0.02)
+material = ExtResource("24_nh_frame")
+
+[node name="B102" type="CSGBox3D" parent="Photos/Hall_Birthday"]
+transform = Transform3D(0.9925, -0.1219, 0, 0.1219, 0.9925, 0, 0, 0, 1, 0, 0, 0)
+size = Vector3(0.22, 0.18, 0.03)
+material = ExtResource("27_nh_photo_c")
+
+[node name="Hall_KidHeight" type="Node3D" parent="Photos"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.95, -2.4)
+
+[node name="B103" type="CSGBox3D" parent="Photos/Hall_KidHeight"]
+transform = Transform3D(0.9962, 0.0872, 0, -0.0872, 0.9962, 0, 0, 0, 1, 0, 0, 0)
+size = Vector3(0.22, 0.26, 0.02)
+material = ExtResource("24_nh_frame")
+
+[node name="B104" type="CSGBox3D" parent="Photos/Hall_KidHeight"]
+transform = Transform3D(0.9962, 0.0872, 0, -0.0872, 0.9962, 0, 0, 0, 1, 0, 0, 0)
+size = Vector3(0.18, 0.22, 0.03)
+material = ExtResource("27_nh_photo_c")
+
+[node name="Living_OverCouch" type="Node3D" parent="Photos"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 1.45, -4.2)
+
+[node name="B105" type="CSGBox3D" parent="Photos/Living_OverCouch"]
+transform = Transform3D(1, 0, 0, 0, 0.9994, -0.0349, 0, 0.0349, 0.9994, 0, 0, 0)
+size = Vector3(0.02, 0.34, 0.44)
+material = ExtResource("24_nh_frame")
+
+[node name="B106" type="CSGBox3D" parent="Photos/Living_OverCouch"]
+transform = Transform3D(1, 0, 0, 0, 0.9994, -0.0349, 0, 0.0349, 0.9994, 0, 0, 0)
+size = Vector3(0.03, 0.3, 0.4)
+material = ExtResource("26_nh_photo_b")
+
+[node name="Living_Baby" type="Node3D" parent="Photos"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 1.5, -1.75)
+
+[node name="B107" type="CSGBox3D" parent="Photos/Living_Baby"]
+transform = Transform3D(1, 0, 0, 0, 0.9976, 0.0698, 0, -0.0698, 0.9976, 0, 0, 0)
+size = Vector3(0.02, 0.26, 0.22)
+material = ExtResource("24_nh_frame")
+
+[node name="B108" type="CSGBox3D" parent="Photos/Living_Baby"]
+transform = Transform3D(1, 0, 0, 0, 0.9976, 0.0698, 0, -0.0698, 0.9976, 0, 0, 0)
+size = Vector3(0.03, 0.22, 0.18)
+material = ExtResource("25_nh_photo_a")
+
+[node name="Nightstand_Photo" type="CSGBox3D" parent="Photos"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.36, 0.69, -0.24)
+size = Vector3(0.12, 0.18, 0.02)
+material = ExtResource("25_nh_photo_a")
+
+[node name="B110" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, -0.175, -11)
+size = Vector3(64, 0.25, 54)
+material = ExtResource("28_nh_grass")
+use_collision = true
+
+[node name="B111" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29, -0.035, -3)
+size = Vector3(10, 0.03, 22)
+material = ExtResource("29_nh_dirt")
+
+[node name="B112" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.3, -0.0325, -5)
+size = Vector3(5.4, 0.035, 2.4)
+material = ExtResource("29_nh_dirt")
+
+[node name="B113" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.3, -0.031, -2.65)
+size = Vector3(17.8, 0.038, 1.3)
+material = ExtResource("29_nh_dirt")
+
+[node name="B114" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.04, -2.65)
+size = Vector3(1, 0.08, 2.6)
+material = ExtResource("30_nh_porch")
+use_collision = true
+
+[node name="B115" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.225, 0.02, -2.65)
+size = Vector3(0.45, 0.04, 1.3)
+material = ExtResource("31_nh_porch_pat")
+use_collision = true
+
+[node name="B116" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.94, 1.19, -3.88)
+size = Vector3(0.08, 2.22, 0.08)
+material = ExtResource("30_nh_porch")
+use_collision = true
+
+[node name="B117" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.94, 1.19, -1.42)
+size = Vector3(0.08, 2.22, 0.08)
+material = ExtResource("30_nh_porch")
+use_collision = true
+
+[node name="B118" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.525, 2.34, -2.65)
+size = Vector3(1.05, 0.08, 2.7)
+material = ExtResource("30_nh_porch")
+
+[node name="PorchBulb" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 2, -2.35)
+size = Vector3(0.1, 0.1, 0.1)
+material = ExtResource("32_nh_bulb")
+
+[node name="B120" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.315, -1.625)
+size = Vector3(0.4, 0.47, 0.25)
+material = ExtResource("22_nh_porcelain")
+
+[node name="NorahCar" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.4, 0.55, -5)
+size = Vector3(4, 0.6, 1.7)
+material = ExtResource("33_nh_car_maroo")
+use_collision = true
+
+[node name="B122" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.6, 1.05, -5)
+size = Vector3(2, 0.4, 1.4)
+material = ExtResource("33_nh_car_maroo")
+use_collision = true
+
+[node name="B123" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.8, 0.25, -5.9)
+size = Vector3(0.5, 0.5, 0.2)
+material = ExtResource("34_nh_tire")
+use_collision = true
+
+[node name="B124" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.8, 0.25, -4.1)
+size = Vector3(0.5, 0.5, 0.2)
+material = ExtResource("34_nh_tire")
+use_collision = true
+
+[node name="B125" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0.25, -5.9)
+size = Vector3(0.5, 0.5, 0.2)
+material = ExtResource("34_nh_tire")
+use_collision = true
+
+[node name="B126" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0.25, -4.1)
+size = Vector3(0.5, 0.5, 0.2)
+material = ExtResource("34_nh_tire")
+use_collision = true
+
+[node name="Headlight" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.4, 0.635, -5.5)
+size = Vector3(0.04, 0.17, 0.4)
+material = ExtResource("35_nh_lamp")
+
+[node name="Headlight2" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.4, 0.635, -4.5)
+size = Vector3(0.04, 0.17, 0.4)
+material = ExtResource("35_nh_lamp")
+
+[node name="B129" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.8654, 2.366, -31.3601)
+size = Vector3(0.32, 4.7321, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B130" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.8654, 6.0226, -31.3601)
+size = Vector3(1.8, 5.1622, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B131" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.9436, 2.0523, -24.6221)
+size = Vector3(0.32, 4.1045, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B132" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.9436, 5.2239, -24.6221)
+size = Vector3(1.8, 4.4777, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B133" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.7521, 1.6912, -25.1199)
+size = Vector3(0.32, 3.3825, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B134" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.7521, 4.305, -25.1199)
+size = Vector3(1.8, 3.69, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B135" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.7158, 1.7498, -32.7775)
+size = Vector3(0.32, 3.4996, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B136" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.7158, 4.454, -32.7775)
+size = Vector3(1.8, 3.8177, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B137" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.2269, 1.7862, -19.5301)
+size = Vector3(0.32, 3.5724, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B138" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.2269, 4.5466, -19.5301)
+size = Vector3(1.8, 3.8971, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B139" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.4986, 2.6925, -23.0199)
+size = Vector3(0.32, 5.385, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B140" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.4986, 6.8536, -23.0199)
+size = Vector3(1.8, 5.8745, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B141" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6822, 2.7239, -27.0581)
+size = Vector3(0.32, 5.4478, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B142" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6822, 6.9335, -27.0581)
+size = Vector3(1.8, 5.943, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B143" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31.3914, 1.9686, -18.9768)
+size = Vector3(0.32, 3.9371, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B144" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31.3914, 5.0109, -18.9768)
+size = Vector3(1.8, 4.2951, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B145" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.9217, 1.9893, -31.9386)
+size = Vector3(0.32, 3.9787, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B146" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.9217, 5.0637, -31.9386)
+size = Vector3(1.8, 4.3404, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B147" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.7031, 2.2898, -30.8373)
+size = Vector3(0.32, 4.5795, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B148" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.7031, 5.8285, -30.8373)
+size = Vector3(1.8, 4.9958, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B149" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7792, 2.2525, -27.483)
+size = Vector3(0.32, 4.505, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B150" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.7792, 5.7337, -27.483)
+size = Vector3(1.8, 4.9146, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B151" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.4838, 1.8766, -32.957)
+size = Vector3(0.32, 3.7531, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B152" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.4838, 4.7767, -32.957)
+size = Vector3(1.8, 4.0943, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B153" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.1024, 1.9956, -26.5171)
+size = Vector3(0.32, 3.9911, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B154" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.1024, 5.0796, -26.5171)
+size = Vector3(1.8, 4.354, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B155" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2085, 1.9797, -26.0693)
+size = Vector3(0.32, 3.9595, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B156" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2085, 5.0393, -26.0693)
+size = Vector3(1.8, 4.3194, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B157" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.4853, 1.9185, -21.7676)
+size = Vector3(0.32, 3.837, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B158" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.4853, 4.8835, -21.7676)
+size = Vector3(1.8, 4.1858, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B159" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8323, 2.6127, -24.8091)
+size = Vector3(0.32, 5.2253, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B160" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8323, 6.6504, -24.8091)
+size = Vector3(1.8, 5.7003, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B161" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8489, 2.7282, -28.9611)
+size = Vector3(0.32, 5.4564, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B162" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8489, 6.9445, -28.9611)
+size = Vector3(1.8, 5.9524, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B163" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.3883, 2.4829, -26.6829)
+size = Vector3(0.32, 4.9657, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B164" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.3883, 6.32, -26.6829)
+size = Vector3(1.8, 5.4171, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B165" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.4889, 1.6931, -25.4431)
+size = Vector3(0.32, 3.3863, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B166" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.4889, 4.3098, -25.4431)
+size = Vector3(1.8, 3.6941, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B167" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4201, 2.2803, -20.62)
+size = Vector3(0.32, 4.5607, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B168" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4201, 5.8045, -20.62)
+size = Vector3(1.8, 4.9753, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B169" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.0268, 2.4148, -28.5094)
+size = Vector3(0.32, 4.8296, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B170" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.0268, 6.1468, -28.5094)
+size = Vector3(1.8, 5.2687, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B171" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7153, 2.1518, -23.8518)
+size = Vector3(0.32, 4.3037, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B172" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7153, 5.4774, -23.8518)
+size = Vector3(1.8, 4.6949, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B173" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.0382, 2.1715, -17.4681)
+size = Vector3(0.32, 4.343, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B174" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.0382, 5.5275, -17.4681)
+size = Vector3(1.8, 4.7378, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B175" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1925, 2.4216, -32.9383)
+size = Vector3(0.32, 4.8433, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B176" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1925, 6.1642, -32.9383)
+size = Vector3(1.8, 5.2836, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B177" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2392, 2.5541, -16.6208)
+size = Vector3(0.32, 5.1082, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B178" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2392, 6.5014, -16.6208)
+size = Vector3(1.8, 5.5726, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B179" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.0627, 2.3855, -27.2486)
+size = Vector3(0.32, 4.771, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B180" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.0627, 6.0722, -27.2486)
+size = Vector3(1.8, 5.2048, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B181" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.7365, 1.8349, -25.9203)
+size = Vector3(0.32, 3.6697, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B182" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.7365, 4.6705, -25.9203)
+size = Vector3(1.8, 4.0033, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B183" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.4426, 2.4951, -32.9683)
+size = Vector3(0.32, 4.9901, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B184" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.4426, 6.3511, -32.9683)
+size = Vector3(1.8, 5.4438, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B185" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.7569, 2.08, -29.6667)
+size = Vector3(0.32, 4.1601, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B186" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.7569, 5.2947, -29.6667)
+size = Vector3(1.8, 4.5383, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B187" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.7996, 2.1441, -32.5898)
+size = Vector3(0.32, 4.2882, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B188" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.7996, 5.4577, -32.5898)
+size = Vector3(1.8, 4.678, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B189" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2314, 2.5512, -18.5408)
+size = Vector3(0.32, 5.1024, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B190" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2314, 6.494, -18.5408)
+size = Vector3(1.8, 5.5663, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B191" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.3831, 2.1068, -29.1276)
+size = Vector3(0.32, 4.2137, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B192" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.3831, 5.3628, -29.1276)
+size = Vector3(1.8, 4.5967, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B193" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.9088, 2.7035, -18.5266)
+size = Vector3(0.32, 5.407, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B194" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.9088, 6.8816, -18.5266)
+size = Vector3(1.8, 5.8986, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B195" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.5484, 1.9052, -30.9162)
+size = Vector3(0.32, 3.8103, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B196" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.5484, 4.8495, -30.9162)
+size = Vector3(1.8, 4.1567, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B197" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.9332, 2.298, -25.5132)
+size = Vector3(0.32, 4.5961, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B198" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.9332, 5.8495, -25.5132)
+size = Vector3(1.8, 5.0139, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B199" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.2862, 2.1108, -33.9284)
+size = Vector3(0.32, 4.2217, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B200" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.2862, 5.3731, -33.9284)
+size = Vector3(1.8, 4.6055, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B201" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.3218, 2.6984, -24.089)
+size = Vector3(0.32, 5.3968, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B202" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.3218, 6.8687, -24.089)
+size = Vector3(1.8, 5.8874, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B203" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.6676, 2.3294, -24.9789)
+size = Vector3(0.32, 4.6587, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B204" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.6676, 5.9293, -24.9789)
+size = Vector3(1.8, 5.0822, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B205" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8672, 2.6395, -33.0551)
+size = Vector3(0.32, 5.279, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B206" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8672, 6.7187, -33.0551)
+size = Vector3(1.8, 5.7589, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B207" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6783, 2.5277, -18.696)
+size = Vector3(0.32, 5.0553, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B208" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.6783, 6.434, -18.696)
+size = Vector3(1.8, 5.5149, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B209" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.0268, 1.7639, -27.0179)
+size = Vector3(0.32, 3.5278, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B210" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.0268, 4.4899, -27.0179)
+size = Vector3(1.8, 3.8485, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B211" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5202, 1.7241, -32.9107)
+size = Vector3(0.32, 3.4482, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B212" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5202, 4.3886, -32.9107)
+size = Vector3(1.8, 3.7616, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B213" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.3093, 2.0241, -31.1597)
+size = Vector3(0.32, 4.0481, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B214" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.3093, 5.1522, -31.1597)
+size = Vector3(1.8, 4.4161, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B215" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31.0558, 1.8164, -33.9959)
+size = Vector3(0.32, 3.6328, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B216" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31.0558, 4.6235, -33.9959)
+size = Vector3(1.8, 3.963, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B217" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.318, 1.6781, -27.6368)
+size = Vector3(0.32, 3.3561, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B218" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.318, 4.2714, -27.6368)
+size = Vector3(1.8, 3.6612, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B219" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.9626, 1.8134, -23.2538)
+size = Vector3(0.32, 3.6268, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B220" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.9626, 4.6159, -23.2538)
+size = Vector3(1.8, 3.9565, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B221" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.8736, 2.0506, -27.9207)
+size = Vector3(0.32, 4.1012, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B222" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.8736, 5.2197, -27.9207)
+size = Vector3(1.8, 4.474, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B223" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.1208, 2.7424, -19.1436)
+size = Vector3(0.32, 5.4848, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B224" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.1208, 6.9807, -19.1436)
+size = Vector3(1.8, 5.9834, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B225" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.9046, 1.7445, -25.5329)
+size = Vector3(0.32, 3.4889, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B226" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.9046, 4.4405, -25.5329)
+size = Vector3(1.8, 3.8061, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B227" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.2775, 1.9412, -28.0039)
+size = Vector3(0.32, 3.8825, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B228" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.2775, 4.9413, -28.0039)
+size = Vector3(1.8, 4.2354, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B229" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.4159, 1.6754, -31.1748)
+size = Vector3(0.32, 3.3508, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B230" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.4159, 4.2647, -31.1748)
+size = Vector3(1.8, 3.6554, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B231" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.2552, 1.8113, -24.7555)
+size = Vector3(0.32, 3.6225, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B232" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.2552, 4.6105, -24.7555)
+size = Vector3(1.8, 3.9518, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B233" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5823, 2.2309, -33.5268)
+size = Vector3(0.32, 4.4618, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B234" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5823, 5.6787, -33.5268)
+size = Vector3(1.8, 4.8675, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B235" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.7961, 2.4158, -18.8918)
+size = Vector3(0.32, 4.8316, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B236" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.7961, 6.1494, -18.8918)
+size = Vector3(1.8, 5.2709, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B237" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.3775, 1.8337, -27.5828)
+size = Vector3(0.32, 3.6675, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B238" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.3775, 4.6677, -27.5828)
+size = Vector3(1.8, 4.0009, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B239" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2285, 2.507, -24.6796)
+size = Vector3(0.32, 5.0139, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B240" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2285, 6.3814, -24.6796)
+size = Vector3(1.8, 5.4697, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B241" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.5388, 2.5427, -30.0968)
+size = Vector3(0.32, 5.0853, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B242" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.5388, 6.4722, -30.0968)
+size = Vector3(1.8, 5.5476, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B243" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.1559, 2.5367, -19.079)
+size = Vector3(0.32, 5.0734, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B244" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.1559, 6.457, -19.079)
+size = Vector3(1.8, 5.5346, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B245" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.8266, 1.8994, -21.0522)
+size = Vector3(0.32, 3.7988, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B246" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.8266, 4.8349, -21.0522)
+size = Vector3(1.8, 4.1442, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B247" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.0122, 1.6819, -27.7777)
+size = Vector3(0.32, 3.3638, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B248" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.0122, 4.2811, -27.7777)
+size = Vector3(1.8, 3.6696, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B249" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.4355, 1.9351, -29.1102)
+size = Vector3(0.32, 3.8702, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B250" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.4355, 4.9257, -29.1102)
+size = Vector3(1.8, 4.222, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B251" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.7812, 2.142, -17.261)
+size = Vector3(0.32, 4.2839, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B252" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.7812, 5.4522, -17.261)
+size = Vector3(1.8, 4.6733, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B253" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.4732, 2.7005, -16.7093)
+size = Vector3(0.32, 5.401, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B254" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.4732, 6.874, -16.7093)
+size = Vector3(1.8, 5.892, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B255" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.5804, 1.8995, -30.1419)
+size = Vector3(0.32, 3.7991, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B256" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.5804, 4.8352, -30.1419)
+size = Vector3(1.8, 4.1444, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B257" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.9845, 2.3365, -30.4235)
+size = Vector3(0.32, 4.6729, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B258" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.9845, 5.9474, -30.4235)
+size = Vector3(1.8, 5.0978, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B259" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.4173, 2.1774, -19.2924)
+size = Vector3(0.32, 4.3548, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B260" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.4173, 5.5425, -19.2924)
+size = Vector3(1.8, 4.7507, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B261" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5668, 1.7433, -20.0062)
+size = Vector3(0.32, 3.4865, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B262" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5668, 4.4374, -20.0062)
+size = Vector3(1.8, 3.8035, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B263" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9928, 2.5105, -18.0789)
+size = Vector3(0.32, 5.0211, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B264" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9928, 6.3904, -18.0789)
+size = Vector3(1.8, 5.4775, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B265" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.0079, 1.8464, -25.6344)
+size = Vector3(0.32, 3.6927, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B266" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.0079, 4.6999, -25.6344)
+size = Vector3(1.8, 4.0285, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B267" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.1916, 2.5309, -28.1809)
+size = Vector3(0.32, 5.0618, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B268" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.1916, 6.4423, -28.1809)
+size = Vector3(1.8, 5.522, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B269" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.6599, 2.0915, -4.1248)
+size = Vector3(0.32, 4.1831, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B270" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.6599, 5.3239, -4.1248)
+size = Vector3(1.8, 4.5633, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B271" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.3616, 1.837, 5.744)
+size = Vector3(0.32, 3.674, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B272" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.3616, 4.676, 5.744)
+size = Vector3(1.8, 4.008, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B273" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5245, 2.6453, -11.4655)
+size = Vector3(0.32, 5.2907, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B274" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5245, 6.7336, -11.4655)
+size = Vector3(1.8, 5.7716, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B275" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.678, 2.5592, -11.6148)
+size = Vector3(0.32, 5.1183, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B276" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.678, 6.5142, -11.6148)
+size = Vector3(1.8, 5.5836, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B277" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.7637, 2.0354, 3.718)
+size = Vector3(0.32, 4.0709, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B278" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.7637, 5.1811, 3.718)
+size = Vector3(1.8, 4.441, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B279" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.5839, 1.6657, -12.0705)
+size = Vector3(0.32, 3.3313, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B280" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.5839, 4.2399, -12.0705)
+size = Vector3(1.8, 3.6342, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B281" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.6507, 2.2292, 3.4902)
+size = Vector3(0.32, 4.4585, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B282" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.6507, 5.6744, 3.4902)
+size = Vector3(1.8, 4.8638, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B283" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.2035, 2.6089, -2.9857)
+size = Vector3(0.32, 5.2178, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B284" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.2035, 6.6409, -2.9857)
+size = Vector3(1.8, 5.6922, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B285" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.9139, 1.927, -9.6687)
+size = Vector3(0.32, 3.854, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B286" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.9139, 4.9051, -9.6687)
+size = Vector3(1.8, 4.2044, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B287" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.5156, 2.2951, -8.7838)
+size = Vector3(0.32, 4.5902, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B288" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.5156, 5.842, -8.7838)
+size = Vector3(1.8, 5.0074, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B289" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.1124, 1.7942, -3.4296)
+size = Vector3(0.32, 3.5884, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B290" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.1124, 4.567, -3.4296)
+size = Vector3(1.8, 3.9146, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B291" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.9202, 2.154, -5.3865)
+size = Vector3(0.32, 4.308, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B292" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.9202, 5.4829, -5.3865)
+size = Vector3(1.8, 4.6996, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B293" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.0002, 2.1127, 11.1289)
+size = Vector3(0.32, 4.2254, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B294" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.0002, 5.3778, 11.1289)
+size = Vector3(1.8, 4.6095, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B295" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.0127, 2.235, -0.9505)
+size = Vector3(0.32, 4.47, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B296" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.0127, 5.6891, -0.9505)
+size = Vector3(1.8, 4.8764, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B297" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.2821, 2.1341, -15.4389)
+size = Vector3(0.32, 4.2683, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B298" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.2821, 5.4323, -15.4389)
+size = Vector3(1.8, 4.6563, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B299" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.1973, 2.5291, -15.882)
+size = Vector3(0.32, 5.0582, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B300" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.1973, 6.4377, -15.882)
+size = Vector3(1.8, 5.518, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B301" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.0682, 2.4477, -1.7952)
+size = Vector3(0.32, 4.8954, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B302" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.0682, 6.2305, -1.7952)
+size = Vector3(1.8, 5.3405, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B303" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.6777, 2.2202, -6.2205)
+size = Vector3(0.32, 4.4404, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B304" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.6777, 5.6514, -6.2205)
+size = Vector3(1.8, 4.844, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B305" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.6653, 1.7667, 7.5282)
+size = Vector3(0.32, 3.5334, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B306" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.6653, 4.4971, 7.5282)
+size = Vector3(1.8, 3.8547, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B307" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.7236, 1.9546, -8.5452)
+size = Vector3(0.32, 3.9092, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B308" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.7236, 4.9754, -8.5452)
+size = Vector3(1.8, 4.2646, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B309" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.2671, 2.2679, -0.7686)
+size = Vector3(0.32, 4.5358, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B310" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.2671, 5.7728, -0.7686)
+size = Vector3(1.8, 4.9482, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B311" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.1199, 2.1376, 11.3746)
+size = Vector3(0.32, 4.2751, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B312" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.1199, 5.4411, 11.3746)
+size = Vector3(1.8, 4.6638, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B313" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.3503, 2.2134, -0.8334)
+size = Vector3(0.32, 4.4268, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B314" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.3503, 5.6341, -0.8334)
+size = Vector3(1.8, 4.8292, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B315" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.3128, 2.2366, -2.4296)
+size = Vector3(0.32, 4.4732, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B316" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.3128, 5.6932, -2.4296)
+size = Vector3(1.8, 4.8799, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B317" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.7364, 2.4191, 12.245)
+size = Vector3(0.32, 4.8383, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B318" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.7364, 6.1578, 12.245)
+size = Vector3(1.8, 5.2781, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B319" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.5184, 1.9356, 12.2654)
+size = Vector3(0.32, 3.8711, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B320" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.5184, 4.9269, 12.2654)
+size = Vector3(1.8, 4.223, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B321" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.7142, 2.574, 12.298)
+size = Vector3(0.32, 5.148, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B322" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.7142, 6.552, 12.298)
+size = Vector3(1.8, 5.616, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B323" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.6456, 2.1363, -12.3513)
+size = Vector3(0.32, 4.2727, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B324" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.6456, 5.4379, -12.3513)
+size = Vector3(1.8, 4.6611, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B325" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.8706, 1.7304, -8.7808)
+size = Vector3(0.32, 3.4609, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B326" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.8706, 4.4047, -8.7808)
+size = Vector3(1.8, 3.7755, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B327" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.0337, 2.6367, 7.5181)
+size = Vector3(0.32, 5.2735, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B328" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.0337, 6.7117, 7.5181)
+size = Vector3(1.8, 5.7529, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B329" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.8534, 2.3763, 5.4836)
+size = Vector3(0.32, 4.7526, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B330" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.8534, 6.0487, 5.4836)
+size = Vector3(1.8, 5.1846, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B331" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.7157, 2.7143, 10.485)
+size = Vector3(0.32, 5.4286, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B332" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.7157, 6.9091, 10.485)
+size = Vector3(1.8, 5.9221, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B333" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.6351, 2.0881, 12.5751)
+size = Vector3(0.32, 4.1762, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B334" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.6351, 5.3151, 12.5751)
+size = Vector3(1.8, 4.5558, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B335" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.8471, 2.5657, 13.6961)
+size = Vector3(0.32, 5.1314, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B336" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.8471, 6.5308, 13.6961)
+size = Vector3(1.8, 5.5979, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B337" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.9376, 2.2172, -3.0543)
+size = Vector3(0.32, 4.4343, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B338" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.9376, 5.6437, -3.0543)
+size = Vector3(1.8, 4.8375, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B339" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.0694, 2.0004, -10.1277)
+size = Vector3(0.32, 4.0008, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B340" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.0694, 5.0919, -10.1277)
+size = Vector3(1.8, 4.3645, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B341" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.6658, 2.2595, -15.4155)
+size = Vector3(0.32, 4.5189, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B342" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.6658, 5.7513, -15.4155)
+size = Vector3(1.8, 4.9297, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B343" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.2855, 2.0146, -15.4575)
+size = Vector3(0.32, 4.0293, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B344" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.2855, 5.1282, -15.4575)
+size = Vector3(1.8, 4.3956, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B345" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.4871, 1.7207, -0.6321)
+size = Vector3(0.32, 3.4414, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B346" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.4871, 4.38, -0.6321)
+size = Vector3(1.8, 3.7543, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B347" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.821, 2.7189, 7.6509)
+size = Vector3(0.32, 5.4377, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B348" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.821, 6.9207, 7.6509)
+size = Vector3(1.8, 5.9321, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B349" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.4, 2.2, -22)
+size = Vector3(0.32, 4.4, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B350" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.4, 5.6, -22)
+size = Vector3(1.8, 4.8, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B351" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.9, 2.475, -23.6)
+size = Vector3(0.32, 4.95, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B352" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.9, 6.3, -23.6)
+size = Vector3(1.8, 5.4, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="B353" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.6, 2.2, -14.6)
+size = Vector3(0.32, 4.4, 0.32)
+material = ExtResource("36_nh_bark")
+
+[node name="B354" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.6, 5.6, -14.6)
+size = Vector3(1.8, 4.8, 1.8)
+material = ExtResource("37_nh_tree")
+
+[node name="FigureMarker" type="Marker3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 0, -14.5)
+
+[node name="NorahStop" type="Marker3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -3.2)
+
+[node name="NH1" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.465, 1.035, -3.24)
+size = Vector3(0.07, 2.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH2" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.335, 1.035, -3.24)
+size = Vector3(0.07, 2.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH3" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9, 2.035, -3.24)
+size = Vector3(0.94, 0.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH4" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.465, 1.035, -3.1)
+size = Vector3(0.07, 2.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH5" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.335, 1.035, -3.1)
+size = Vector3(0.07, 2.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH6" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9, 2.035, -3.1)
+size = Vector3(0.94, 0.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH7" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.545, 1.035, -2.4)
+size = Vector3(0.07, 2.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH8" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.285, 1.035, -2.4)
+size = Vector3(0.07, 2.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH9" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.915, 2.035, -2.4)
+size = Vector3(0.81, 0.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH10" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.545, 1.035, -2.26)
+size = Vector3(0.07, 2.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH11" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.285, 1.035, -2.26)
+size = Vector3(0.07, 2.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH12" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.915, 2.035, -2.26)
+size = Vector3(0.81, 0.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH13" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.135, 1.035, -2.4)
+size = Vector3(0.07, 2.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH14" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.865, 1.035, -2.4)
+size = Vector3(0.07, 2.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH15" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 2.035, -2.4)
+size = Vector3(0.8, 0.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH16" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.135, 1.035, -2.26)
+size = Vector3(0.07, 2.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH17" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.865, 1.035, -2.26)
+size = Vector3(0.07, 2.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH18" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 2.035, -2.26)
+size = Vector3(0.8, 0.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH19" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 1.035, -3.205)
+size = Vector3(0.02, 2.07, 0.07)
+material = ExtResource("38_nh_trim")
+
+[node name="NH20" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 1.035, -2.135)
+size = Vector3(0.02, 2.07, 0.07)
+material = ExtResource("38_nh_trim")
+
+[node name="NH21" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 2.035, -2.67)
+size = Vector3(0.02, 0.07, 1.14)
+material = ExtResource("38_nh_trim")
+
+[node name="NH22" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 1.035, -3.205)
+size = Vector3(0.02, 2.07, 0.07)
+material = ExtResource("38_nh_trim")
+
+[node name="NH23" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 1.035, -2.135)
+size = Vector3(0.02, 2.07, 0.07)
+material = ExtResource("38_nh_trim")
+
+[node name="NH24" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 2.035, -2.67)
+size = Vector3(0.02, 0.07, 1.14)
+material = ExtResource("38_nh_trim")
+
+[node name="NH25" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.9, 1.035, -4.535)
+size = Vector3(0.02, 2.07, 0.07)
+material = ExtResource("38_nh_trim")
+
+[node name="NH26" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.9, 1.035, -3.795)
+size = Vector3(0.02, 2.07, 0.07)
+material = ExtResource("38_nh_trim")
+
+[node name="NH27" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.9, 2.035, -4.165)
+size = Vector3(0.02, 0.07, 0.81)
+material = ExtResource("38_nh_trim")
+
+[node name="NH28" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.1, 1.035, -4.535)
+size = Vector3(0.02, 2.07, 0.07)
+material = ExtResource("38_nh_trim")
+
+[node name="NH29" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.1, 1.035, -3.795)
+size = Vector3(0.02, 2.07, 0.07)
+material = ExtResource("38_nh_trim")
+
+[node name="NH30" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.1, 2.035, -4.165)
+size = Vector3(0.02, 0.07, 0.81)
+material = ExtResource("38_nh_trim")
+
+[node name="NH31" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 1.385, -1.635)
+size = Vector3(0.02, 0.97, 0.07)
+material = ExtResource("38_nh_trim")
+
+[node name="NH32" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 1.385, -0.465)
+size = Vector3(0.02, 0.97, 0.07)
+material = ExtResource("38_nh_trim")
+
+[node name="NH33" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 1.835, -1.05)
+size = Vector3(0.02, 0.07, 1.24)
+material = ExtResource("38_nh_trim")
+
+[node name="NH34" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08, 0.88, -1.05)
+size = Vector3(0.02, 0.04, 1.24)
+material = ExtResource("38_nh_trim")
+
+[node name="NH35" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 1.385, -1.635)
+size = Vector3(0.02, 0.97, 0.07)
+material = ExtResource("38_nh_trim")
+
+[node name="NH36" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 1.385, -0.465)
+size = Vector3(0.02, 0.97, 0.07)
+material = ExtResource("38_nh_trim")
+
+[node name="NH37" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 1.835, -1.05)
+size = Vector3(0.02, 0.07, 1.24)
+material = ExtResource("38_nh_trim")
+
+[node name="NH38" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.08, 0.88, -1.05)
+size = Vector3(0.06, 0.04, 1.24)
+material = ExtResource("38_nh_trim")
+
+[node name="NH39" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.9, 1.41, -1.705)
+size = Vector3(0.02, 1.12, 0.07)
+material = ExtResource("38_nh_trim")
+
+[node name="NH40" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.9, 1.41, -0.635)
+size = Vector3(0.02, 1.12, 0.07)
+material = ExtResource("38_nh_trim")
+
+[node name="NH41" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.9, 1.935, -1.17)
+size = Vector3(0.02, 0.07, 1.14)
+material = ExtResource("38_nh_trim")
+
+[node name="NH42" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.92, 0.83, -1.17)
+size = Vector3(0.02, 0.04, 1.14)
+material = ExtResource("38_nh_trim")
+
+[node name="NH43" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.1, 1.41, -1.705)
+size = Vector3(0.02, 1.12, 0.07)
+material = ExtResource("38_nh_trim")
+
+[node name="NH44" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.1, 1.41, -0.635)
+size = Vector3(0.02, 1.12, 0.07)
+material = ExtResource("38_nh_trim")
+
+[node name="NH45" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.1, 1.935, -1.17)
+size = Vector3(0.02, 0.07, 1.14)
+material = ExtResource("38_nh_trim")
+
+[node name="NH46" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.08, 0.83, -1.17)
+size = Vector3(0.06, 0.04, 1.14)
+material = ExtResource("38_nh_trim")
+
+[node name="NH47" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.565, 1.385, -5.43)
+size = Vector3(0.07, 0.77, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH48" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.735, 1.385, -5.43)
+size = Vector3(0.07, 0.77, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH49" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.15, 1.735, -5.43)
+size = Vector3(1.24, 0.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH50" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.15, 0.98, -5.43)
+size = Vector3(1.24, 0.04, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH51" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.565, 1.385, -5.23)
+size = Vector3(0.07, 0.77, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH52" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.735, 1.385, -5.23)
+size = Vector3(0.07, 0.77, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH53" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.15, 1.735, -5.23)
+size = Vector3(1.24, 0.07, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="NH54" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.15, 0.98, -5.23)
+size = Vector3(1.24, 0.04, 0.02)
+material = ExtResource("38_nh_trim")
+
+[node name="Mullion0" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, -1.05)
+size = Vector3(0.05, 0.04, 1.1)
+material = ExtResource("38_nh_trim")
+
+[node name="Mullion8" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1.375, -1.17)
+size = Vector3(0.05, 0.04, 1)
+material = ExtResource("38_nh_trim")
+
+[node name="NH57" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.15, 1.35, -5.33)
+size = Vector3(1.1, 0.04, 0.05)
+material = ExtResource("38_nh_trim")
+
+[node name="NH58" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 1.915, -1.05)
+size = Vector3(0.02, 0.03, 1.4)
+material = ExtResource("16_nh_metal")
+
+[node name="NH59" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 1.325, -1.5013)
+size = Vector3(0.06, 1.15, 0.4375)
+material = ExtResource("39_nh_curtain")
+
+[node name="NH60" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 1.325, -0.5988)
+size = Vector3(0.06, 1.15, 0.4375)
+material = ExtResource("39_nh_curtain")
+
+[node name="NH61" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.9, 2.015, -1.17)
+size = Vector3(0.02, 0.03, 1.3)
+material = ExtResource("16_nh_metal")
+
+[node name="BedCurtainL" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.9, 1.35, -1.5875)
+size = Vector3(0.06, 1.3, 0.405)
+material = ExtResource("40_nh_curtain_b")
+
+[node name="BedCurtainR" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.9, 1.35, -0.7525)
+size = Vector3(0.06, 1.3, 0.405)
+material = ExtResource("40_nh_curtain_b")
+
+[node name="NH64" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.15, 1.815, -5.23)
+size = Vector3(1.4, 0.03, 0.02)
+material = ExtResource("16_nh_metal")
+
+[node name="NH65" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.6987, 1.325, -5.23)
+size = Vector3(0.4375, 0.95, 0.06)
+material = ExtResource("39_nh_curtain")
+
+[node name="NH66" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.6013, 1.325, -5.23)
+size = Vector3(0.4375, 0.95, 0.06)
+material = ExtResource("39_nh_curtain")
+
+[node name="NH67" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.065, -5.2625)
+size = Vector3(3.88, 0.09, 0.015)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH68" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.065, -0.0675)
+size = Vector3(3.88, 0.09, 0.015)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH69" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0675, 0.065, -2.665)
+size = Vector3(0.015, 0.09, 5.21)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH70" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.9325, 0.065, -2.665)
+size = Vector3(0.015, 0.09, 5.21)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH71" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.065, -5.2625)
+size = Vector3(3.88, 0.09, 0.015)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH72" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.065, -3.2375)
+size = Vector3(3.88, 0.09, 0.015)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH73" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0675, 0.065, -4.25)
+size = Vector3(0.015, 0.09, 2.04)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH74" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.9325, 0.065, -4.25)
+size = Vector3(0.015, 0.09, 2.04)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH75" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.065, -3.1025)
+size = Vector3(3.88, 0.09, 0.015)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH76" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.065, -2.3975)
+size = Vector3(3.88, 0.09, 0.015)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH77" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0675, 0.065, -2.75)
+size = Vector3(0.015, 0.09, 0.72)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH78" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.9325, 0.065, -2.75)
+size = Vector3(0.015, 0.09, 0.72)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH79" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.915, 0.065, -2.2625)
+size = Vector3(1.71, 0.09, 0.015)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH80" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.915, 0.065, -0.0675)
+size = Vector3(1.71, 0.09, 0.015)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH81" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0675, 0.065, -1.165)
+size = Vector3(0.015, 0.09, 2.21)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH82" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.7625, 0.065, -1.165)
+size = Vector3(0.015, 0.09, 2.21)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH83" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.915, 0.065, -2.2625)
+size = Vector3(2.05, 0.09, 0.015)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH84" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.915, 0.065, -0.0675)
+size = Vector3(2.05, 0.09, 0.015)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH85" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.8975, 0.065, -1.165)
+size = Vector3(0.015, 0.09, 2.21)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH86" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.9325, 0.065, -1.165)
+size = Vector3(0.015, 0.09, 2.21)
+material = ExtResource("13_nh_wood_dark")
+
+[node name="Q87" type="MeshInstance3D" parent="Photos"]
+transform = Transform3D(0.9976, -0.0698, 0, 0.0698, 0.9976, 0, 0, 0, 1, 5.9, 1.55, -3.083)
+mesh = SubResource("QuadMesh_1")
+material_override = ExtResource("41_nh_addie_sch")
+
+[node name="Q88" type="MeshInstance3D" parent="Photos"]
+transform = Transform3D(0.9986, 0.0523, 0, -0.0523, 0.9986, 0, 0, 0, 1, 6.5, 1.35, -3.083)
+mesh = SubResource("QuadMesh_2")
+material_override = ExtResource("42_nh_addie_lak")
+
+[node name="Q89" type="MeshInstance3D" parent="Photos"]
+transform = Transform3D(0.9925, -0.1219, 0, 0.1219, 0.9925, 0, 0, 0, 1, 7.1, 1.6, -3.083)
+mesh = SubResource("QuadMesh_3")
+material_override = ExtResource("43_nh_addie_bir")
+
+[node name="Q90" type="MeshInstance3D" parent="Photos"]
+transform = Transform3D(-0.9962, -0.0872, 0, -0.0872, 0.9962, 0, -0, -0, -1, 6, 0.95, -2.417)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("41_nh_addie_sch")
+
+[node name="Q91" type="MeshInstance3D" parent="Photos"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.117, 1.45, -4.2)
+mesh = SubResource("QuadMesh_5")
+material_override = ExtResource("42_nh_addie_lak")
+
+[node name="Q92" type="MeshInstance3D" parent="Photos"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0.117, 1.5, -1.75)
+mesh = SubResource("QuadMesh_6")
+material_override = ExtResource("44_nh_addie_bab")
+
+[node name="Q93" type="MeshInstance3D" parent="Photos"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.36, 0.69, -0.215)
+mesh = SubResource("QuadMesh_7")
+material_override = ExtResource("43_nh_addie_bir")
+
+[node name="Q94" type="MeshInstance3D" parent="Props"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 4.78, 1.02, -4.97)
+mesh = SubResource("QuadMesh_8")
+material_override = ExtResource("45_nh_fridge_pi")
+
+[node name="Q95" type="MeshInstance3D" parent="Props"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 4.78, 1.4, -4.84)
+mesh = SubResource("QuadMesh_9")
+material_override = ExtResource("42_nh_addie_lak")
+
+[node name="NH96" type="CSGCylinder3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2.26, -2.7)
+radius = 0.14
+height = 0.06
+sides = 8
+material = ExtResource("46_nh_fixture")
+
+[node name="NH97" type="CSGCylinder3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.8, 2.26, -4.3)
+radius = 0.14
+height = 0.06
+sides = 8
+material = ExtResource("46_nh_fixture")
+
+[node name="NH98" type="CSGCylinder3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.26, -2.75)
+radius = 0.14
+height = 0.06
+sides = 8
+material = ExtResource("46_nh_fixture")
+
+[node name="NH99" type="CSGCylinder3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9, 2.26, -1.2)
+radius = 0.14
+height = 0.06
+sides = 8
+material = ExtResource("46_nh_fixture")
+
+[node name="NH100" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07, 1.26, -1.95)
+size = Vector3(0.02, 0.12, 0.08)
+material = ExtResource("47_nh_switch")
+
+[node name="NH101" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.07, 1.26, -3.4)
+size = Vector3(0.02, 0.12, 0.08)
+material = ExtResource("47_nh_switch")
+
+[node name="NH102" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.3, 1.26, -2.4)
+size = Vector3(0.08, 0.12, 0.02)
+material = ExtResource("47_nh_switch")
+
+[node name="NH103" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.88, 1.26, -2.26)
+size = Vector3(0.08, 0.12, 0.02)
+material = ExtResource("47_nh_switch")
+
+[node name="NH104" type="CSGCylinder3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.28, 0.85, -1.4)
+radius = 0.03
+height = 1.7
+sides = 6
+material = ExtResource("13_nh_wood_dark")
+use_collision = true
+
+[node name="NH105" type="CSGCylinder3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.28, 0.02, -1.4)
+radius = 0.18
+height = 0.04
+sides = 8
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH106" type="CSGBox3D" parent="Props"]
+transform = Transform3D(0.9781, 0, 0.2079, 0, 1, 0, -0.2079, 0, 0.9781, 0.28, 1.3, -1.35)
+size = Vector3(0.3, 0.6, 0.18)
+material = ExtResource("48_nh_coat")
+
+[node name="NH107" type="CSGBox3D" parent="Props"]
+transform = Transform3D(0.9397, 0, -0.342, 0, 1, 0, 0.342, 0, 0.9397, 0.3, 1.25, -1.47)
+size = Vector3(0.22, 0.5, 0.12)
+material = ExtResource("49_nh_kidpink")
+
+[node name="NH108" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.21, 0.08, -1.66)
+size = Vector3(0.18, 0.16, 0.08)
+material = ExtResource("49_nh_kidpink")
+
+[node name="NH109" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.21, 0.08, -1.54)
+size = Vector3(0.18, 0.16, 0.08)
+material = ExtResource("49_nh_kidpink")
+
+[node name="NH110" type="CSGCylinder3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.72, 0.16, -0.28)
+radius = 0.16
+height = 0.32
+sides = 8
+material = ExtResource("50_nh_pot_clay")
+use_collision = true
+
+[node name="NH111" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 0.8192, -0.5736, 0, 0.5736, 0.8192, 3.72, 0.45, -0.28)
+size = Vector3(0.06, 0.5, 0.22)
+material = ExtResource("51_nh_plant")
+
+[node name="NH112" type="CSGBox3D" parent="Props"]
+transform = Transform3D(0.342, 0.6165, 0.7092, 0, 0.7547, -0.6561, -0.9397, 0.2244, 0.2581, 3.72, 0.45, -0.28)
+size = Vector3(0.06, 0.5, 0.22)
+material = ExtResource("51_nh_plant")
+
+[node name="NH113" type="CSGBox3D" parent="Props"]
+transform = Transform3D(-0.866, 0.3657, 0.341, 0, 0.682, -0.7314, -0.5, -0.6334, -0.5906, 3.72, 0.45, -0.28)
+size = Vector3(0.06, 0.5, 0.22)
+material = ExtResource("51_nh_plant")
+
+[node name="NH114" type="CSGBox3D" parent="Props"]
+transform = Transform3D(-0.6428, -0.6118, -0.461, 0, 0.6018, -0.7986, 0.766, -0.5134, -0.3868, 3.72, 0.45, -0.28)
+size = Vector3(0.06, 0.5, 0.22)
+material = ExtResource("51_nh_plant")
+
+[node name="NH115" type="CSGBox3D" parent="Props"]
+transform = Transform3D(0.5, -0.7423, -0.446, 0, 0.515, -0.8572, 0.866, 0.4286, 0.2575, 3.72, 0.45, -0.28)
+size = Vector3(0.06, 0.5, 0.22)
+material = ExtResource("51_nh_plant")
+
+[node name="NH116" type="CSGCylinder3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.62, 0.6, -0.98)
+radius = 0.05
+height = 0.12
+sides = 6
+material = ExtResource("13_nh_wood_dark")
+
+[node name="NH117" type="CSGCylinder3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.62, 0.74, -0.98)
+radius = 0.11
+height = 0.14
+sides = 8
+material = ExtResource("46_nh_fixture")
+
+[node name="NH118" type="CSGBox3D" parent="Props"]
+transform = Transform3D(0.9903, 0, 0.1392, 0, 1, 0, -0.1392, 0, 0.9903, 0.62, 0.36, -4.55)
+size = Vector3(0.12, 0.28, 0.32)
+material = ExtResource("12_nh_blanket")
+
+[node name="NH119" type="CSGBox3D" parent="Props"]
+transform = Transform3D(0.9848, 0, -0.1736, 0, 1, 0, 0.1736, 0, 0.9848, 0.62, 0.36, -3.65)
+size = Vector3(0.12, 0.26, 0.3)
+material = ExtResource("11_nh_couch")
+
+[node name="NH120" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0.105, -1.825)
+size = Vector3(0.2, 0.15, 0.15)
+material = ExtResource("49_nh_kidpink")
+
+[node name="NH121" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.975, 0.065, -1.525)
+size = Vector3(0.15, 0.07, 0.15)
+material = ExtResource("52_nh_mug2")
+
+[node name="NH122" type="CSGCylinder3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.1, 0.8, -4.95)
+radius = 0.12
+height = 0.02
+sides = 10
+material = ExtResource("53_nh_plate")
+
+[node name="NH123" type="CSGCylinder3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.1, 0.825, -4.95)
+radius = 0.12
+height = 0.02
+sides = 10
+material = ExtResource("53_nh_plate")
+
+[node name="NH124" type="CSGCylinder3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.1, 0.85, -4.95)
+radius = 0.12
+height = 0.02
+sides = 10
+material = ExtResource("53_nh_plate")
+
+[node name="NH125" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.15, 1.05, -5.14)
+size = Vector3(0.2, 0.3, 0.08)
+material = ExtResource("54_nh_cereal_bo")
+
+[node name="Q126" type="MeshInstance3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.15, 1.05, -5.098)
+mesh = SubResource("QuadMesh_10")
+material_override = ExtResource("54_nh_cereal_bo")
+
+[node name="NH127" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.7, 1.075, -5.11)
+size = Vector3(0.3, 0.35, 0.22)
+material = ExtResource("55_nh_coffee")
+
+[node name="NH128" type="CSGCylinder3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.7, 0.98, -4.92)
+radius = 0.06
+height = 0.14
+sides = 8
+material = ExtResource("9_nh_glass")
+
+[node name="NH129" type="CSGCylinder3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0.95, -4.85)
+radius = 0.04
+height = 0.09
+sides = 6
+material = ExtResource("56_nh_mug")
+
+[node name="NH130" type="CSGCylinder3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.62, 0.95, -4.85)
+radius = 0.04
+height = 0.09
+sides = 6
+material = ExtResource("52_nh_mug2")
+
+[node name="NH131" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.65, 0.73, -3.65)
+size = Vector3(0.3, 0.02, 0.2)
+material = ExtResource("18_nh_drawing")
+
+[node name="Q132" type="MeshInstance3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 6.66, 0.745, -3.62)
+mesh = SubResource("QuadMesh_11")
+material_override = ExtResource("57_nh_mail_bill")
+
+[node name="NH133" type="CSGCylinder3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.95, 0.79, -3.45)
+radius = 0.035
+height = 0.12
+sides = 6
+material = ExtResource("49_nh_kidpink")
+
+[node name="NH134" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.85, 0.025, -2.75)
+size = Vector3(3.2, 0.01, 0.46)
+material = ExtResource("58_nh_runner")
+
+[node name="NH135" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.76, 1.065, -0.95)
+size = Vector3(0.02, 0.03, 0.6)
+material = ExtResource("16_nh_metal")
+
+[node name="NH136" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.745, 0.84, -0.95)
+size = Vector3(0.03, 0.48, 0.5)
+material = ExtResource("59_nh_towel")
+
+[node name="NH137" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9, 0.025, -1.075)
+size = Vector3(0.6, 0.01, 0.45)
+material = ExtResource("59_nh_towel")
+
+[node name="NH138" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.45, 1.935, -0.655)
+size = Vector3(0.6, 0.03, 0.03)
+material = ExtResource("16_nh_metal")
+
+[node name="NH139" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.395, 1.21, -0.67)
+size = Vector3(0.45, 1.42, 0.02)
+material = ExtResource("60_nh_shower")
+
+[node name="NH140" type="CSGCylinder3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.25, 0.9, -1.55)
+radius = 0.03
+height = 0.08
+sides = 6
+material = ExtResource("52_nh_mug2")
+
+[node name="NH141" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.245, 0.96, -1.555)
+size = Vector3(0.01, 0.08, 0.01)
+material = ExtResource("49_nh_kidpink")
+
+[node name="NH142" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.31, 0.64, -0.39)
+size = Vector3(0.18, 0.08, 0.06)
+material = ExtResource("14_nh_tv")
+
+[node name="NH143" type="CSGBox3D" parent="Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.31, 0.64, -0.3565)
+size = Vector3(0.14, 0.04, 0.003)
+material = ExtResource("61_nh_clock_red")
+
+[node name="NH144" type="CSGBox3D" parent="Props"]
+transform = Transform3D(0.866, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866, 7, 0.04, -2.05)
+size = Vector3(0.4, 0.06, 0.3)
+material = ExtResource("62_nh_clothes")
+
+[node name="NH145" type="CSGBox3D" parent="Props"]
+transform = Transform3D(0.9659, 0, -0.2588, 0, 1, 0, 0.2588, 0, 0.9659, 7.65, 0.42, -0.32)
+size = Vector3(0.3, 0.08, 0.25)
+material = ExtResource("62_nh_clothes")
+
+[node name="NH146" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.97, 0.515, -3.725)
+size = Vector3(0.06, 0.87, 0.45)
+material = ExtResource("63_nh_trim_ext")
+use_collision = true
+
+[node name="NH147" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.97, 0.885, -3.725)
+size = Vector3(0.06, 0.07, 0.45)
+material = ExtResource("63_nh_trim_ext")
+
+[node name="NH148" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.97, 0.465, -3.8)
+size = Vector3(0.04, 0.77, 0.03)
+material = ExtResource("63_nh_trim_ext")
+
+[node name="NH149" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.97, 0.465, -3.65)
+size = Vector3(0.04, 0.77, 0.03)
+material = ExtResource("63_nh_trim_ext")
+
+[node name="NH150" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.97, 0.515, -1.575)
+size = Vector3(0.06, 0.87, 0.45)
+material = ExtResource("63_nh_trim_ext")
+use_collision = true
+
+[node name="NH151" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.97, 0.885, -1.575)
+size = Vector3(0.06, 0.07, 0.45)
+material = ExtResource("63_nh_trim_ext")
+
+[node name="NH152" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.97, 0.465, -1.65)
+size = Vector3(0.04, 0.77, 0.03)
+material = ExtResource("63_nh_trim_ext")
+
+[node name="NH153" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.97, 0.465, -1.5)
+size = Vector3(0.04, 0.77, 0.03)
+material = ExtResource("63_nh_trim_ext")
+
+[node name="NH154" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 0.9397, 0.342, 0, -0.342, 0.9397, 4, 2.92, -4.415)
+size = Vector3(8.8, 0.1, 3.75)
+material = ExtResource("10_nh_roof")
+
+[node name="NH155" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 0.9397, -0.342, 0, 0.342, 0.9397, 4, 2.92, -0.915)
+size = Vector3(8.8, 0.1, 3.75)
+material = ExtResource("10_nh_roof")
+
+[node name="NH156" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.51, -2.665)
+size = Vector3(0.18, 0.42, 5.07)
+material = ExtResource("6_nh_siding")
+
+[node name="NH157" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.91, -2.665)
+size = Vector3(0.18, 0.38, 3.47)
+material = ExtResource("6_nh_siding")
+
+[node name="NH158" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.25, -2.665)
+size = Vector3(0.18, 0.3, 1.87)
+material = ExtResource("6_nh_siding")
+
+[node name="NH159" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2.51, -2.665)
+size = Vector3(0.18, 0.42, 5.07)
+material = ExtResource("6_nh_siding")
+
+[node name="NH160" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2.91, -2.665)
+size = Vector3(0.18, 0.38, 3.47)
+material = ExtResource("6_nh_siding")
+
+[node name="NH161" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 3.25, -2.665)
+size = Vector3(0.18, 0.3, 1.87)
+material = ExtResource("6_nh_siding")
+
+[node name="NH162" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.305, -5.75)
+size = Vector3(8.9, 0.09, 0.12)
+material = ExtResource("64_nh_gutter")
+
+[node name="NH163" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.305, 0.42)
+size = Vector3(8.9, 0.09, 0.12)
+material = ExtResource("64_nh_gutter")
+
+[node name="NH164" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16, 1.15, 0.34)
+size = Vector3(0.08, 2.3, 0.08)
+material = ExtResource("64_nh_gutter")
+
+[node name="NH165" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 3.3, -1.4)
+size = Vector3(0.2, 1, 0.2)
+material = ExtResource("16_nh_metal")
+
+[node name="NH166" type="CSGCylinder3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 1.2, 0.16, -5.7)
+radius = 0.15
+height = 0.9
+sides = 6
+material = ExtResource("65_nh_logs")
+use_collision = true
+
+[node name="NH167" type="CSGCylinder3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 1.65, 0.18, -5.7)
+radius = 0.15
+height = 1
+sides = 6
+material = ExtResource("65_nh_logs")
+
+[node name="NH168" type="CSGCylinder3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 2.1, 0.16, -5.7)
+radius = 0.15
+height = 0.9
+sides = 6
+material = ExtResource("65_nh_logs")
+
+[node name="NH169" type="CSGCylinder3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 2.55, 0.18, -5.7)
+radius = 0.15
+height = 1
+sides = 6
+material = ExtResource("65_nh_logs")
+
+[node name="NH170" type="CSGCylinder3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 1.4, 0.42, -5.7)
+radius = 0.14
+height = 0.9
+sides = 6
+material = ExtResource("65_nh_logs")
+
+[node name="NH171" type="CSGCylinder3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 1.85, 0.42, -5.7)
+radius = 0.14
+height = 0.9
+sides = 6
+material = ExtResource("65_nh_logs")
+
+[node name="NH172" type="CSGCylinder3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 2.3, 0.42, -5.7)
+radius = 0.14
+height = 0.9
+sides = 6
+material = ExtResource("65_nh_logs")
+
+[node name="NH173" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.025, 0.03, -5.725)
+size = Vector3(2.15, 0.06, 0.55)
+material = ExtResource("13_nh_wood_dark")
+use_collision = true
+
+[node name="NH174" type="CSGCylinder3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.42, -5.95)
+radius = 0.25
+height = 0.84
+sides = 8
+material = ExtResource("66_nh_can")
+use_collision = true
+
+[node name="NH175" type="CSGCylinder3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05, 0.42, -6.05)
+radius = 0.25
+height = 0.84
+sides = 8
+material = ExtResource("66_nh_can")
+use_collision = true
+
+[node name="NH176" type="CSGCylinder3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.86, -5.95)
+radius = 0.27
+height = 0.05
+sides = 8
+material = ExtResource("66_nh_can")
+
+[node name="NH177" type="CSGCylinder3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -4.85, 0.2, -0.85)
+radius = 0.2
+height = 0.04
+sides = 10
+material = ExtResource("34_nh_tire")
+
+[node name="NH178" type="CSGCylinder3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -4.15, 0.2, -0.85)
+radius = 0.2
+height = 0.04
+sides = 10
+material = ExtResource("34_nh_tire")
+
+[node name="NH179" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0.2, -0.85)
+size = Vector3(0.7, 0.04, 0.06)
+material = ExtResource("67_nh_bike")
+
+[node name="NH180" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9397, -0.342, 0, 0.342, 0.9397, 0, 0, 0, 1, -4.35, 0.32, -0.85)
+size = Vector3(0.04, 0.3, 0.04)
+material = ExtResource("67_nh_bike")
+
+[node name="NH181" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.4, 0.455, -0.85)
+size = Vector3(0.2, 0.03, 0.14)
+material = ExtResource("34_nh_tire")
+
+[node name="NH182" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.8, 0.42, -0.85)
+size = Vector3(0.04, 0.04, 0.3)
+material = ExtResource("16_nh_metal")
+
+[node name="NH183" type="CSGCylinder3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.6, 0.55, -2.2)
+radius = 0.05
+height = 1.1
+sides = 6
+material = ExtResource("13_nh_wood_dark")
+use_collision = true
+
+[node name="NH184" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.6, 1.24, -2.2)
+size = Vector3(0.4, 0.28, 0.44)
+material = ExtResource("16_nh_metal")
+
+[node name="NH185" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.405, 1.2, -2.2)
+size = Vector3(0.03, 0.1, 0.2)
+material = ExtResource("18_nh_drawing")
+
+[node name="NH186" type="CSGCylinder3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.2, 4, -7.4)
+radius = 0.13
+height = 8
+sides = 6
+material = ExtResource("68_nh_pole")
+use_collision = true
+
+[node name="NH187" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.2, 7.45, -7.4)
+size = Vector3(0.1, 0.1, 1.8)
+material = ExtResource("68_nh_pole")
+
+[node name="NH188" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(-0.0948, 0.191, -0.977, 0, 0.9814, 0.1919, 0.9955, 0.0182, -0.093, -12.6, 4.425, -6.2)
+size = Vector3(0.02, 0.02, 25.7935)
+material = ExtResource("69_nh_wire")
+
+[node name="LivingBulb" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2.1, -2.7)
+light_color = Color(1, 0.82, 0.55, 1)
+light_energy = 0.9
+omni_range = 5
+shadow_enabled = true
+
+[node name="KitchenBulb" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.8, 2.1, -4.3)
+light_color = Color(0.85, 0.95, 0.8, 1)
+light_energy = 0.7
+omni_range = 4
+shadow_enabled = true
+
+[node name="HallBulb" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.1, -2.75)
+light_color = Color(1, 0.8, 0.5, 1)
+light_energy = 0.45
+omni_range = 3
+shadow_enabled = true
+
+[node name="BedroomLamp" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.14, 0.95, -0.35)
+light_color = Color(1, 0.75, 0.45, 1)
+light_energy = 0.6
+omni_range = 3
+shadow_enabled = true
+
+[node name="BathBulb" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9, 2.1, -1.2)
+light_color = Color(0.95, 0.95, 0.85, 1)
+light_energy = 0.6
+omni_range = 3
+shadow_enabled = true
+
+[node name="PorchLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 1.9, -2.35)
+light_color = Color(1, 0.85, 0.55, 1)
+light_energy = 1.2
+omni_range = 6
+shadow_enabled = true
+
+[node name="HeadlightGlow" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.6, 0.7, -5)
+light_color = Color(1, 0.95, 0.8, 1)
+light_energy = 1
+omni_range = 8
+shadow_enabled = true
+
+[node name="HeadlightBeam" type="SpotLight3D" parent="Lights"]
+transform = Transform3D(0.3142, -0.0173, -0.9492, -0, 0.9998, -0.0182, 0.9493, 0.0057, 0.3142, -19.2, 0.65, -5)
+light_color = Color(1, 0.95, 0.8, 1)
+light_energy = 16.0
+spot_range = 40.0
+spot_angle = 26.0
+shadow_enabled = true
+
+[node name="YardBounce" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 4, -4)
+light_color = Color(0.5, 0.55, 0.7, 1)
+light_energy = 0.5
+omni_range = 14
+shadow_enabled = true
+
+[node name="Moon" type="DirectionalLight3D" parent="Lights"]
+transform = Transform3D(-0.8, 0.5367, -0.2683, 0, 0.4472, 0.8944, 0.6, 0.7155, -0.3578, 0, 10, 0)
+light_color = Color(0.45, 0.52, 0.7, 1)
+light_energy = 0.32
+
+[node name="HeadlightLow" type="SpotLight3D" parent="Lights"]
+transform = Transform3D(-0.0869, 0.0346, -0.9956, 0, 0.9994, 0.0347, 0.9962, 0.003, -0.0868, -19.2, 0.6, -4.5)
+light_color = Color(1, 0.95, 0.8, 1)
+light_energy = 10.0
+spot_range = 26.0
+spot_angle = 20.0
+
+[node name="A2_LouisFar" type="Camera3D" parent="Cameras"]
+transform = Transform3D(-0.7849, 0.0115, 0.6195, 0, 0.9998, -0.0186, -0.6196, -0.0146, -0.7847, -6, 0.45, -24)
+fov = 46
+near = 0.03
+far = 80.0
+environment = ExtResource("70_env_norah_ya")
+editor_description = "Arrival: Louis watching from deep in the north woods, low, trunks at the frame edges; the car pulls in, Norah gets out"
+
+[node name="A2_LouisFar" type="Node3D" parent="CameraMarkers"]
+
+[node name="B355" type="CSGBox3D" parent="CameraMarkers/A2_LouisFar"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 2.675, -24)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/A2_LouisFar"]
+transform = Transform3D(0.7849, 0, -0.6196, 0, 1, 0, 0.6196, 0, 0.7849, -6.3407, 2.66, -23.5684)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="A3_LouisNear" type="Camera3D" parent="Cameras"]
+transform = Transform3D(-0.9743, 0.0082, 0.2252, 0, 0.9993, -0.0363, -0.2254, -0.0354, -0.9736, -10.4, 0.5, -16.2)
+fov = 52
+near = 0.03
+far = 80.0
+environment = ExtResource("70_env_norah_ya")
+editor_description = "Arrival: closer in the woods, one or two trunks, straight across the dark grass at Norah; headlights flare into the lens"
+
+[node name="A3_LouisNear" type="Node3D" parent="CameraMarkers"]
+
+[node name="B356" type="CSGBox3D" parent="CameraMarkers/A3_LouisNear"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.4, 2.675, -16.2)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/A3_LouisNear"]
+transform = Transform3D(0.9743, 0, -0.2254, 0, 1, 0, 0.2254, 0, 0.9743, -10.5239, 2.66, -15.6645)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="A4_PorchOut" type="Camera3D" parent="Cameras"]
+transform = Transform3D(0.1548, -0.0763, 0.985, 0, 0.997, 0.0772, -0.9879, -0.0119, 0.1544, -0.6, 1.95, -1.3)
+fov = 54
+near = 0.03
+far = 80.0
+environment = ExtResource("70_env_norah_ya")
+editor_description = "Arrival: from the porch facing out at Norah walking in; the treeline is behind the camera"
+
+[node name="A4_PorchOut" type="Node3D" parent="CameraMarkers"]
+
+[node name="B357" type="CSGBox3D" parent="CameraMarkers/A4_PorchOut"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 2.675, -1.3)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/A4_PorchOut"]
+transform = Transform3D(-0.1548, 0, -0.9879, 0, 1, 0, 0.9879, 0, -0.1548, -1.1417, 2.66, -1.3849)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="C1_Shoulder" type="Camera3D" parent="Cameras"]
+transform = Transform3D(0.5537, 0.0342, -0.832, -0, 0.9992, 0.0411, 0.8327, -0.0227, 0.5532, -9.75, 1.95, -1.7)
+fov = 36
+near = 0.03
+far = 80.0
+environment = ExtResource("70_env_norah_ya")
+editor_description = "Cutscene: over her shoulder, the pale shape at the treeline in the headlight beam (C5 reuses it, dark)"
+
+[node name="C1_Shoulder" type="Node3D" parent="CameraMarkers"]
+
+[node name="B358" type="CSGBox3D" parent="CameraMarkers/C1_Shoulder"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.75, 2.675, -1.7)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/C1_Shoulder"]
+transform = Transform3D(-0.5537, 0, 0.8327, 0, 1, 0, -0.8327, 0, -0.5537, -9.2924, 2.66, -2.0043)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="C2_Face" type="Camera3D" parent="Cameras"]
+transform = Transform3D(-0.5401, -0.0841, 0.8374, 0, 0.995, 0.1, -0.8416, 0.054, -0.5374, -7.33, 1.6, -3.63)
+fov = 40
+near = 0.03
+far = 80.0
+environment = ExtResource("70_env_norah_ya")
+editor_description = "Cutscene: close on her face, confused"
+
+[node name="C2_Face" type="Node3D" parent="CameraMarkers"]
+
+[node name="B359" type="CSGBox3D" parent="CameraMarkers/C2_Face"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.33, 2.675, -3.63)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/C2_Face"]
+transform = Transform3D(0.5401, 0, -0.8416, 0, 1, 0, 0.8416, 0, 0.5401, -7.7906, 2.66, -3.3344)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="C3_Side" type="Camera3D" parent="Cameras"]
+transform = Transform3D(-0.9701, 0.0147, -0.2421, 0, 0.9982, 0.0605, 0.2425, 0.0587, -0.9684, -8.6, 1.3, -5.6)
+fov = 50
+near = 0.03
+far = 80.0
+environment = ExtResource("70_env_norah_ya")
+editor_description = "Cutscene: from the side as she leans to see"
+
+[node name="C3_Side" type="Node3D" parent="CameraMarkers"]
+
+[node name="B360" type="CSGBox3D" parent="CameraMarkers/C3_Side"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.6, 2.675, -5.6)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/C3_Side"]
+transform = Transform3D(0.9701, 0, 0.2425, 0, 1, 0, -0.2425, 0, 0.9701, -8.4668, 2.66, -5.0674)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="C4_Headlight" type="Camera3D" parent="Cameras"]
+transform = Transform3D(-0.5547, -0.1218, 0.8231, 0, 0.9892, 0.1463, -0.8321, 0.0812, -0.5487, -17.6, 0.95, -6.6)
+fov = 44
+near = 0.03
+far = 80.0
+environment = ExtResource("70_env_norah_ya")
+editor_description = "Cutscene: close on the headlight sputtering out with a click"
+
+[node name="C4_Headlight" type="Node3D" parent="CameraMarkers"]
+
+[node name="B361" type="CSGBox3D" parent="CameraMarkers/C4_Headlight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.6, 2.675, -6.6)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/C4_Headlight"]
+transform = Transform3D(0.5547, 0, -0.8321, 0, 1, 0, 0.8321, 0, 0.5547, -18.0527, 2.66, -6.2982)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="C6_Jumpscare" type="Camera3D" parent="Cameras"]
+transform = Transform3D(0.6247, -0.0908, -0.7756, -0, 0.9932, -0.1163, 0.7809, 0.0727, 0.6205, -7.6, 0.6, -3.6)
+fov = 66
+near = 0.03
+far = 80.0
+environment = ExtResource("70_env_norah_ya")
+editor_description = "Jumpscare: low beside Norah as Louis bursts out of the dark at her and the camera"
+
+[node name="C6_Jumpscare" type="Node3D" parent="CameraMarkers"]
+
+[node name="B362" type="CSGBox3D" parent="CameraMarkers/C6_Jumpscare"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.6, 2.675, -3.6)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/C6_Jumpscare"]
+transform = Transform3D(-0.6247, 0, 0.7809, 0, 1, 0, -0.7809, 0, -0.6247, -7.1734, 2.66, -3.9412)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="S1_Overhead" type="Camera3D" parent="Cameras"]
+transform = Transform3D(0.1351, 0.5006, -0.8551, -0, 0.863, 0.5053, 0.9908, -0.0683, 0.1166, -12, 6.8, -1.2)
+fov = 56
+near = 0.03
+far = 80.0
+environment = ExtResource("70_env_norah_ya")
+editor_description = "Sprint: overhead behind her, the path to the door lit only by the porch light"
+
+[node name="S1_Overhead" type="Node3D" parent="CameraMarkers"]
+
+[node name="B363" type="CSGBox3D" parent="CameraMarkers/S1_Overhead"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 2.675, -1.2)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/S1_Overhead"]
+transform = Transform3D(-0.1351, 0, 0.9908, 0, 1, 0, -0.9908, 0, -0.1351, -11.5297, 2.66, -1.2641)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="N2_Yard" type="Camera3D" parent="Cameras"]
+transform = Transform3D(0.4797, 0.1418, -0.8659, -0, 0.9869, 0.1616, 0.8774, -0.0775, 0.4734, -7.5, 2.4, 1.5)
+fov = 52
+near = 0.03
+far = 80.0
+environment = ExtResource("70_env_norah_ya")
+editor_description = "Yard from the cul-de-sac: car, porch steps, front door, side path"
+
+[node name="N2_Yard" type="Node3D" parent="CameraMarkers"]
+
+[node name="B364" type="CSGBox3D" parent="CameraMarkers/N2_Yard"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 2.675, 1.5)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/N2_Yard"]
+transform = Transform3D(-0.4797, 0, 0.8774, 0, 1, 0, -0.8774, 0, -0.4797, -7.0237, 2.66, 1.2396)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="N3_BackCorner" type="Camera3D" parent="Cameras"]
+transform = Transform3D(-0.7634, 0.0473, -0.6442, 0, 0.9973, 0.0732, 0.6459, 0.0559, -0.7613, 8.6, 1.7, -6.2)
+fov = 58
+near = 0.03
+far = 80.0
+environment = ExtResource("70_env_norah_ya")
+editor_description = "Back corner of the house toward the woods: the treeline and the figure in the headlight beam"
+
+[node name="N3_BackCorner" type="Node3D" parent="CameraMarkers"]
+
+[node name="B365" type="CSGBox3D" parent="CameraMarkers/N3_BackCorner"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.6, 2.675, -6.2)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/N3_BackCorner"]
+transform = Transform3D(0.7634, 0, 0.6459, 0, 1, 0, -0.6459, 0, 0.7634, 8.9543, 2.66, -5.7813)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="N4_SideWall" type="Camera3D" parent="Cameras"]
+transform = Transform3D(-0.0465, -0.0521, -0.9976, 0, 0.9986, -0.0522, 0.9989, -0.0024, -0.0464, -0.6, 0.55, -6)
+fov = 60
+near = 0.03
+far = 80.0
+environment = ExtResource("70_env_norah_ya")
+editor_description = "Low along the north wall: where Norah flattens and Louis skids past"
+
+[node name="N4_SideWall" type="Node3D" parent="CameraMarkers"]
+
+[node name="B366" type="CSGBox3D" parent="CameraMarkers/N4_SideWall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 2.675, -6)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/N4_SideWall"]
+transform = Transform3D(0.0465, 0, 0.9989, 0, 1, 0, -0.9989, 0, 0.0465, -0.0513, 2.66, -5.9745)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="I1_LivingCorner" type="Camera3D" parent="Cameras"]
+transform = Transform3D(-0.7932, 0.2579, -0.5517, 0, 0.9059, 0.4234, 0.609, 0.3358, -0.7185, 0.25, 2.15, -5.1)
+fov = 72
+near = 0.03
+far = 80.0
+environment = ExtResource("73_env_norah_ho")
+editor_description = "High in the living-room ceiling corner, looking down past the light fixture at the front door and hall mouth"
+
+[node name="I1_LivingCorner" type="Node3D" parent="CameraMarkers"]
+
+[node name="B367" type="CSGBox3D" parent="CameraMarkers/I1_LivingCorner"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 2.675, -5.1)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/I1_LivingCorner"]
+transform = Transform3D(0.7932, 0, 0.609, 0, 1, 0, -0.609, 0, 0.7932, 0.5535, 2.66, -4.7048)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="I2_KitchenFridge" type="Camera3D" parent="Cameras"]
+transform = Transform3D(-0.1178, -0.0167, -0.9929, 0, 0.9999, -0.0168, 0.993, -0.002, -0.1178, 4.85, 0.95, -4.4)
+fov = 64
+near = 0.03
+far = 80.0
+environment = ExtResource("73_env_norah_ho")
+editor_description = "Low beside the fridge, its edge filling part of the frame: back door and bookshelf"
+
+[node name="I2_KitchenFridge" type="Node3D" parent="CameraMarkers"]
+
+[node name="B368" type="CSGBox3D" parent="CameraMarkers/I2_KitchenFridge"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.85, 2.675, -4.4)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/I2_KitchenFridge"]
+transform = Transform3D(0.1178, 0, 0.993, 0, 1, 0, -0.993, 0, 0.1178, 5.3961, 2.66, -4.3352)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="I3_HallEast" type="Camera3D" parent="Cameras"]
+transform = Transform3D(0, -0.0905, 0.9959, 0, 0.9959, 0.0905, -1, 0, 0, 7.85, 1.5, -2.75)
+fov = 62
+near = 0.03
+far = 80.0
+environment = ExtResource("73_env_norah_ho")
+editor_description = "Hallway east end at shoulder height: photos slide past, bedroom and bath doors both in frame"
+
+[node name="I3_HallEast" type="Node3D" parent="CameraMarkers"]
+
+[node name="B369" type="CSGBox3D" parent="CameraMarkers/I3_HallEast"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.85, 2.675, -2.75)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/I3_HallEast"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 7.3023, 2.66, -2.75)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="I3b_HallWest" type="Camera3D" parent="Cameras"]
+transform = Transform3D(-0.0389, 0.1662, -0.9853, 0, 0.9861, 0.1664, 0.9992, 0.0065, -0.0384, 4.15, 1.65, -2.75)
+fov = 62
+near = 0.03
+far = 80.0
+environment = ExtResource("73_env_norah_ho")
+editor_description = "Hallway west end: the kitchen doorway and the far end"
+
+[node name="I3b_HallWest" type="Node3D" parent="CameraMarkers"]
+
+[node name="B370" type="CSGBox3D" parent="CameraMarkers/I3b_HallWest"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.15, 2.675, -2.75)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/I3b_HallWest"]
+transform = Transform3D(0.0389, 0, 0.9992, 0, 1, 0, -0.9992, 0, 0.0389, 4.6919, 2.66, -2.7289)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="I4_BedroomDoor" type="Camera3D" parent="Cameras"]
+transform = Transform3D(-0.7584, 0.3777, -0.5312, 0, 0.815, 0.5795, 0.6518, 0.4395, -0.6181, 6.5, 1.8, -2.18)
+fov = 66
+near = 0.03
+far = 80.0
+environment = ExtResource("73_env_norah_ho")
+editor_description = "Bedroom doorway, half-hidden by the frame: bed, window, wardrobe, lockbox spot"
+
+[node name="I4_BedroomDoor" type="Node3D" parent="CameraMarkers"]
+
+[node name="B371" type="CSGBox3D" parent="CameraMarkers/I4_BedroomDoor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 2.675, -2.18)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/I4_BedroomDoor"]
+transform = Transform3D(0.7584, 0, 0.6518, 0, 1, 0, -0.6518, 0, 0.7584, 6.7922, 2.66, -1.84)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="I5_BehindBed" type="Camera3D" parent="Cameras"]
+transform = Transform3D(0.4864, -0.1425, -0.862, -0, 0.9866, -0.1631, 0.8737, 0.0793, 0.4799, 6.15, 0.95, -0.22)
+fov = 58
+near = 0.03
+far = 80.0
+environment = ExtResource("73_env_norah_ho")
+editor_description = "Low behind the bed: the window bursting inward, Louis landing on the bed"
+
+[node name="I5_BehindBed" type="Node3D" parent="CameraMarkers"]
+
+[node name="B372" type="CSGBox3D" parent="CameraMarkers/I5_BehindBed"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.15, 2.675, -0.22)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/I5_BehindBed"]
+transform = Transform3D(-0.4864, 0, 0.8737, 0, 1, 0, -0.8737, 0, -0.4864, 6.6241, 2.66, -0.484)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="B1_BathCorner" type="Camera3D" parent="Cameras"]
+transform = Transform3D(0.9372, -0.1952, 0.289, 0, 0.8286, 0.5599, -0.3487, -0.5247, 0.7766, 5.7, 2.15, -0.15)
+fov = 72
+near = 0.03
+far = 80.0
+environment = ExtResource("73_env_norah_ho")
+editor_description = "Bathroom ceiling corner, tilted down over the tub at the door"
+
+[node name="B1_BathCorner" type="Node3D" parent="CameraMarkers"]
+
+[node name="B373" type="CSGBox3D" parent="CameraMarkers/B1_BathCorner"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.7, 2.675, -0.15)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/B1_BathCorner"]
+transform = Transform3D(-0.9372, 0, -0.3487, 0, 1, 0, 0.3487, 0, -0.9372, 5.5411, 2.66, -0.5771)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="B2_HallFloor" type="Camera3D" parent="Cameras"]
+transform = Transform3D(-0.5633, 0.2101, 0.7991, 0, 0.9671, -0.2543, -0.8262, -0.1432, -0.5448, 6, 0.25, -3.05)
+fov = 62
+near = 0.03
+far = 80.0
+environment = ExtResource("73_env_norah_ho")
+editor_description = "Hallway floor, low: the bath door opening onto Louis"
+
+[node name="B2_HallFloor" type="Node3D" parent="CameraMarkers"]
+
+[node name="B374" type="CSGBox3D" parent="CameraMarkers/B2_HallFloor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 2.675, -3.05)
+size = Vector3(0.28, 0.15, 0.28)
+material = ExtResource("71_nh_cam_marke")
+
+[node name="Beam" type="CSGBox3D" parent="CameraMarkers/B2_HallFloor"]
+transform = Transform3D(0.5633, 0, -0.8262, 0, 1, 0, 0.8262, 0, 0.5633, 5.5605, 2.66, -2.7503)
+size = Vector3(0.06, 0.06, 1.1)
+material = ExtResource("72_nh_cam_line")
+
+[node name="PlayerStart" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -2.6)

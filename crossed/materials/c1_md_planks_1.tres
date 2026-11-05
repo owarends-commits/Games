@@ -1,0 +1,14 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3]
+
+[ext_resource type="Shader" path="res://shaders/ps1_surface.gdshader" id="1"]
+[ext_resource type="Texture2D" path="res://assets/textures/md/planks.png" id="2"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/albedo_tex = ExtResource("2")
+shader_parameter/world_uv = true
+shader_parameter/uv_scale = Vector2(1, 1)
+shader_parameter/affine_amount = 0.3
+shader_parameter/emission_strength = 0

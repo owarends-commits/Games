@@ -1,0 +1,2979 @@
+[gd_scene load_steps=80 format=3]
+
+[ext_resource type="Material" path="res://materials/lh_floor.tres" id="1_lh_floor"]
+[ext_resource type="Material" path="res://materials/lh_lino.tres" id="2_lh_lino"]
+[ext_resource type="Material" path="res://materials/lh_ceiling.tres" id="3_lh_ceiling"]
+[ext_resource type="Material" path="res://materials/lh_floor_attic.tres" id="4_lh_floor_att"]
+[ext_resource type="Material" path="res://materials/lh_attic_wall.tres" id="5_lh_attic_wal"]
+[ext_resource type="Material" path="res://materials/lh_siding.tres" id="6_lh_siding"]
+[ext_resource type="Material" path="res://materials/lh_wallpaper.tres" id="7_lh_wallpaper"]
+[ext_resource type="Material" path="res://materials/lh_wall_kitchen.tres" id="8_lh_wall_kitc"]
+[ext_resource type="Material" path="res://materials/lh_trim.tres" id="9_lh_trim"]
+[ext_resource type="Material" path="res://materials/lh_glass.tres" id="10_lh_glass"]
+[ext_resource type="Material" path="res://materials/lh_wood_dark.tres" id="11_lh_wood_dark"]
+[ext_resource type="Material" path="res://materials/lh_metal.tres" id="12_lh_metal"]
+[ext_resource type="Material" path="res://materials/lh_curtain.tres" id="13_lh_curtain"]
+[ext_resource type="Material" path="res://materials/lh_door.tres" id="14_lh_door"]
+[ext_resource type="Material" path="res://materials/lh_splinter.tres" id="15_lh_splinter"]
+[ext_resource type="Material" path="res://materials/lh_wood.tres" id="16_lh_wood"]
+[ext_resource type="Material" path="res://materials/lh_rail.tres" id="17_lh_rail"]
+[ext_resource type="Material" path="res://materials/lh_rug.tres" id="18_lh_rug"]
+[ext_resource type="Material" path="res://materials/lh_couch.tres" id="19_lh_couch"]
+[ext_resource type="Material" path="res://materials/lh_crochet.tres" id="20_lh_crochet"]
+[ext_resource type="Material" path="res://materials/lh_chair_cloth.tres" id="21_lh_chair_clo"]
+[ext_resource type="Material" path="res://materials/lh_brass.tres" id="22_lh_brass"]
+[ext_resource type="Material" path="res://materials/lh_frame_gold.tres" id="23_lh_frame_gol"]
+[ext_resource type="Material" path="res://materials/lh_print_mary.tres" id="24_lh_print_mar"]
+[ext_resource type="Material" path="res://materials/lh_print_heart.tres" id="25_lh_print_hea"]
+[ext_resource type="Material" path="res://materials/lh_lampshade.tres" id="26_lh_lampshade"]
+[ext_resource type="Material" path="res://materials/lh_beads.tres" id="27_lh_beads"]
+[ext_resource type="Material" path="res://materials/lh_plate.tres" id="28_lh_plate"]
+[ext_resource type="Material" path="res://materials/lh_black.tres" id="29_lh_black"]
+[ext_resource type="Material" path="res://materials/lh_leather.tres" id="30_lh_leather"]
+[ext_resource type="Material" path="res://materials/lh_bible.tres" id="31_lh_bible"]
+[ext_resource type="Material" path="res://materials/lh_stain.tres" id="32_lh_stain"]
+[ext_resource type="Material" path="res://materials/lh_mulch.tres" id="33_lh_mulch"]
+[ext_resource type="Material" path="res://materials/lh_radio.tres" id="34_lh_radio"]
+[ext_resource type="Material" path="res://materials/lh_books_side.tres" id="35_lh_books_sid"]
+[ext_resource type="Material" path="res://materials/lh_spines.tres" id="36_lh_spines"]
+[ext_resource type="Material" path="res://materials/lh_counter.tres" id="37_lh_counter"]
+[ext_resource type="Material" path="res://materials/lh_enamel.tres" id="38_lh_enamel"]
+[ext_resource type="Material" path="res://materials/lh_burner.tres" id="39_lh_burner"]
+[ext_resource type="Material" path="res://materials/lh_pot.tres" id="40_lh_pot"]
+[ext_resource type="Material" path="res://materials/lh_stew.tres" id="41_lh_stew"]
+[ext_resource type="Material" path="res://materials/lh_red_glow.tres" id="42_lh_red_glow"]
+[ext_resource type="Material" path="res://materials/lh_toolbox.tres" id="43_lh_toolbox"]
+[ext_resource type="Material" path="res://materials/lh_tape.tres" id="44_lh_tape"]
+[ext_resource type="Material" path="res://materials/lh_cardboard.tres" id="45_lh_cardboard"]
+[ext_resource type="Material" path="res://materials/lh_fridge.tres" id="46_lh_fridge"]
+[ext_resource type="Material" path="res://materials/lh_calendar.tres" id="47_lh_calendar"]
+[ext_resource type="Material" path="res://materials/lh_sheet.tres" id="48_lh_sheet"]
+[ext_resource type="Material" path="res://materials/lh_torn.tres" id="49_lh_torn"]
+[ext_resource type="Material" path="res://materials/lh_scorch.tres" id="50_lh_scorch"]
+[ext_resource type="Material" path="res://materials/lh_quilt.tres" id="51_lh_quilt"]
+[ext_resource type="Material" path="res://materials/lh_safe.tres" id="52_lh_safe"]
+[ext_resource type="Material" path="res://materials/lh_dial.tres" id="53_lh_dial"]
+[ext_resource type="Material" path="res://materials/lh_dressform.tres" id="54_lh_dressform"]
+[ext_resource type="Material" path="res://materials/lh_wet.tres" id="55_lh_wet"]
+[ext_resource type="Material" path="res://materials/lh_bulb.tres" id="56_lh_bulb"]
+[ext_resource type="Material" path="res://materials/lh_grass.tres" id="57_lh_grass"]
+[ext_resource type="Material" path="res://materials/lh_porch.tres" id="58_lh_porch"]
+[ext_resource type="Material" path="res://materials/lh_roof.tres" id="59_lh_roof"]
+[ext_resource type="Material" path="res://materials/lh_stone.tres" id="60_lh_stone"]
+[ext_resource type="Material" path="res://materials/lh_robe_blue.tres" id="61_lh_robe_blue"]
+[ext_resource type="Material" path="res://materials/lh_flower_red.tres" id="62_lh_flower_re"]
+[ext_resource type="Material" path="res://materials/lh_dirt.tres" id="63_lh_dirt"]
+[ext_resource type="Material" path="res://materials/lh_bark.tres" id="64_lh_bark"]
+[ext_resource type="Material" path="res://materials/lh_leaves.tres" id="65_lh_leaves"]
+[ext_resource type="Material" path="res://materials/lh_tree.tres" id="66_lh_tree"]
+[ext_resource type="Environment" path="res://environments/env_norah_yard.tres" id="67_env_norah_ya"]
+[ext_resource type="Environment" path="res://environments/env_norah_house.tres" id="68_env_norah_ho"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1"]
+size = Vector3(4.4003, 0.12, 0.82)
+
+[sub_resource type="QuadMesh" id="QuadMesh_2"]
+size = Vector2(0.24, 0.32)
+
+[sub_resource type="QuadMesh" id="QuadMesh_3"]
+size = Vector2(0.24, 0.32)
+
+[sub_resource type="QuadMesh" id="QuadMesh_4"]
+size = Vector2(0.4, 0.28)
+
+[sub_resource type="QuadMesh" id="QuadMesh_5"]
+size = Vector2(1.25, 0.24)
+
+[sub_resource type="QuadMesh" id="QuadMesh_6"]
+size = Vector2(1.25, 0.24)
+
+[sub_resource type="QuadMesh" id="QuadMesh_7"]
+size = Vector2(1.25, 0.24)
+
+[sub_resource type="QuadMesh" id="QuadMesh_8"]
+size = Vector2(1.25, 0.24)
+
+[sub_resource type="QuadMesh" id="QuadMesh_9"]
+size = Vector2(0.24, 0.32)
+
+[sub_resource type="QuadMesh" id="QuadMesh_10"]
+size = Vector2(0.16, 0.2)
+
+[sub_resource type="QuadMesh" id="QuadMesh_11"]
+size = Vector2(0.3, 0.4)
+
+[node name="LouisHouse" type="Node3D"]
+
+[node name="Geometry" type="Node3D" parent="."]
+
+[node name="Floors" type="Node3D" parent="Geometry"]
+
+[node name="Walls" type="Node3D" parent="Geometry"]
+
+[node name="Ceilings" type="Node3D" parent="Geometry"]
+
+[node name="Roof" type="Node3D" parent="Geometry"]
+
+[node name="Stairs" type="Node3D" parent="Geometry"]
+
+[node name="Props" type="Node3D" parent="."]
+
+[node name="Living" type="Node3D" parent="."]
+
+[node name="Kitchen" type="Node3D" parent="."]
+
+[node name="Bedroom" type="Node3D" parent="."]
+
+[node name="Upstairs" type="Node3D" parent="."]
+
+[node name="Exterior" type="Node3D" parent="."]
+
+[node name="Lights" type="Node3D" parent="."]
+
+[node name="Cameras" type="Node3D" parent="."]
+
+[node name="Anim" type="Node3D" parent="."]
+
+[node name="LH1" type="CSGBox3D" parent="Geometry/Floors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9, -0.02, 12)
+size = Vector3(4.2, 0.08, 6)
+material = ExtResource("1_lh_floor")
+use_collision = true
+
+[node name="LH2" type="CSGBox3D" parent="Geometry/Floors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, -0.02, 10.6)
+size = Vector3(2.8, 0.08, 3.2)
+material = ExtResource("2_lh_lino")
+use_collision = true
+
+[node name="LH3" type="CSGBox3D" parent="Geometry/Floors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, -0.02, 13.6)
+size = Vector3(2.8, 0.08, 2.8)
+material = ExtResource("1_lh_floor")
+use_collision = true
+
+[node name="LH4" type="CSGBox3D" parent="Geometry/Ceilings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 2.44, 11.55)
+size = Vector3(7, 0.08, 5.1)
+material = ExtResource("3_lh_ceiling")
+use_collision = true
+
+[node name="LH5" type="CSGBox3D" parent="Geometry/Floors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 2.49, 11.55)
+size = Vector3(7, 0.02, 5.1)
+material = ExtResource("4_lh_floor_att")
+use_collision = true
+
+[node name="LH6" type="CSGBox3D" parent="Geometry/Ceilings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 2.44, 14.55)
+size = Vector3(1, 0.08, 0.9)
+material = ExtResource("3_lh_ceiling")
+use_collision = true
+
+[node name="LH7" type="CSGBox3D" parent="Geometry/Floors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 2.49, 14.55)
+size = Vector3(1, 0.02, 0.9)
+material = ExtResource("4_lh_floor_att")
+use_collision = true
+
+[node name="LH8" type="CSGBox3D" parent="Geometry/Ceilings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 2.44, 14.55)
+size = Vector3(2.8, 0.08, 0.9)
+material = ExtResource("3_lh_ceiling")
+use_collision = true
+
+[node name="LH9" type="CSGBox3D" parent="Geometry/Floors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 2.49, 14.55)
+size = Vector3(2.8, 0.02, 0.9)
+material = ExtResource("4_lh_floor_att")
+use_collision = true
+
+[node name="LH10" type="CSGBox3D" parent="Geometry/Ceilings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 4.53, 12)
+size = Vector3(7, 0.06, 6)
+material = ExtResource("5_lh_attic_wal")
+use_collision = true
+
+[node name="LH11" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.045, 2.25, 9.25)
+size = Vector3(0.09, 4.5, 0.5)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH12" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.955, 2.25, 9.25)
+size = Vector3(0.09, 4.5, 0.5)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH13" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.045, 0.45, 10.1)
+size = Vector3(0.09, 0.9, 1.2)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH14" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.955, 0.45, 10.1)
+size = Vector3(0.09, 0.9, 1.2)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH15" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.045, 3.175, 10.1)
+size = Vector3(0.09, 2.65, 1.2)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH16" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.955, 3.175, 10.1)
+size = Vector3(0.09, 2.65, 1.2)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH17" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.045, 2.25, 11.15)
+size = Vector3(0.09, 4.5, 0.9)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH18" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.955, 2.25, 11.15)
+size = Vector3(0.09, 4.5, 0.9)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH19" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.045, 3.275, 12)
+size = Vector3(0.09, 2.45, 0.8)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH20" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.955, 3.275, 12)
+size = Vector3(0.09, 2.45, 0.8)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH21" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.045, 2.25, 13.7)
+size = Vector3(0.09, 4.5, 2.6)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH22" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.955, 2.25, 13.7)
+size = Vector3(0.09, 4.5, 2.6)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH23" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.955, 1.2, 9.7)
+size = Vector3(0.09, 2.4, 1.4)
+material = ExtResource("8_lh_wall_kitc")
+use_collision = true
+
+[node name="LH24" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.045, 1.2, 9.7)
+size = Vector3(0.09, 2.4, 1.4)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH25" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.955, 2.225, 10.8)
+size = Vector3(0.09, 0.35, 0.8)
+material = ExtResource("8_lh_wall_kitc")
+use_collision = true
+
+[node name="LH26" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.045, 2.225, 10.8)
+size = Vector3(0.09, 0.35, 0.8)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH27" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.955, 1.2, 13.1)
+size = Vector3(0.09, 2.4, 3.8)
+material = ExtResource("8_lh_wall_kitc")
+use_collision = true
+
+[node name="LH28" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.045, 1.2, 13.1)
+size = Vector3(0.09, 2.4, 3.8)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH29" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1.2, 8.955)
+size = Vector3(5, 2.4, 0.09)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH30" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1.2, 9.045)
+size = Vector3(5, 2.4, 0.09)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH31" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 0.55, 8.955)
+size = Vector3(0.9, 1.1, 0.09)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH32" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 0.55, 9.045)
+size = Vector3(0.9, 1.1, 0.09)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH33" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 2.1, 8.955)
+size = Vector3(0.9, 0.6, 0.09)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH34" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 2.1, 9.045)
+size = Vector3(0.9, 0.6, 0.09)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH35" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.45, 1.2, 8.955)
+size = Vector3(1.1, 2.4, 0.09)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH36" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.45, 1.2, 9.045)
+size = Vector3(1.1, 2.4, 0.09)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH37" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 1.2, 14.955)
+size = Vector3(5.4, 2.4, 0.09)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH38" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 1.2, 15.045)
+size = Vector3(5.4, 2.4, 0.09)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH39" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85, 0.475, 14.955)
+size = Vector3(0.9, 0.95, 0.09)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH40" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85, 0.475, 15.045)
+size = Vector3(0.9, 0.95, 0.09)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH41" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85, 2.125, 14.955)
+size = Vector3(0.9, 0.55, 0.09)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH42" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85, 2.125, 15.045)
+size = Vector3(0.9, 0.55, 0.09)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH43" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.65, 1.2, 14.955)
+size = Vector3(0.7, 2.4, 0.09)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH44" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.65, 1.2, 15.045)
+size = Vector3(0.7, 2.4, 0.09)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH45" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 1.2, 9.4)
+size = Vector3(0.12, 2.4, 0.8)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH46" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 2.225, 10.25)
+size = Vector3(0.12, 0.35, 0.9)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH47" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 1.2, 11.6)
+size = Vector3(0.12, 2.4, 1.8)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH48" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 2.225, 12.9)
+size = Vector3(0.12, 0.35, 0.8)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH49" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2, 1.2, 14.15)
+size = Vector3(0.12, 2.4, 1.7)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH50" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 1.2, 12.17)
+size = Vector3(2.8, 2.4, 0.06)
+material = ExtResource("8_lh_wall_kitc")
+use_collision = true
+
+[node name="LH51" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 1.2, 12.23)
+size = Vector3(2.8, 2.4, 0.06)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH52" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.955, 3.45, 12)
+size = Vector3(0.09, 2.1, 6)
+material = ExtResource("5_lh_attic_wal")
+use_collision = true
+
+[node name="LH53" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.045, 3.45, 12)
+size = Vector3(0.09, 2.1, 6)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH54" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 3.45, 8.955)
+size = Vector3(3, 2.1, 0.09)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH55" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 3.45, 9.045)
+size = Vector3(3, 2.1, 0.09)
+material = ExtResource("5_lh_attic_wal")
+use_collision = true
+
+[node name="LH56" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 2.85, 8.955)
+size = Vector3(1, 0.9, 0.09)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH57" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 2.85, 9.045)
+size = Vector3(1, 0.9, 0.09)
+material = ExtResource("5_lh_attic_wal")
+use_collision = true
+
+[node name="LH58" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 4.35, 8.955)
+size = Vector3(1, 0.3, 0.09)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH59" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 4.35, 9.045)
+size = Vector3(1, 0.3, 0.09)
+material = ExtResource("5_lh_attic_wal")
+use_collision = true
+
+[node name="LH60" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 3.45, 8.955)
+size = Vector3(3, 2.1, 0.09)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH61" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 3.45, 9.045)
+size = Vector3(3, 2.1, 0.09)
+material = ExtResource("5_lh_attic_wal")
+use_collision = true
+
+[node name="LH62" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 3.45, 14.955)
+size = Vector3(7, 2.1, 0.09)
+material = ExtResource("5_lh_attic_wal")
+use_collision = true
+
+[node name="LH63" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 3.45, 15.045)
+size = Vector3(7, 2.1, 0.09)
+material = ExtResource("6_lh_siding")
+use_collision = true
+
+[node name="LH64" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.13, 1.06, 9.765)
+size = Vector3(0.02, 2.12, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH65" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.13, 1.06, 10.735)
+size = Vector3(0.02, 2.12, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH66" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.13, 2.085, 10.25)
+size = Vector3(0.02, 0.07, 1.04)
+material = ExtResource("9_lh_trim")
+
+[node name="LH67" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.27, 1.06, 9.765)
+size = Vector3(0.02, 2.12, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH68" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.27, 1.06, 10.735)
+size = Vector3(0.02, 2.12, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH69" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.27, 2.085, 10.25)
+size = Vector3(0.02, 0.07, 1.04)
+material = ExtResource("9_lh_trim")
+
+[node name="LH70" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.13, 1.06, 12.465)
+size = Vector3(0.02, 2.12, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH71" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.13, 1.06, 13.335)
+size = Vector3(0.02, 2.12, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH72" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.13, 2.085, 12.9)
+size = Vector3(0.02, 0.07, 0.94)
+material = ExtResource("9_lh_trim")
+
+[node name="LH73" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.27, 1.06, 12.465)
+size = Vector3(0.02, 2.12, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH74" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.27, 1.06, 13.335)
+size = Vector3(0.02, 2.12, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH75" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.27, 2.085, 12.9)
+size = Vector3(0.02, 0.07, 0.94)
+material = ExtResource("9_lh_trim")
+
+[node name="LH76" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1, 1.06, 11.565)
+size = Vector3(0.02, 2.12, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH77" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1, 1.06, 12.435)
+size = Vector3(0.02, 2.12, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH78" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1, 2.085, 12)
+size = Vector3(0.02, 0.07, 0.94)
+material = ExtResource("9_lh_trim")
+
+[node name="LH79" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9, 1.06, 11.565)
+size = Vector3(0.02, 2.12, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH80" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9, 1.06, 12.435)
+size = Vector3(0.02, 2.12, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH81" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9, 2.085, 12)
+size = Vector3(0.02, 0.07, 0.94)
+material = ExtResource("9_lh_trim")
+
+[node name="LH82" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.9, 1.06, 10.365)
+size = Vector3(0.02, 2.12, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH83" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.9, 1.06, 11.235)
+size = Vector3(0.02, 2.12, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH84" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.9, 2.085, 10.8)
+size = Vector3(0.02, 0.07, 0.94)
+material = ExtResource("9_lh_trim")
+
+[node name="LH85" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.1, 1.06, 10.365)
+size = Vector3(0.02, 2.12, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH86" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.1, 1.06, 11.235)
+size = Vector3(0.02, 2.12, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH87" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.1, 2.085, 10.8)
+size = Vector3(0.02, 0.07, 0.94)
+material = ExtResource("9_lh_trim")
+
+[node name="LivingWindow" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.375, 10.1)
+size = Vector3(0.02, 0.95, 1.2)
+material = ExtResource("10_lh_glass")
+
+[node name="LH89" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.375, 10.1)
+size = Vector3(0.05, 0.04, 1.2)
+material = ExtResource("9_lh_trim")
+
+[node name="LH90" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.375, 10.1)
+size = Vector3(0.05, 0.95, 0.03)
+material = ExtResource("9_lh_trim")
+
+[node name="LH91" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1, 1.41, 9.465)
+size = Vector3(0.02, 1.02, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH92" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1, 1.41, 10.735)
+size = Vector3(0.02, 1.02, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH93" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1, 1.885, 10.1)
+size = Vector3(0.02, 0.07, 1.34)
+material = ExtResource("9_lh_trim")
+
+[node name="LH94" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.08, 0.88, 10.1)
+size = Vector3(0.02, 0.04, 1.34)
+material = ExtResource("9_lh_trim")
+
+[node name="LH95" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9, 1.41, 9.465)
+size = Vector3(0.02, 1.02, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH96" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9, 1.41, 10.735)
+size = Vector3(0.02, 1.02, 0.07)
+material = ExtResource("9_lh_trim")
+
+[node name="LH97" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9, 1.885, 10.1)
+size = Vector3(0.02, 0.07, 1.34)
+material = ExtResource("9_lh_trim")
+
+[node name="LH98" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.92, 0.88, 10.1)
+size = Vector3(0.06, 0.04, 1.34)
+material = ExtResource("9_lh_trim")
+
+[node name="KitchenWindow" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 1.45, 9)
+size = Vector3(0.9, 0.7, 0.02)
+material = ExtResource("10_lh_glass")
+
+[node name="LH100" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 1.45, 9)
+size = Vector3(0.9, 0.04, 0.05)
+material = ExtResource("9_lh_trim")
+
+[node name="LH101" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 1.45, 9)
+size = Vector3(0.03, 0.7, 0.05)
+material = ExtResource("9_lh_trim")
+
+[node name="LH102" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.965, 1.485, 8.9)
+size = Vector3(0.07, 0.77, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH103" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.935, 1.485, 8.9)
+size = Vector3(0.07, 0.77, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH104" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 1.835, 8.9)
+size = Vector3(1.04, 0.07, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH105" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 1.08, 8.9)
+size = Vector3(1.04, 0.04, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH106" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.965, 1.485, 9.1)
+size = Vector3(0.07, 0.77, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH107" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.935, 1.485, 9.1)
+size = Vector3(0.07, 0.77, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH108" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 1.835, 9.1)
+size = Vector3(1.04, 0.07, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH109" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 1.08, 9.1)
+size = Vector3(1.04, 0.04, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="BedroomWindow" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85, 1.4, 15)
+size = Vector3(0.9, 0.9, 0.02)
+material = ExtResource("10_lh_glass")
+
+[node name="LH111" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85, 1.4, 15)
+size = Vector3(0.9, 0.04, 0.05)
+material = ExtResource("9_lh_trim")
+
+[node name="LH112" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85, 1.4, 15)
+size = Vector3(0.03, 0.9, 0.05)
+material = ExtResource("9_lh_trim")
+
+[node name="LH113" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.365, 1.435, 14.9)
+size = Vector3(0.07, 0.97, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH114" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.335, 1.435, 14.9)
+size = Vector3(0.07, 0.97, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH115" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85, 1.885, 14.9)
+size = Vector3(1.04, 0.07, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH116" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85, 0.93, 14.9)
+size = Vector3(1.04, 0.04, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH117" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.365, 1.435, 15.1)
+size = Vector3(0.07, 0.97, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH118" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.335, 1.435, 15.1)
+size = Vector3(0.07, 0.97, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH119" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85, 1.885, 15.1)
+size = Vector3(1.04, 0.07, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH120" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85, 0.93, 15.1)
+size = Vector3(1.04, 0.04, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="UpWindow" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 3.975, 9)
+size = Vector3(1, 0.45, 0.02)
+material = ExtResource("10_lh_glass")
+
+[node name="LH122" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.035, 3.785, 8.9)
+size = Vector3(0.07, 0.97, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH123" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.035, 3.785, 8.9)
+size = Vector3(0.07, 0.97, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH124" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 4.235, 8.9)
+size = Vector3(1.14, 0.07, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH125" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 3.28, 8.9)
+size = Vector3(1.14, 0.04, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH126" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.035, 3.785, 9.1)
+size = Vector3(0.07, 0.97, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH127" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.035, 3.785, 9.1)
+size = Vector3(0.07, 0.97, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH128" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 4.235, 9.1)
+size = Vector3(1.14, 0.07, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH129" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 3.28, 9.1)
+size = Vector3(1.14, 0.04, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH130" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9, 0.065, 9.0675)
+size = Vector3(4.08, 0.09, 0.015)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH131" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9, 0.065, 14.9325)
+size = Vector3(4.08, 0.09, 0.015)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH132" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9325, 0.065, 12)
+size = Vector3(0.015, 0.09, 5.88)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH133" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1325, 0.065, 12)
+size = Vector3(0.015, 0.09, 5.88)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH134" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0.065, 9.0675)
+size = Vector3(2.68, 0.09, 0.015)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH135" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0.065, 12.1325)
+size = Vector3(2.68, 0.09, 0.015)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH136" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2675, 0.065, 10.6)
+size = Vector3(0.015, 0.09, 3.08)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH137" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.9325, 0.065, 10.6)
+size = Vector3(0.015, 0.09, 3.08)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH138" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0.065, 12.2675)
+size = Vector3(2.68, 0.09, 0.015)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH139" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 0.065, 14.9325)
+size = Vector3(2.68, 0.09, 0.015)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH140" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2675, 0.065, 13.6)
+size = Vector3(0.015, 0.09, 2.68)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH141" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.9325, 0.065, 13.6)
+size = Vector3(0.015, 0.09, 2.68)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH142" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.885, 2.37, 9.1)
+size = Vector3(4.05, 0.06, 0.02)
+material = ExtResource("9_lh_trim")
+
+[node name="LH143" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9, 2.37, 12.015)
+size = Vector3(0.02, 0.06, 5.85)
+material = ExtResource("9_lh_trim")
+
+[node name="LH144" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9, 1.965, 10.1)
+size = Vector3(0.02, 0.03, 1.5)
+material = ExtResource("12_lh_metal")
+
+[node name="LH145" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9, 1.35, 9.615)
+size = Vector3(0.06, 1.2, 0.47)
+material = ExtResource("13_lh_curtain")
+
+[node name="LH146" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9, 1.35, 10.585)
+size = Vector3(0.06, 1.2, 0.47)
+material = ExtResource("13_lh_curtain")
+
+[node name="LH147" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.45, 1.915, 9.1)
+size = Vector3(1.2, 0.03, 0.02)
+material = ExtResource("12_lh_metal")
+
+[node name="LH148" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0663, 1.425, 9.1)
+size = Vector3(0.3725, 0.95, 0.06)
+material = ExtResource("13_lh_curtain")
+
+[node name="LH149" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8338, 1.425, 9.1)
+size = Vector3(0.3725, 0.95, 0.06)
+material = ExtResource("13_lh_curtain")
+
+[node name="LH150" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85, 1.965, 14.9)
+size = Vector3(1.2, 0.03, 0.02)
+material = ExtResource("12_lh_metal")
+
+[node name="LH151" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4662, 1.375, 14.9)
+size = Vector3(0.3725, 1.15, 0.06)
+material = ExtResource("13_lh_curtain")
+
+[node name="LH152" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2337, 1.375, 14.9)
+size = Vector3(0.3725, 1.15, 0.06)
+material = ExtResource("13_lh_curtain")
+
+[node name="BackDoor" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.975, 1.025, 10.8)
+size = Vector3(0.05, 2.05, 0.8)
+material = ExtResource("14_lh_door")
+use_collision = true
+
+[node name="DoorHalfHanging" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(0.4695, -0.0616, -0.8808, 0, 0.9976, -0.0698, 0.8829, 0.0327, 0.4683, -3.02, 1.25, 11.82)
+size = Vector3(0.05, 1.5, 0.42)
+material = ExtResource("14_lh_door")
+
+[node name="DoorHalfFloor" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(0.9487, -0.0663, 0.309, 0.0698, 0.9976, 0, -0.3083, 0.0216, 0.9511, -2.45, 0.05, 12.25)
+size = Vector3(0.42, 0.05, 0.95)
+material = ExtResource("14_lh_door")
+
+[node name="LH156" type="CSGBox3D" parent="Props"]
+transform = Transform3D(0.866, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866, -2.7, 0.03, 12.6)
+size = Vector3(0.04, 0.025, 0.22)
+material = ExtResource("15_lh_splinter")
+
+[node name="LH157" type="CSGBox3D" parent="Props"]
+transform = Transform3D(0.2588, 0, 0.9659, 0, 1, 0, -0.9659, 0, 0.2588, -2.4, 0.03, 11.9)
+size = Vector3(0.04, 0.025, 0.22)
+material = ExtResource("15_lh_splinter")
+
+[node name="LH158" type="CSGBox3D" parent="Props"]
+transform = Transform3D(0.9848, 0, 0.1736, 0, 1, 0, -0.1736, 0, 0.9848, -3.3, 0.03, 12.1)
+size = Vector3(0.04, 0.025, 0.22)
+material = ExtResource("15_lh_splinter")
+
+[node name="LH159" type="CSGBox3D" parent="Props"]
+transform = Transform3D(-0.5, 0, 0.866, 0, 1, 0, -0.866, 0, -0.5, -2.2, 0.03, 12.4)
+size = Vector3(0.04, 0.025, 0.22)
+material = ExtResource("15_lh_splinter")
+
+[node name="LH160" type="CSGBox3D" parent="Props"]
+transform = Transform3D(0.5, 0, 0.866, 0, 1, 0, -0.866, 0, 0.5, -2.9, 0.03, 11.5)
+size = Vector3(0.04, 0.025, 0.22)
+material = ExtResource("15_lh_splinter")
+
+[node name="LH161" type="CSGBox3D" parent="Geometry/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.095, 1.05, 12.41)
+size = Vector3(0.05, 0.3, 0.06)
+material = ExtResource("15_lh_splinter")
+
+[node name="LH162" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8567, 0.1883, 14.52)
+size = Vector3(0.2867, 0.04, 0.8)
+material = ExtResource("16_lh_wood")
+
+[node name="LH163" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.1042, 14.52)
+size = Vector3(0.02, 0.2083, 0.8)
+material = ExtResource("9_lh_trim")
+
+[node name="LH164" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8667, 0.0842, 14.1)
+size = Vector3(0.2667, 0.1683, 0.06)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH165" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.59, 0.3967, 14.52)
+size = Vector3(0.2867, 0.04, 0.8)
+material = ExtResource("16_lh_wood")
+
+[node name="LH166" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7333, 0.3125, 14.52)
+size = Vector3(0.02, 0.2083, 0.8)
+material = ExtResource("9_lh_trim")
+
+[node name="LH167" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 0.1883, 14.1)
+size = Vector3(0.2667, 0.3767, 0.06)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH168" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3233, 0.605, 14.52)
+size = Vector3(0.2867, 0.04, 0.8)
+material = ExtResource("16_lh_wood")
+
+[node name="LH169" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4667, 0.5208, 14.52)
+size = Vector3(0.02, 0.2083, 0.8)
+material = ExtResource("9_lh_trim")
+
+[node name="LH170" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3333, 0.2925, 14.1)
+size = Vector3(0.2667, 0.585, 0.06)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH171" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0567, 0.8133, 14.52)
+size = Vector3(0.2867, 0.04, 0.8)
+material = ExtResource("16_lh_wood")
+
+[node name="LH172" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 0.7292, 14.52)
+size = Vector3(0.02, 0.2083, 0.8)
+material = ExtResource("9_lh_trim")
+
+[node name="LH173" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0667, 0.3967, 14.1)
+size = Vector3(0.2667, 0.7933, 0.06)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH174" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.79, 1.0217, 14.52)
+size = Vector3(0.2867, 0.04, 0.8)
+material = ExtResource("16_lh_wood")
+
+[node name="LH175" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9333, 0.9375, 14.52)
+size = Vector3(0.02, 0.2083, 0.8)
+material = ExtResource("9_lh_trim")
+
+[node name="LH176" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 0.5008, 14.1)
+size = Vector3(0.2667, 1.0017, 0.06)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH177" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5233, 1.23, 14.52)
+size = Vector3(0.2867, 0.04, 0.8)
+material = ExtResource("16_lh_wood")
+
+[node name="LH178" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6667, 1.1458, 14.52)
+size = Vector3(0.02, 0.2083, 0.8)
+material = ExtResource("9_lh_trim")
+
+[node name="LH179" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5333, 0.605, 14.1)
+size = Vector3(0.2667, 1.21, 0.06)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH180" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2567, 1.4383, 14.52)
+size = Vector3(0.2867, 0.04, 0.8)
+material = ExtResource("16_lh_wood")
+
+[node name="LH181" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 1.3542, 14.52)
+size = Vector3(0.02, 0.2083, 0.8)
+material = ExtResource("9_lh_trim")
+
+[node name="LH182" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2667, 0.7092, 14.1)
+size = Vector3(0.2667, 1.4183, 0.06)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH183" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.01, 1.6467, 14.52)
+size = Vector3(0.2867, 0.04, 0.8)
+material = ExtResource("16_lh_wood")
+
+[node name="LH184" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1333, 1.5625, 14.52)
+size = Vector3(0.02, 0.2083, 0.8)
+material = ExtResource("9_lh_trim")
+
+[node name="LH185" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8133, 14.1)
+size = Vector3(0.2667, 1.6267, 0.06)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH186" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2767, 1.855, 14.52)
+size = Vector3(0.2867, 0.04, 0.8)
+material = ExtResource("16_lh_wood")
+
+[node name="LH187" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1333, 1.7708, 14.52)
+size = Vector3(0.02, 0.2083, 0.8)
+material = ExtResource("9_lh_trim")
+
+[node name="LH188" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2667, 0.9175, 14.1)
+size = Vector3(0.2667, 1.835, 0.06)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH189" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5433, 2.0633, 14.52)
+size = Vector3(0.2867, 0.04, 0.8)
+material = ExtResource("16_lh_wood")
+
+[node name="LH190" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 1.9792, 14.52)
+size = Vector3(0.02, 0.2083, 0.8)
+material = ExtResource("9_lh_trim")
+
+[node name="LH191" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5333, 1.0217, 14.1)
+size = Vector3(0.2667, 2.0433, 0.06)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH192" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.81, 2.2717, 14.52)
+size = Vector3(0.2867, 0.04, 0.8)
+material = ExtResource("16_lh_wood")
+
+[node name="LH193" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6667, 2.1875, 14.52)
+size = Vector3(0.02, 0.2083, 0.8)
+material = ExtResource("9_lh_trim")
+
+[node name="LH194" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 1.1258, 14.1)
+size = Vector3(0.2667, 2.2517, 0.06)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH195" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0767, 2.48, 14.52)
+size = Vector3(0.2867, 0.04, 0.8)
+material = ExtResource("16_lh_wood")
+
+[node name="LH196" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9333, 2.3958, 14.52)
+size = Vector3(0.02, 0.2083, 0.8)
+material = ExtResource("9_lh_trim")
+
+[node name="LH197" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0667, 1.23, 14.1)
+size = Vector3(0.2667, 2.46, 0.06)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="Ramp" type="StaticBody3D" parent="Geometry/Stairs"]
+transform = Transform3D(0.7926, -0.6097, 0, 0.6097, 0.7926, 0, 0, 0, 1, -0.3884, 1.2024, 14.51)
+
+[node name="Shape" type="CollisionShape3D" parent="Geometry/Stairs/Ramp"]
+shape = SubResource("BoxShape3D_1")
+
+[node name="LH198" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9, 0.5031, 14.15)
+size = Vector3(0.04, 0.85, 0.04)
+material = ExtResource("17_lh_rail")
+
+[node name="LH199" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4, 0.8938, 14.15)
+size = Vector3(0.04, 0.85, 0.04)
+material = ExtResource("17_lh_rail")
+
+[node name="LH200" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9, 1.2844, 14.15)
+size = Vector3(0.04, 0.85, 0.04)
+material = ExtResource("17_lh_rail")
+
+[node name="LH201" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 1.675, 14.15)
+size = Vector3(0.04, 0.85, 0.04)
+material = ExtResource("17_lh_rail")
+
+[node name="LH202" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 2.0656, 14.15)
+size = Vector3(0.04, 0.85, 0.04)
+material = ExtResource("17_lh_rail")
+
+[node name="LH203" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 2.4562, 14.15)
+size = Vector3(0.04, 0.85, 0.04)
+material = ExtResource("17_lh_rail")
+
+[node name="LH204" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 2.8469, 14.15)
+size = Vector3(0.04, 0.85, 0.04)
+material = ExtResource("17_lh_rail")
+
+[node name="LH205" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(0.788, -0.6156, 0, 0.6156, 0.788, 0, 0, 0, 1, -0.4, 2.13, 14.15)
+size = Vector3(4.0608, 0.05, 0.07)
+material = ExtResource("17_lh_rail")
+
+[node name="LH206" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.02, 0.5, 14.16)
+size = Vector3(0.08, 1, 0.08)
+material = ExtResource("17_lh_rail")
+use_collision = true
+
+[node name="LH207" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 2.95, 14.07)
+size = Vector3(3.2, 0.9, 0.06)
+material = ExtResource("17_lh_rail")
+use_collision = true
+
+[node name="LH208" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.03, 2.95, 14.55)
+size = Vector3(0.06, 0.9, 0.9)
+material = ExtResource("17_lh_rail")
+use_collision = true
+
+[node name="LH209" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 0.7, 14.565)
+size = Vector3(1.2, 1.4, 0.87)
+material = ExtResource("7_lh_wallpaper")
+use_collision = true
+
+[node name="LH210" type="CSGBox3D" parent="Geometry/Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 14.54)
+size = Vector3(0.04, 1.3, 0.72)
+material = ExtResource("14_lh_door")
+
+[node name="LH211" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.025, 11.25)
+size = Vector3(2, 0.01, 1.9)
+material = ExtResource("18_lh_rug")
+
+[node name="LH212" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0.225, 9.535)
+size = Vector3(2.4, 0.45, 0.83)
+material = ExtResource("19_lh_couch")
+use_collision = true
+
+[node name="LH213" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0.7, 9.235)
+size = Vector3(2.4, 0.5, 0.23)
+material = ExtResource("19_lh_couch")
+use_collision = true
+
+[node name="LH214" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.975, 0.325, 9.535)
+size = Vector3(0.15, 0.65, 0.83)
+material = ExtResource("19_lh_couch")
+use_collision = true
+
+[node name="LH215" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.575, 0.325, 9.535)
+size = Vector3(0.15, 0.65, 0.83)
+material = ExtResource("19_lh_couch")
+use_collision = true
+
+[node name="LH216" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 0.84, 9.355)
+size = Vector3(1.2, 0.28, 0.05)
+material = ExtResource("20_lh_crochet")
+
+[node name="LH217" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.475, 0.525, 9.625)
+size = Vector3(0.55, 0.15, 0.45)
+material = ExtResource("21_lh_chair_clo")
+
+[node name="CrucifixPost" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.85, 1.625, 9.105)
+size = Vector3(0.06, 0.65, 0.03)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="CrucifixBeam" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.85, 1.745, 9.105)
+size = Vector3(0.4, 0.05, 0.03)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH220" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.85, 1.585, 9.1275)
+size = Vector3(0.04, 0.27, 0.015)
+material = ExtResource("22_lh_brass")
+
+[node name="LH221" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.85, 1.715, 9.1275)
+size = Vector3(0.24, 0.03, 0.015)
+material = ExtResource("22_lh_brass")
+
+[node name="LH222" type="CSGBox3D" parent="Living"]
+transform = Transform3D(0.9998, 0.0175, 0, -0.0175, 0.9998, 0, 0, 0, 1, -1.65, 1.6, 9.1)
+size = Vector3(0.29, 0.37, 0.02)
+material = ExtResource("23_lh_frame_gol")
+
+[node name="Q223" type="MeshInstance3D" parent="Living"]
+transform = Transform3D(0.9998, 0.0175, 0, -0.0175, 0.9998, 0, 0, 0, 1, -1.65, 1.6, 9.112)
+mesh = SubResource("QuadMesh_2")
+material_override = ExtResource("24_lh_print_mar")
+
+[node name="LH224" type="CSGBox3D" parent="Living"]
+transform = Transform3D(0.9997, -0.0262, 0, 0.0262, 0.9997, 0, 0, 0, 1, 0.05, 1.6, 9.1)
+size = Vector3(0.29, 0.37, 0.02)
+material = ExtResource("23_lh_frame_gol")
+
+[node name="Q225" type="MeshInstance3D" parent="Living"]
+transform = Transform3D(0.9997, -0.0262, 0, 0.0262, 0.9997, 0, 0, 0, 1, 0.05, 1.6, 9.112)
+mesh = SubResource("QuadMesh_3")
+material_override = ExtResource("25_lh_print_hea")
+
+[node name="LH226" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.89, 0.275, 9.35)
+size = Vector3(0.38, 0.55, 0.4)
+material = ExtResource("11_lh_wood_dark")
+use_collision = true
+
+[node name="LH227" type="CSGCylinder3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.89, 0.67, 9.32)
+radius = 0.07
+height = 0.24
+sides = 6
+material = ExtResource("22_lh_brass")
+
+[node name="LH228" type="CSGCylinder3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.89, 0.86, 9.32)
+radius = 0.13
+height = 0.16
+sides = 8
+material = ExtResource("26_lh_lampshade")
+
+[node name="LH229" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 0.565, 9.46)
+size = Vector3(0.018, 0.018, 0.018)
+material = ExtResource("27_lh_beads")
+
+[node name="LH230" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9411, 0.565, 9.4817)
+size = Vector3(0.018, 0.018, 0.018)
+material = ExtResource("27_lh_beads")
+
+[node name="LH231" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9161, 0.565, 9.4991)
+size = Vector3(0.018, 0.018, 0.018)
+material = ExtResource("27_lh_beads")
+
+[node name="LH232" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.88, 0.565, 9.5087)
+size = Vector3(0.018, 0.018, 0.018)
+material = ExtResource("27_lh_beads")
+
+[node name="LH233" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.84, 0.565, 9.5087)
+size = Vector3(0.018, 0.018, 0.018)
+material = ExtResource("27_lh_beads")
+
+[node name="LH234" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8039, 0.565, 9.4991)
+size = Vector3(0.018, 0.018, 0.018)
+material = ExtResource("27_lh_beads")
+
+[node name="LH235" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7789, 0.565, 9.4817)
+size = Vector3(0.018, 0.018, 0.018)
+material = ExtResource("27_lh_beads")
+
+[node name="LH236" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.77, 0.565, 9.46)
+size = Vector3(0.018, 0.018, 0.018)
+material = ExtResource("27_lh_beads")
+
+[node name="LH237" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7789, 0.565, 9.4383)
+size = Vector3(0.018, 0.018, 0.018)
+material = ExtResource("27_lh_beads")
+
+[node name="LH238" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8039, 0.565, 9.4209)
+size = Vector3(0.018, 0.018, 0.018)
+material = ExtResource("27_lh_beads")
+
+[node name="LH239" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.84, 0.565, 9.4113)
+size = Vector3(0.018, 0.018, 0.018)
+material = ExtResource("27_lh_beads")
+
+[node name="LH240" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.88, 0.565, 9.4113)
+size = Vector3(0.018, 0.018, 0.018)
+material = ExtResource("27_lh_beads")
+
+[node name="LH241" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9161, 0.565, 9.4209)
+size = Vector3(0.018, 0.018, 0.018)
+material = ExtResource("27_lh_beads")
+
+[node name="LH242" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9411, 0.565, 9.4383)
+size = Vector3(0.018, 0.018, 0.018)
+material = ExtResource("27_lh_beads")
+
+[node name="LH243" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9375, 0.561, 9.42)
+size = Vector3(0.015, 0.01, 0.08)
+material = ExtResource("27_lh_beads")
+
+[node name="LH244" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9375, 0.561, 9.41)
+size = Vector3(0.045, 0.01, 0.01)
+material = ExtResource("22_lh_brass")
+
+[node name="LH245" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 0.21, 10.975)
+size = Vector3(1.4, 0.42, 0.45)
+material = ExtResource("16_lh_wood")
+use_collision = true
+
+[node name="LH246" type="CSGCylinder3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0.47, 10.9)
+radius = 0.04
+height = 0.09
+sides = 6
+material = ExtResource("28_lh_plate")
+
+[node name="LH247" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.75, 0.43, 10.95)
+size = Vector3(0.2, 0.02, 0.06)
+material = ExtResource("29_lh_black")
+
+[node name="LH248" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.525, 0.225, 10.2)
+size = Vector3(0.65, 0.45, 0.7)
+material = ExtResource("21_lh_chair_clo")
+use_collision = true
+
+[node name="LH249" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.86, 0.525, 10.2)
+size = Vector3(0.12, 1.05, 0.7)
+material = ExtResource("21_lh_chair_clo")
+use_collision = true
+
+[node name="LH250" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.525, 0.325, 9.83)
+size = Vector3(0.65, 0.65, 0.1)
+material = ExtResource("21_lh_chair_clo")
+use_collision = true
+
+[node name="LH251" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.525, 0.325, 10.57)
+size = Vector3(0.65, 0.65, 0.1)
+material = ExtResource("21_lh_chair_clo")
+use_collision = true
+
+[node name="LH252" type="CSGCylinder3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.65, 0.75, 9.35)
+radius = 0.025
+height = 1.5
+sides = 6
+material = ExtResource("22_lh_brass")
+
+[node name="FloorLampShade" type="CSGCylinder3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.65, 1.55, 9.35)
+radius = 0.17
+height = 0.24
+sides = 8
+material = ExtResource("26_lh_lampshade")
+
+[node name="LH254" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.65, 0.45, 11.075)
+size = Vector3(0.4, 0.9, 0.45)
+material = ExtResource("11_lh_wood_dark")
+use_collision = true
+
+[node name="LH255" type="CSGBox3D" parent="Living"]
+transform = Transform3D(0.9703, 0.2419, 0, -0.2419, 0.9703, 0, 0, 0, 1, -2.6, 0.93, 11.075)
+size = Vector3(0.34, 0.03, 0.42)
+material = ExtResource("30_lh_leather")
+
+[node name="BibleOpen" type="MeshInstance3D" parent="Living"]
+transform = Transform3D(0, -0.9703, 0.2419, -0, 0.2419, 0.9703, -1, -0, 0, -2.595, 0.955, 11.075)
+mesh = SubResource("QuadMesh_4")
+material_override = ExtResource("31_lh_bible")
+
+[node name="LH257" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.895, 1.575, 12.9)
+size = Vector3(0.03, 0.05, 0.6)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH258" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.84, 1.2, 12.8)
+size = Vector3(0.12, 0.7, 0.3)
+material = ExtResource("21_lh_chair_clo")
+
+[node name="LH259" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.825, 1.55, 13.1)
+size = Vector3(0.15, 0.1, 0.2)
+material = ExtResource("32_lh_stain")
+
+[node name="LH260" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.675, 0.025, 12.9)
+size = Vector3(0.45, 0.01, 0.7)
+material = ExtResource("33_lh_mulch")
+
+[node name="LH261" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7, 0.105, 12.76)
+size = Vector3(0.3, 0.15, 0.12)
+material = ExtResource("29_lh_black")
+
+[node name="LH262" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7, 0.105, 13.01)
+size = Vector3(0.3, 0.15, 0.12)
+material = ExtResource("29_lh_black")
+
+[node name="LH263" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.87, 0.425, 13.71)
+size = Vector3(0.5, 0.85, 0.58)
+material = ExtResource("34_lh_radio")
+use_collision = true
+
+[node name="LH264" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.615, 0.575, 13.71)
+size = Vector3(0.01, 0.25, 0.42)
+material = ExtResource("32_lh_stain")
+
+[node name="LH265" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.98, 0.95, 11.625)
+size = Vector3(0.32, 1.9, 1.35)
+material = ExtResource("11_lh_wood_dark")
+use_collision = true
+
+[node name="LH266" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.975, 0.24, 11.625)
+size = Vector3(0.29, 0.24, 1.25)
+material = ExtResource("35_lh_books_sid")
+
+[node name="Q267" type="MeshInstance3D" parent="Living"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.828, 0.24, 11.625)
+mesh = SubResource("QuadMesh_5")
+material_override = ExtResource("36_lh_spines")
+
+[node name="LH268" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.975, 0.72, 11.625)
+size = Vector3(0.29, 0.24, 1.25)
+material = ExtResource("35_lh_books_sid")
+
+[node name="Q269" type="MeshInstance3D" parent="Living"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.828, 0.72, 11.625)
+mesh = SubResource("QuadMesh_6")
+material_override = ExtResource("36_lh_spines")
+
+[node name="LH270" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.975, 1.2, 11.625)
+size = Vector3(0.29, 0.24, 1.25)
+material = ExtResource("35_lh_books_sid")
+
+[node name="Q271" type="MeshInstance3D" parent="Living"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.828, 1.2, 11.625)
+mesh = SubResource("QuadMesh_7")
+material_override = ExtResource("36_lh_spines")
+
+[node name="LH272" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.975, 1.67, 11.625)
+size = Vector3(0.29, 0.24, 1.25)
+material = ExtResource("35_lh_books_sid")
+
+[node name="Q273" type="MeshInstance3D" parent="Living"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 0.828, 1.67, 11.625)
+mesh = SubResource("QuadMesh_8")
+material_override = ExtResource("36_lh_spines")
+
+[node name="LH274" type="CSGCylinder3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, -0.6, 2, 9.12)
+radius = 0.14
+height = 0.04
+sides = 12
+material = ExtResource("28_lh_plate")
+
+[node name="LH275" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 1.94, 9.1475)
+size = Vector3(0.02, 0.12, 0.005)
+material = ExtResource("29_lh_black")
+
+[node name="LH276" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 2, 9.1475)
+size = Vector3(0.1, 0.02, 0.005)
+material = ExtResource("29_lh_black")
+
+[node name="LH277" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9075, 1.41, 14.44)
+size = Vector3(0.005, 0.22, 0.28)
+material = ExtResource("9_lh_trim")
+
+[node name="LH278" type="CSGBox3D" parent="Living"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.895, 1.415, 14.415)
+size = Vector3(0.03, 0.03, 0.03)
+material = ExtResource("12_lh_metal")
+
+[node name="LH279" type="CSGBox3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.175, 0.44, 9.4)
+size = Vector3(1.75, 0.88, 0.6)
+material = ExtResource("16_lh_wood")
+use_collision = true
+
+[node name="LH280" type="CSGBox3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.175, 0.9, 9.4)
+size = Vector3(1.79, 0.04, 0.64)
+material = ExtResource("37_lh_counter")
+use_collision = true
+
+[node name="LH281" type="CSGBox3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0.825, 9.4)
+size = Vector3(0.7, 0.15, 0.4)
+material = ExtResource("12_lh_metal")
+
+[node name="LH282" type="CSGCylinder3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 1.02, 9.18)
+radius = 0.015
+height = 0.2
+sides = 6
+material = ExtResource("12_lh_metal")
+
+[node name="Stove" type="CSGBox3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.39, 0.45, 9.4)
+size = Vector3(0.62, 0.9, 0.6)
+material = ExtResource("38_lh_enamel")
+use_collision = true
+
+[node name="LH284" type="CSGBox3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.39, 1, 9.14)
+size = Vector3(0.62, 0.2, 0.08)
+material = ExtResource("38_lh_enamel")
+use_collision = true
+
+[node name="LH285" type="CSGCylinder3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.24, 0.905, 9.3)
+radius = 0.09
+height = 0.01
+sides = 8
+material = ExtResource("39_lh_burner")
+
+[node name="LH286" type="CSGCylinder3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.54, 0.905, 9.3)
+radius = 0.09
+height = 0.01
+sides = 8
+material = ExtResource("39_lh_burner")
+
+[node name="LH287" type="CSGCylinder3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.24, 0.905, 9.55)
+radius = 0.09
+height = 0.01
+sides = 8
+material = ExtResource("39_lh_burner")
+
+[node name="LH288" type="CSGCylinder3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.54, 0.905, 9.55)
+radius = 0.09
+height = 0.01
+sides = 8
+material = ExtResource("39_lh_burner")
+
+[node name="Pot" type="CSGCylinder3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.24, 0.99, 9.55)
+radius = 0.13
+height = 0.17
+sides = 10
+material = ExtResource("40_lh_pot")
+
+[node name="LH290" type="CSGCylinder3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.24, 1.06, 9.55)
+radius = 0.12
+height = 0.02
+sides = 10
+material = ExtResource("41_lh_stew")
+
+[node name="LH291" type="CSGBox3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.365, 1.09, 9.615)
+size = Vector3(0.03, 0.06, 0.27)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH292" type="CSGBox3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.39, 1.13, 9.12)
+size = Vector3(0.58, 0.02, 0.04)
+material = ExtResource("42_lh_red_glow")
+
+[node name="Toolbox" type="CSGBox3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.575, 1.02, 9.33)
+size = Vector3(0.45, 0.2, 0.3)
+material = ExtResource("43_lh_toolbox")
+use_collision = true
+
+[node name="LH294" type="CSGBox3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.58, 1.135, 9.33)
+size = Vector3(0.2, 0.03, 0.04)
+material = ExtResource("12_lh_metal")
+
+[node name="DuctTape" type="CSGCylinder3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.95, 0.96, 9.33)
+radius = 0.06
+height = 0.05
+sides = 10
+material = ExtResource("44_lh_tape")
+
+[node name="LH296" type="CSGBox3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.175, 1.46, 9.25)
+size = Vector3(1.75, 0.02, 0.3)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH297" type="CSGCylinder3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4, 1.53, 9.25)
+radius = 0.05
+height = 0.12
+sides = 6
+material = ExtResource("28_lh_plate")
+
+[node name="LH298" type="CSGCylinder3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 1.53, 9.25)
+radius = 0.05
+height = 0.12
+sides = 6
+material = ExtResource("45_lh_cardboard")
+
+[node name="LH299" type="CSGCylinder3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.85, 1.53, 9.25)
+radius = 0.05
+height = 0.12
+sides = 6
+material = ExtResource("40_lh_pot")
+
+[node name="LH300" type="CSGCylinder3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1, 1.53, 9.25)
+radius = 0.05
+height = 0.12
+sides = 6
+material = ExtResource("28_lh_plate")
+
+[node name="LH301" type="CSGBox3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.65, 0.875, 11.765)
+size = Vector3(0.6, 1.75, 0.63)
+material = ExtResource("46_lh_fridge")
+use_collision = true
+
+[node name="LH302" type="CSGBox3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.35, 1.15, 11.575)
+size = Vector3(0.02, 0.5, 0.05)
+material = ExtResource("12_lh_metal")
+
+[node name="LH303" type="CSGBox3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3375, 1.29, 11.75)
+size = Vector3(0.005, 0.18, 0.2)
+material = ExtResource("28_lh_plate")
+
+[node name="LH304" type="CSGBox3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.05, 0.37, 11.3)
+size = Vector3(0.8, 0.74, 0.7)
+material = ExtResource("16_lh_wood")
+use_collision = true
+
+[node name="LH305" type="CSGBox3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.675, 0.225, 11.275)
+size = Vector3(0.35, 0.45, 0.35)
+material = ExtResource("11_lh_wood_dark")
+use_collision = true
+
+[node name="LH306" type="CSGBox3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.825, 0.7, 11.275)
+size = Vector3(0.05, 0.5, 0.35)
+material = ExtResource("11_lh_wood_dark")
+use_collision = true
+
+[node name="LH307" type="CSGCylinder3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.05, 0.75, 11.3)
+radius = 0.11
+height = 0.015
+sides = 10
+material = ExtResource("28_lh_plate")
+
+[node name="LH308" type="CSGBox3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.21, 0.755, 11.31)
+size = Vector3(0.02, 0.01, 0.22)
+material = ExtResource("12_lh_metal")
+
+[node name="LH309" type="CSGCylinder3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 0.79, 11.1)
+radius = 0.03
+height = 0.09
+sides = 6
+material = ExtResource("10_lh_glass")
+
+[node name="ChapelCalendar" type="MeshInstance3D" parent="Kitchen"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, -0, 0, -1, 2.6, 1.55, 12.13)
+mesh = SubResource("QuadMesh_9")
+material_override = ExtResource("47_lh_calendar")
+
+[node name="LH311" type="CSGBox3D" parent="Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.895, 0.01, 10.8)
+size = Vector3(0.03, 0.02, 0.8)
+material = ExtResource("33_lh_mulch")
+
+[node name="LH312" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.175, 13.9)
+size = Vector3(1.9, 0.35, 1.4)
+material = ExtResource("11_lh_wood_dark")
+use_collision = true
+
+[node name="LH313" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.9, 0.7, 13.9)
+size = Vector3(0.1, 0.7, 1.4)
+material = ExtResource("11_lh_wood_dark")
+use_collision = true
+
+[node name="LH314" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.975, 0.425, 13.9)
+size = Vector3(1.75, 0.15, 1.3)
+material = ExtResource("48_lh_sheet")
+use_collision = true
+
+[node name="LH315" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(0.7198, -0.604, 0.342, 0.6428, 0.766, 0, -0.262, 0.2198, 0.9397, 2.6, 0.58, 13.6)
+size = Vector3(0.06, 0.32, 0.22)
+material = ExtResource("49_lh_torn")
+
+[node name="LH316" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(0.5265, -0.6275, -0.5736, 0.766, 0.6428, 0, 0.3687, -0.4394, 0.8192, 2.9, 0.58, 14.2)
+size = Vector3(0.06, 0.32, 0.22)
+material = ExtResource("49_lh_torn")
+
+[node name="LH317" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(0.2418, 0.2418, 0.9397, -0.7071, 0.7071, 0, -0.6645, -0.6645, 0.342, 3.2, 0.58, 13.5)
+size = Vector3(0.06, 0.32, 0.22)
+material = ExtResource("49_lh_torn")
+
+[node name="LH318" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(-0.2962, 0.171, 0.9397, 0.5, 0.866, 0, -0.8138, 0.4698, -0.342, 2.4, 0.58, 14.1)
+size = Vector3(0.06, 0.32, 0.22)
+material = ExtResource("49_lh_torn")
+
+[node name="LH319" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(0.2802, 0.1962, -0.9397, -0.5736, 0.8192, 0, 0.7698, 0.539, 0.342, 3.4, 0.58, 14.3)
+size = Vector3(0.06, 0.32, 0.22)
+material = ExtResource("49_lh_torn")
+
+[node name="LH320" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(-0.4698, 0.8138, 0.342, 0.866, 0.5, 0, -0.171, 0.2962, -0.9397, 2.7, 0.58, 13.9)
+size = Vector3(0.06, 0.32, 0.22)
+material = ExtResource("49_lh_torn")
+
+[node name="LH321" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(-0.539, -0.7698, -0.342, -0.8192, 0.5736, 0, 0.1962, 0.2802, -0.9397, 3.05, 0.58, 13.85)
+size = Vector3(0.06, 0.32, 0.22)
+material = ExtResource("49_lh_torn")
+
+[node name="LH322" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9, 0.51, 13.9)
+size = Vector3(0.8, 0.02, 0.6)
+material = ExtResource("50_lh_scorch")
+
+[node name="LH323" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(0.9135, 0, 0.4067, 0, 1, 0, -0.4067, 0, 0.9135, 1.85, 0.12, 13.4)
+size = Vector3(0.7, 0.18, 0.9)
+material = ExtResource("51_lh_quilt")
+
+[node name="LH324" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.66, 0.57, 13.45)
+size = Vector3(0.32, 0.14, 0.3)
+material = ExtResource("48_lh_sheet")
+
+[node name="LH325" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.7, 0.275, 14.785)
+size = Vector3(0.5, 0.55, 0.33)
+material = ExtResource("16_lh_wood")
+use_collision = true
+
+[node name="LH326" type="CSGCylinder3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.7, 0.65, 14.78)
+radius = 0.1
+height = 0.2
+sides = 8
+material = ExtResource("26_lh_lampshade")
+
+[node name="LH327" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.935, 1.525, 13.775)
+size = Vector3(0.03, 0.45, 0.05)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH328" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.935, 1.6, 13.775)
+size = Vector3(0.03, 0.04, 0.25)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH329" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1, 0.425, 12.525)
+size = Vector3(1.2, 0.85, 0.45)
+material = ExtResource("16_lh_wood")
+use_collision = true
+
+[node name="LH330" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1, 0.31, 12.7525)
+size = Vector3(1.1, 0.02, 0.015)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH331" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1, 0.61, 12.7525)
+size = Vector3(1.1, 0.02, 0.015)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH332" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(0.9945, 0.1045, 0, -0.1045, 0.9945, 0, 0, 0, 1, 2.9, 0.98, 12.45)
+size = Vector3(0.21, 0.25, 0.02)
+material = ExtResource("23_lh_frame_gol")
+
+[node name="Q333" type="MeshInstance3D" parent="Bedroom"]
+transform = Transform3D(0.9945, 0.1045, 0, -0.1045, 0.9945, 0, 0, 0, 1, 2.9, 0.98, 12.462)
+mesh = SubResource("QuadMesh_10")
+material_override = ExtResource("24_lh_print_mar")
+
+[node name="LH334" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.35, 0.865, 12.475)
+size = Vector3(0.3, 0.03, 0.25)
+material = ExtResource("29_lh_black")
+
+[node name="LH335" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 1.6, 12.27)
+size = Vector3(0.35, 0.45, 0.02)
+material = ExtResource("23_lh_frame_gol")
+
+[node name="Q336" type="MeshInstance3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 1.6, 12.282)
+mesh = SubResource("QuadMesh_11")
+material_override = ExtResource("25_lh_print_hea")
+
+[node name="Safe" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.56, 0.275, 14.625)
+size = Vector3(0.52, 0.55, 0.55)
+material = ExtResource("52_lh_safe")
+use_collision = true
+
+[node name="SafeDial" type="CSGCylinder3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 1.56, 0.32, 14.345)
+radius = 0.06
+height = 0.02
+sides = 10
+material = ExtResource("53_lh_dial")
+
+[node name="LH339" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.69, 0.2, 14.34)
+size = Vector3(0.06, 0.04, 0.02)
+material = ExtResource("22_lh_brass")
+
+[node name="SafeDoor" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.56, 0.275, 14.34)
+size = Vector3(0.52, 0.55, 0.04)
+material = ExtResource("52_lh_safe")
+
+[node name="LH341" type="CSGBox3D" parent="Bedroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.625, 0.0225, 13.95)
+size = Vector3(0.75, 0.005, 0.7)
+material = ExtResource("18_lh_rug")
+
+[node name="LH342" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 2.725, 13.4)
+size = Vector3(0.55, 0.45, 0.5)
+material = ExtResource("45_lh_cardboard")
+use_collision = true
+
+[node name="LH343" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 3.125, 13.4)
+size = Vector3(0.5, 0.35, 0.45)
+material = ExtResource("45_lh_cardboard")
+
+[node name="LH344" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9, 2.75, 13.6)
+size = Vector3(0.5, 0.5, 0.45)
+material = ExtResource("45_lh_cardboard")
+use_collision = true
+
+[node name="LH345" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 2.725, 9.6)
+size = Vector3(0.6, 0.45, 0.5)
+material = ExtResource("45_lh_cardboard")
+use_collision = true
+
+[node name="LH346" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 2.7, 10.2)
+size = Vector3(0.55, 0.4, 0.5)
+material = ExtResource("45_lh_cardboard")
+use_collision = true
+
+[node name="LH347" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 2.8, 13.2)
+size = Vector3(0.5, 0.6, 0.6)
+material = ExtResource("45_lh_cardboard")
+use_collision = true
+
+[node name="LH348" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.825, 2.84, 13.3775)
+size = Vector3(0.35, 0.08, 0.015)
+material = ExtResource("29_lh_black")
+
+[node name="LH349" type="CSGCylinder3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 3.25, 10)
+radius = 0.03
+height = 1.5
+sides = 6
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH350" type="CSGCylinder3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 3.75, 10)
+radius = 0.2
+height = 0.55
+sides = 8
+material = ExtResource("54_lh_dressform")
+
+[node name="LH351" type="CSGCylinder3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 4.1, 10)
+radius = 0.12
+height = 0.12
+sides = 8
+material = ExtResource("54_lh_dressform")
+
+[node name="LH352" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2, 2.515, 10)
+size = Vector3(0.3, 0.03, 0.3)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH353" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.15, 2.725, 10.8)
+size = Vector3(0.7, 0.45, 0.6)
+material = ExtResource("16_lh_wood")
+use_collision = true
+
+[node name="LH354" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.475, 3.225, 10.8)
+size = Vector3(0.05, 0.55, 0.6)
+material = ExtResource("16_lh_wood")
+use_collision = true
+
+[node name="LH355" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.15, 2.515, 10.425)
+size = Vector3(0.7, 0.03, 0.05)
+material = ExtResource("11_lh_wood_dark")
+
+[node name="LH356" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.25, 2.875, 14.55)
+size = Vector3(1.3, 0.75, 0.7)
+material = ExtResource("11_lh_wood_dark")
+use_collision = true
+
+[node name="WetPatch" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 2.525, 9.375)
+size = Vector3(1.2, 0.01, 0.45)
+material = ExtResource("55_lh_wet")
+
+[node name="LH358" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.84, 2.5085, 13.4)
+size = Vector3(0.1, 0.007, 0.24)
+material = ExtResource("55_lh_wet")
+
+[node name="LH359" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.84, 2.5085, 12.55)
+size = Vector3(0.1, 0.007, 0.24)
+material = ExtResource("55_lh_wet")
+
+[node name="LH360" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 2.5085, 11.7)
+size = Vector3(0.1, 0.007, 0.24)
+material = ExtResource("55_lh_wet")
+
+[node name="LH361" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 2.5085, 10.85)
+size = Vector3(0.1, 0.007, 0.24)
+material = ExtResource("55_lh_wet")
+
+[node name="LH362" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.36, 2.5085, 10)
+size = Vector3(0.1, 0.007, 0.24)
+material = ExtResource("55_lh_wet")
+
+[node name="LH363" type="CSGBox3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.275, 3.31, 8.98)
+size = Vector3(0.35, 0.02, 0.14)
+material = ExtResource("55_lh_wet")
+
+[node name="AtticLamp" type="OmniLight3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 4.3, 12)
+light_color = Color(0.9, 0.85, 0.7, 1)
+light_energy = 0
+omni_range = 4
+shadow_enabled = true
+
+[node name="LH364" type="CSGCylinder3D" parent="Upstairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 4.42, 12)
+radius = 0.05
+height = 0.1
+sides = 6
+material = ExtResource("56_lh_bulb")
+
+[node name="CurtainL" type="Node3D" parent="Anim"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, 4.28, 9.1)
+
+[node name="LH365" type="CSGBox3D" parent="Anim/CurtainL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.225, -0.575, 0)
+size = Vector3(0.45, 1.15, 0.04)
+material = ExtResource("13_lh_curtain")
+
+[node name="CurtainR" type="Node3D" parent="Anim"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.95, 4.28, 9.1)
+
+[node name="LH366" type="CSGBox3D" parent="Anim/CurtainR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.225, -0.575, 0)
+size = Vector3(0.45, 1.15, 0.04)
+material = ExtResource("13_lh_curtain")
+
+[node name="LH367" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.175, 22.75)
+size = Vector3(24, 0.25, 14.5)
+material = ExtResource("57_lh_grass")
+use_collision = true
+
+[node name="LH368" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.725, 0.05, 12)
+size = Vector3(1.45, 0.1, 2.8)
+material = ExtResource("58_lh_porch")
+use_collision = true
+
+[node name="LH369" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.65, 0.025, 12)
+size = Vector3(0.4, 0.05, 1.2)
+material = ExtResource("58_lh_porch")
+use_collision = true
+
+[node name="LH370" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.38, 1.285, 10.68)
+size = Vector3(0.08, 2.33, 0.08)
+material = ExtResource("9_lh_trim")
+use_collision = true
+
+[node name="LH371" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.38, 1.285, 13.32)
+size = Vector3(0.08, 2.33, 0.08)
+material = ExtResource("9_lh_trim")
+use_collision = true
+
+[node name="LH372" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.405, 0.535, 11.05)
+size = Vector3(0.09, 0.83, 0.8)
+material = ExtResource("9_lh_trim")
+use_collision = true
+
+[node name="LH373" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.405, 0.535, 12.95)
+size = Vector3(0.09, 0.83, 0.8)
+material = ExtResource("9_lh_trim")
+use_collision = true
+
+[node name="LH374" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9781, 0.2079, 0, -0.2079, 0.9781, 0, 0, 0, 1, -3.75, 2.55, 12)
+size = Vector3(1.6, 0.08, 3)
+material = ExtResource("59_lh_roof")
+
+[node name="PorchBulb" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.24, 2.05, 12.61)
+size = Vector3(0.12, 0.2, 0.12)
+material = ExtResource("56_lh_bulb")
+
+[node name="LH376" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.9, 0.31, 13.15)
+size = Vector3(0.6, 0.38, 0.3)
+material = ExtResource("11_lh_wood_dark")
+use_collision = true
+
+[node name="LH377" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 0.125, 12)
+size = Vector3(1, 0.01, 0.8)
+material = ExtResource("33_lh_mulch")
+
+[node name="LH378" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 0.9135, 0.4067, 0, -0.4067, 0.9135, 0.5, 5.12, 10.4)
+size = Vector3(7.8, 0.1, 3.45)
+material = ExtResource("59_lh_roof")
+
+[node name="LH379" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 0.9135, -0.4067, 0, 0.4067, 0.9135, 0.5, 5.12, 13.6)
+size = Vector3(7.8, 0.1, 3.45)
+material = ExtResource("59_lh_roof")
+
+[node name="LH380" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 4.725, 12)
+size = Vector3(0.16, 0.45, 5.6)
+material = ExtResource("6_lh_siding")
+
+[node name="LH381" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 5.175, 12)
+size = Vector3(0.16, 0.45, 3.6)
+material = ExtResource("6_lh_siding")
+
+[node name="LH382" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 5.6, 12)
+size = Vector3(0.16, 0.4, 1.6)
+material = ExtResource("6_lh_siding")
+
+[node name="LH383" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 4.725, 12)
+size = Vector3(0.16, 0.45, 5.6)
+material = ExtResource("6_lh_siding")
+
+[node name="LH384" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 5.175, 12)
+size = Vector3(0.16, 0.45, 3.6)
+material = ExtResource("6_lh_siding")
+
+[node name="LH385" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 5.6, 12)
+size = Vector3(0.16, 0.4, 1.6)
+material = ExtResource("6_lh_siding")
+
+[node name="LH386" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.05, 5.7, 13.65)
+size = Vector3(0.5, 1.4, 0.5)
+material = ExtResource("32_lh_stain")
+
+[node name="LH387" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 4.45, 8.75)
+size = Vector3(7.6, 0.1, 0.12)
+material = ExtResource("12_lh_metal")
+
+[node name="LH388" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 4.45, 15.25)
+size = Vector3(7.6, 0.1, 0.12)
+material = ExtResource("12_lh_metal")
+
+[node name="LH389" type="CSGBox3D" parent="Geometry/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.14, 2.25, 8.79)
+size = Vector3(0.08, 4.5, 0.08)
+material = ExtResource("12_lh_metal")
+
+[node name="LH390" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.04, 10.2)
+size = Vector3(1.2, 0.08, 1.2)
+material = ExtResource("33_lh_mulch")
+use_collision = true
+
+[node name="LH391" type="CSGCylinder3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.25, 10.2)
+radius = 0.18
+height = 0.34
+sides = 8
+material = ExtResource("60_lh_stone")
+use_collision = true
+
+[node name="LH392" type="CSGCylinder3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.75, 10.2)
+radius = 0.14
+height = 0.68
+sides = 8
+material = ExtResource("61_lh_robe_blue")
+
+[node name="LH393" type="CSGCylinder3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.17, 10.2)
+radius = 0.07
+height = 0.16
+sides = 8
+material = ExtResource("60_lh_stone")
+
+[node name="LH394" type="CSGCylinder3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.3, 10.2)
+radius = 0.12
+height = 0.02
+sides = 10
+material = ExtResource("22_lh_brass")
+
+[node name="LH395" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.4, 0.14, 9.8)
+size = Vector3(0.12, 0.12, 0.12)
+material = ExtResource("62_lh_flower_re")
+
+[node name="LH396" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.6, 0.14, 9.85)
+size = Vector3(0.12, 0.12, 0.12)
+material = ExtResource("62_lh_flower_re")
+
+[node name="LH397" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.45, 0.14, 10.6)
+size = Vector3(0.12, 0.12, 0.12)
+material = ExtResource("62_lh_flower_re")
+
+[node name="LH398" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.55, 0.14, 10.55)
+size = Vector3(0.12, 0.12, 0.12)
+material = ExtResource("62_lh_flower_re")
+
+[node name="LH399" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.14, 10.7)
+size = Vector3(0.12, 0.12, 0.12)
+material = ExtResource("62_lh_flower_re")
+
+[node name="LH400" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9613, 0, -0.2756, 0, 1, 0, 0.2756, 0, 0.9613, -1.4, -0.04, -1.4)
+size = Vector3(0.9, 0.02, 1.4)
+material = ExtResource("63_lh_dirt")
+
+[node name="LH401" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9613, 0, -0.2756, 0, 1, 0, 0.2756, 0, 0.9613, -1.7455, -0.04, -0.1818)
+size = Vector3(0.9, 0.02, 1.4)
+material = ExtResource("63_lh_dirt")
+
+[node name="LH402" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9613, 0, -0.2756, 0, 1, 0, 0.2756, 0, 0.9613, -2.0909, -0.04, 1.0364)
+size = Vector3(0.9, 0.02, 1.4)
+material = ExtResource("63_lh_dirt")
+
+[node name="LH403" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9613, 0, -0.2756, 0, 1, 0, 0.2756, 0, 0.9613, -2.4364, -0.04, 2.2545)
+size = Vector3(0.9, 0.02, 1.4)
+material = ExtResource("63_lh_dirt")
+
+[node name="LH404" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9613, 0, -0.2756, 0, 1, 0, 0.2756, 0, 0.9613, -2.7818, -0.04, 3.4727)
+size = Vector3(0.9, 0.02, 1.4)
+material = ExtResource("63_lh_dirt")
+
+[node name="LH405" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9613, 0, -0.2756, 0, 1, 0, 0.2756, 0, 0.9613, -3.1273, -0.04, 4.6909)
+size = Vector3(0.9, 0.02, 1.4)
+material = ExtResource("63_lh_dirt")
+
+[node name="LH406" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9613, 0, -0.2756, 0, 1, 0, 0.2756, 0, 0.9613, -3.4727, -0.04, 5.9091)
+size = Vector3(0.9, 0.02, 1.4)
+material = ExtResource("63_lh_dirt")
+
+[node name="LH407" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9613, 0, -0.2756, 0, 1, 0, 0.2756, 0, 0.9613, -3.8182, -0.04, 7.1273)
+size = Vector3(0.9, 0.02, 1.4)
+material = ExtResource("63_lh_dirt")
+
+[node name="LH408" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9613, 0, -0.2756, 0, 1, 0, 0.2756, 0, 0.9613, -4.1636, -0.04, 8.3455)
+size = Vector3(0.9, 0.02, 1.4)
+material = ExtResource("63_lh_dirt")
+
+[node name="LH409" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9613, 0, -0.2756, 0, 1, 0, 0.2756, 0, 0.9613, -4.5091, -0.04, 9.5636)
+size = Vector3(0.9, 0.02, 1.4)
+material = ExtResource("63_lh_dirt")
+
+[node name="LH410" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9613, 0, -0.2756, 0, 1, 0, 0.2756, 0, 0.9613, -4.8545, -0.04, 10.7818)
+size = Vector3(0.9, 0.02, 1.4)
+material = ExtResource("63_lh_dirt")
+
+[node name="LH411" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9613, 0, -0.2756, 0, 1, 0, 0.2756, 0, 0.9613, -5.2, -0.04, 12)
+size = Vector3(0.9, 0.02, 1.4)
+material = ExtResource("63_lh_dirt")
+
+[node name="LH412" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.175, -0.0325, 12)
+size = Vector3(0.65, 0.035, 0.8)
+material = ExtResource("63_lh_dirt")
+
+[node name="LH413" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.2, 0.525, 12.675)
+size = Vector3(0.6, 1.05, 0.15)
+material = ExtResource("11_lh_wood_dark")
+use_collision = true
+
+[node name="LH414" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.2, 1.2, 12.675)
+size = Vector3(0.9, 0.3, 0.45)
+material = ExtResource("12_lh_metal")
+
+[node name="LH415" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4397, 2.8085, 24.3569)
+size = Vector3(0.3, 5.617, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH416" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.4481, 0, 0.894, 0, 1, 0, -0.894, 0, 0.4481, 0.4397, 4.1819, 24.3569)
+size = Vector3(1.9, 2.0596, 1.9)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH417" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.5072, 0, 0.8618, 0, 1, 0, -0.8618, 0, 0.5072, 0.4397, 6.0543, 24.3569)
+size = Vector3(1.425, 2.0596, 1.425)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH418" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9851, 0, 0.1722, 0, 1, 0, -0.1722, 0, 0.9851, 0.4397, 7.7394, 24.3569)
+size = Vector3(0.855, 2.0596, 0.855)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH419" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.4613, 2.5837, 20.7655)
+size = Vector3(0.3, 5.1674, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH420" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.8782, 0, 0.4782, 0, 1, 0, -0.4782, 0, 0.8782, -9.4613, 3.8672, 20.7655)
+size = Vector3(1.9, 1.8947, 1.9)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH421" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.2391, 0, 0.971, 0, 1, 0, -0.971, 0, 0.2391, -9.4613, 5.5897, 20.7655)
+size = Vector3(1.425, 1.8947, 1.425)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH422" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.086, 0, 0.9963, 0, 1, 0, -0.9963, 0, 0.086, -9.4613, 7.1399, 20.7655)
+size = Vector3(0.855, 1.8947, 0.855)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH423" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9682, 1.8653, 25.9868)
+size = Vector3(0.3, 3.7306, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH424" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.972, 0, 0.2348, 0, 1, 0, -0.2348, 0, 0.972, -1.9682, 2.8614, 25.9868)
+size = Vector3(1.9, 1.3679, 1.9)
+material = ExtResource("66_lh_tree")
+
+[node name="LH425" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.4462, 0, 0.8949, 0, 1, 0, -0.8949, 0, 0.4462, -1.9682, 4.105, 25.9868)
+size = Vector3(1.425, 1.3679, 1.425)
+material = ExtResource("66_lh_tree")
+
+[node name="LH426" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.6388, 0, 0.7694, 0, 1, 0, -0.7694, 0, 0.6388, -1.9682, 5.2241, 25.9868)
+size = Vector3(0.855, 1.3679, 0.855)
+material = ExtResource("66_lh_tree")
+
+[node name="LH427" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.1038, 2.367, 19.2851)
+size = Vector3(0.3, 4.7339, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH428" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.8844, 0, 0.4668, 0, 1, 0, -0.4668, 0, 0.8844, 9.1038, 3.5637, 19.2851)
+size = Vector3(1.9, 1.7358, 1.9)
+material = ExtResource("66_lh_tree")
+
+[node name="LH429" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9917, 0, 0.1282, 0, 1, 0, -0.1282, 0, 0.9917, 9.1038, 5.1417, 19.2851)
+size = Vector3(1.425, 1.7358, 1.425)
+material = ExtResource("66_lh_tree")
+
+[node name="LH430" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.0945, 0, 0.9955, 0, 1, 0, -0.9955, 0, 0.0945, 9.1038, 6.5619, 19.2851)
+size = Vector3(0.855, 1.7358, 0.855)
+material = ExtResource("66_lh_tree")
+
+[node name="LH431" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.518, 1.9487, 25.9688)
+size = Vector3(0.3, 3.8974, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH432" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.1254, 0, 0.9921, 0, 1, 0, -0.9921, 0, 0.1254, -0.518, 2.9782, 25.9688)
+size = Vector3(1.9, 1.429, 1.9)
+material = ExtResource("66_lh_tree")
+
+[node name="LH433" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9996, 0, 0.028, 0, 1, 0, -0.028, 0, 0.9996, -0.518, 4.2773, 25.9688)
+size = Vector3(1.425, 1.429, 1.425)
+material = ExtResource("66_lh_tree")
+
+[node name="LH434" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.8339, 0, 0.5519, 0, 1, 0, -0.5519, 0, 0.8339, -0.518, 5.4465, 25.9688)
+size = Vector3(0.855, 1.429, 0.855)
+material = ExtResource("66_lh_tree")
+
+[node name="LH435" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.9666, 2.1724, 23.8923)
+size = Vector3(0.3, 4.3447, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH436" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.347, 0, 0.9379, 0, 1, 0, -0.9379, 0, 0.347, -8.9666, 3.2913, 23.8923)
+size = Vector3(1.9, 1.5931, 1.9)
+material = ExtResource("66_lh_tree")
+
+[node name="LH437" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.2062, 0, 0.9785, 0, 1, 0, -0.9785, 0, 0.2062, -8.9666, 4.7396, 23.8923)
+size = Vector3(1.425, 1.5931, 1.425)
+material = ExtResource("66_lh_tree")
+
+[node name="LH438" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9304, 0, 0.3666, 0, 1, 0, -0.3666, 0, 0.9304, -8.9666, 6.043, 23.8923)
+size = Vector3(0.855, 1.5931, 0.855)
+material = ExtResource("66_lh_tree")
+
+[node name="LH439" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1363, 2.3533, 25.6378)
+size = Vector3(0.3, 4.7065, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH440" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.3292, 0, 0.9443, 0, 1, 0, -0.9443, 0, 0.3292, 1.1363, 3.5446, 25.6378)
+size = Vector3(1.9, 1.7257, 1.9)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH441" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9545, 0, 0.2982, 0, 1, 0, -0.2982, 0, 0.9545, 1.1363, 5.1134, 25.6378)
+size = Vector3(1.425, 1.7257, 1.425)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH442" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.5828, 0, 0.8126, 0, 1, 0, -0.8126, 0, 0.5828, 1.1363, 6.5254, 25.6378)
+size = Vector3(0.855, 1.7257, 0.855)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH443" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1109, 1.936, 22.2046)
+size = Vector3(0.3, 3.8719, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH444" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.8772, 0, 0.4802, 0, 1, 0, -0.4802, 0, 0.8772, 1.1109, 2.9603, 22.2046)
+size = Vector3(1.9, 1.4197, 1.9)
+material = ExtResource("66_lh_tree")
+
+[node name="LH445" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.867, 0, 0.4983, 0, 1, 0, -0.4983, 0, 0.867, 1.1109, 4.251, 22.2046)
+size = Vector3(1.425, 1.4197, 1.425)
+material = ExtResource("66_lh_tree")
+
+[node name="LH446" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.1424, 0, 0.9898, 0, 1, 0, -0.9898, 0, 0.1424, 1.1109, 5.4126, 22.2046)
+size = Vector3(0.855, 1.4197, 0.855)
+material = ExtResource("66_lh_tree")
+
+[node name="LH447" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5669, 1.8103, 19.8169)
+size = Vector3(0.3, 3.6205, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH448" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.7426, 0, 0.6697, 0, 1, 0, -0.6697, 0, 0.7426, 1.5669, 2.7844, 19.8169)
+size = Vector3(1.9, 1.3275, 1.9)
+material = ExtResource("66_lh_tree")
+
+[node name="LH449" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9098, 0, 0.4151, 0, 1, 0, -0.4151, 0, 0.9098, 1.5669, 3.9912, 19.8169)
+size = Vector3(1.425, 1.3275, 1.425)
+material = ExtResource("66_lh_tree")
+
+[node name="LH450" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.5449, 0, 0.8385, 0, 1, 0, -0.8385, 0, 0.5449, 1.5669, 5.0773, 19.8169)
+size = Vector3(0.855, 1.3275, 0.855)
+material = ExtResource("66_lh_tree")
+
+[node name="LH451" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5797, 1.8788, 20.1332)
+size = Vector3(0.3, 3.7576, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH452" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9995, 0, 0.0324, 0, 1, 0, -0.0324, 0, 0.9995, 4.5797, 2.8803, 20.1332)
+size = Vector3(1.9, 1.3778, 1.9)
+material = ExtResource("66_lh_tree")
+
+[node name="LH453" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.6323, 0, 0.7747, 0, 1, 0, -0.7747, 0, 0.6323, 4.5797, 4.1328, 20.1332)
+size = Vector3(1.425, 1.3778, 1.425)
+material = ExtResource("66_lh_tree")
+
+[node name="LH454" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.4735, 0, 0.8808, 0, 1, 0, -0.8808, 0, 0.4735, 4.5797, 5.2601, 20.1332)
+size = Vector3(0.855, 1.3778, 0.855)
+material = ExtResource("66_lh_tree")
+
+[node name="LH455" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9397, 2.8078, 23.7189)
+size = Vector3(0.3, 5.6156, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH456" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9531, 0, 0.3025, 0, 1, 0, -0.3025, 0, 0.9531, -1.9397, 4.1809, 23.7189)
+size = Vector3(1.9, 2.0591, 1.9)
+material = ExtResource("66_lh_tree")
+
+[node name="LH457" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.923, 0, 0.3847, 0, 1, 0, -0.3847, 0, 0.923, -1.9397, 6.0528, 23.7189)
+size = Vector3(1.425, 2.0591, 1.425)
+material = ExtResource("66_lh_tree")
+
+[node name="LH458" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9721, 0, 0.2347, 0, 1, 0, -0.2347, 0, 0.9721, -1.9397, 7.7375, 23.7189)
+size = Vector3(0.855, 2.0591, 0.855)
+material = ExtResource("66_lh_tree")
+
+[node name="LH459" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.7918, 2.6841, 19.3053)
+size = Vector3(0.3, 5.3683, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH460" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.125, 0, 0.9922, 0, 1, 0, -0.9922, 0, 0.125, -7.7918, 4.0078, 19.3053)
+size = Vector3(1.9, 1.9684, 1.9)
+material = ExtResource("66_lh_tree")
+
+[node name="LH461" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.2929, 0, 0.9562, 0, 1, 0, -0.9562, 0, 0.2929, -7.7918, 5.7972, 19.3053)
+size = Vector3(1.425, 1.9684, 1.425)
+material = ExtResource("66_lh_tree")
+
+[node name="LH462" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.997, 0, 0.0776, 0, 1, 0, -0.0776, 0, 0.997, -7.7918, 7.4077, 19.3053)
+size = Vector3(0.855, 1.9684, 0.855)
+material = ExtResource("66_lh_tree")
+
+[node name="LH463" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5192, 2.6095, 18.2887)
+size = Vector3(0.3, 5.219, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH464" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.8056, 0, 0.5925, 0, 1, 0, -0.5925, 0, 0.8056, 8.5192, 3.9033, 18.2887)
+size = Vector3(1.9, 1.9136, 1.9)
+material = ExtResource("66_lh_tree")
+
+[node name="LH465" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9931, 0, 0.1176, 0, 1, 0, -0.1176, 0, 0.9931, 8.5192, 5.643, 18.2887)
+size = Vector3(1.425, 1.9136, 1.425)
+material = ExtResource("66_lh_tree")
+
+[node name="LH466" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9911, 0, 0.1334, 0, 1, 0, -0.1334, 0, 0.9911, 8.5192, 7.2087, 18.2887)
+size = Vector3(0.855, 1.9136, 0.855)
+material = ExtResource("66_lh_tree")
+
+[node name="LH467" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7301, 2.3589, 19.5545)
+size = Vector3(0.3, 4.7178, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH468" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(-0.1608, 0.2297, 0.9599, 0.8192, 0.5736, 0, -0.5506, 0.7863, -0.2804, 2.5834, 4.1125, 20.0565)
+size = Vector3(0.07, 1.3074, 0.07)
+material = ExtResource("64_lh_bark")
+
+[node name="LH469" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(-0.4482, 0.6402, 0.6239, 0.8192, 0.5736, 0, -0.3579, 0.5111, -0.7815, 2.3735, 4.1917, 19.8391)
+size = Vector3(0.07, 1.1405, 0.07)
+material = ExtResource("64_lh_bark")
+
+[node name="LH470" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(-0.5708, 0.8152, -0.0983, 0.8192, 0.5736, 0, 0.0564, -0.0805, -0.9952, 2.2876, 4.6793, 19.5108)
+size = Vector3(0.07, 1.1115, 0.07)
+material = ExtResource("64_lh_bark")
+
+[node name="LH471" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.0346, 2.1342, 19.447)
+size = Vector3(0.3, 4.2683, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH472" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.999, 0, 0.0446, 0, 1, 0, -0.0446, 0, 0.999, 5.0346, 3.2378, 19.447)
+size = Vector3(1.9, 1.565, 1.9)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH473" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.3906, 0, 0.9205, 0, 1, 0, -0.9205, 0, 0.3906, 5.0346, 4.6606, 19.447)
+size = Vector3(1.425, 1.565, 1.425)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH474" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.6278, 0, 0.7784, 0, 1, 0, -0.7784, 0, 0.6278, 5.0346, 5.9411, 19.447)
+size = Vector3(0.855, 1.565, 0.855)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH475" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5464, 2.1452, 25.0942)
+size = Vector3(0.3, 4.2904, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH476" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.6424, 0, 0.7664, 0, 1, 0, -0.7664, 0, 0.6424, -1.5464, 3.2533, 25.0942)
+size = Vector3(1.9, 1.5731, 1.9)
+material = ExtResource("66_lh_tree")
+
+[node name="LH477" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.5712, 0, 0.8208, 0, 1, 0, -0.8208, 0, 0.5712, -1.5464, 4.6834, 25.0942)
+size = Vector3(1.425, 1.5731, 1.425)
+material = ExtResource("66_lh_tree")
+
+[node name="LH478" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.8376, 0, 0.5463, 0, 1, 0, -0.5463, 0, 0.8376, -1.5464, 5.9705, 25.0942)
+size = Vector3(0.855, 1.5731, 0.855)
+material = ExtResource("66_lh_tree")
+
+[node name="LH479" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.4914, 2.073, 13.5478)
+size = Vector3(0.3, 4.146, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH480" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.5985, 0, 0.8011, 0, 1, 0, -0.8011, 0, 0.5985, 10.4914, 3.1522, 13.5478)
+size = Vector3(1.9, 1.5202, 1.9)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH481" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.6861, 0, 0.7275, 0, 1, 0, -0.7275, 0, 0.6861, 10.4914, 4.5342, 13.5478)
+size = Vector3(1.425, 1.5202, 1.425)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH482" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.6808, 0, 0.7325, 0, 1, 0, -0.7325, 0, 0.6808, 10.4914, 5.778, 13.5478)
+size = Vector3(0.855, 1.5202, 0.855)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH483" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.8644, 2.4336, 11.757)
+size = Vector3(0.3, 4.8671, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH484" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.761, 0, 0.6487, 0, 1, 0, -0.6487, 0, 0.761, 6.8644, 3.657, 11.757)
+size = Vector3(1.9, 1.7846, 1.9)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH485" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.7649, 0, 0.6441, 0, 1, 0, -0.6441, 0, 0.7649, 6.8644, 5.2793, 11.757)
+size = Vector3(1.425, 1.7846, 1.425)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH486" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.7024, 0, 0.7118, 0, 1, 0, -0.7118, 0, 0.7024, 6.8644, 6.7395, 11.757)
+size = Vector3(0.855, 1.7846, 0.855)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH487" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.4131, 1.8109, 10.7493)
+size = Vector3(0.3, 3.6218, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH488" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.5719, -0.8167, -0.0765, 0.8192, 0.5736, 0, 0.0439, -0.0627, 0.9971, 8.9629, 3.1395, 10.7071)
+size = Vector3(0.07, 1.3784, 0.07)
+material = ExtResource("64_lh_bark")
+
+[node name="LH489" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.0071, -0.0102, -0.9999, 0.8192, 0.5736, 0, 0.5735, -0.8191, 0.0124, 8.4179, 2.9582, 10.3701)
+size = Vector3(0.07, 0.9479, 0.07)
+material = ExtResource("64_lh_bark")
+
+[node name="LH490" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(-0.5701, 0.8141, -0.1105, 0.8192, 0.5736, 0, 0.0634, -0.0906, -0.9939, 7.9005, 2.7413, 10.6922)
+size = Vector3(0.07, 1.2895, 0.07)
+material = ExtResource("64_lh_bark")
+
+[node name="LH491" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.1227, 2.351, 15.0608)
+size = Vector3(0.3, 4.7021, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH492" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.988, 0, 0.1544, 0, 1, 0, -0.1544, 0, 0.988, 8.1227, 3.5414, 15.0608)
+size = Vector3(1.9, 1.7241, 1.9)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH493" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.1431, 0, 0.9897, 0, 1, 0, -0.9897, 0, 0.1431, 8.1227, 5.1088, 15.0608)
+size = Vector3(1.425, 1.7241, 1.425)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH494" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.2526, 0, 0.9676, 0, 1, 0, -0.9676, 0, 0.2526, 8.1227, 6.5194, 15.0608)
+size = Vector3(0.855, 1.7241, 0.855)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH495" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.1177, 2.4834, 11.3659)
+size = Vector3(0.3, 4.9667, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH496" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(-0.3392, 0.4844, -0.8064, 0.8192, 0.5736, 0, 0.4626, -0.6606, -0.5913, 5.7877, 4.7109, 10.9158)
+size = Vector3(0.07, 1.3954, 0.07)
+material = ExtResource("64_lh_bark")
+
+[node name="LH497" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(-0.516, 0.737, 0.4365, 0.8192, 0.5736, 0, -0.2504, 0.3576, -0.8997, 5.8151, 4.3945, 11.5127)
+size = Vector3(0.07, 0.8408, 0.07)
+material = ExtResource("64_lh_bark")
+
+[node name="LH498" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.2176, -0.3107, 0.9253, 0.8192, 0.5736, 0, -0.5307, 0.7579, 0.3793, 6.2963, 4.0596, 11.8015)
+size = Vector3(0.07, 1.1771, 0.07)
+material = ExtResource("64_lh_bark")
+
+[node name="LH499" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5629, 2.5376, 11.4373)
+size = Vector3(0.3, 5.0753, 0.3)
+material = ExtResource("64_lh_bark")
+
+[node name="LH500" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.8039, 0, 0.5948, 0, 1, 0, -0.5948, 0, 0.8039, 7.5629, 3.8027, 11.4373)
+size = Vector3(1.9, 1.8609, 1.9)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH501" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.9999, 0, 0.0117, 0, 1, 0, -0.0117, 0, 0.9999, 7.5629, 5.4944, 11.4373)
+size = Vector3(1.425, 1.8609, 1.425)
+material = ExtResource("65_lh_leaves")
+
+[node name="LH502" type="CSGBox3D" parent="Exterior"]
+transform = Transform3D(0.3825, 0, 0.924, 0, 1, 0, -0.924, 0, 0.3825, 7.5629, 7.017, 11.4373)
+size = Vector3(0.855, 1.8609, 0.855)
+material = ExtResource("65_lh_leaves")
+
+[node name="PorchLight" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4, 1.95, 12.6)
+light_color = Color(1, 0.82, 0.5, 1)
+light_energy = 1.4
+omni_range = 7
+shadow_enabled = true
+
+[node name="FloorLamp" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.65, 1.45, 9.45)
+light_color = Color(1, 0.75, 0.45, 1)
+light_energy = 0.7
+omni_range = 4.5
+shadow_enabled = true
+
+[node name="TableLamp" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.89, 0.9, 9.32)
+light_color = Color(1, 0.75, 0.45, 1)
+light_energy = 0
+omni_range = 3
+shadow_enabled = true
+
+[node name="StoveClock" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4, 1.15, 9.3)
+light_color = Color(1, 0.15, 0.08, 1)
+light_energy = 0.25
+omni_range = 1.4
+shadow_enabled = false
+
+[node name="MoonWindow" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 3.9, 8.6)
+light_color = Color(0.5, 0.58, 0.8, 1)
+light_energy = 0.7
+omni_range = 4.5
+shadow_enabled = true
+
+[node name="BedroomMoon" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85, 1.5, 15.4)
+light_color = Color(0.45, 0.52, 0.72, 1)
+light_energy = 0.35
+omni_range = 3
+shadow_enabled = true
+
+[node name="YardMoonSouth" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 6, 5)
+light_color = Color(0.45, 0.52, 0.75, 1)
+light_energy = 0.75
+omni_range = 16
+shadow_enabled = false
+
+[node name="YardMoonWest" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 5.5, 13)
+light_color = Color(0.45, 0.52, 0.75, 1)
+light_energy = 0.5
+omni_range = 12
+shadow_enabled = false
+
+[node name="LY1_WalkOver" type="Camera3D" parent="Cameras"]
+transform = Transform3D(-0.9971, -0.0165, 0.0749, 0, 0.9765, 0.2153, -0.0767, 0.2147, -0.9737, -3.6, 2.9, 0.6)
+fov = 52
+near = 0.03
+far = 80.0
+environment = ExtResource("67_env_norah_ya")
+editor_description = "Off the corner of Norah's porch: her back, the walk across the dark grass to his lit porch"
+
+[node name="LY2_LouisPorch" type="Camera3D" parent="Cameras"]
+transform = Transform3D(0.5692, -0.0777, -0.8185, -0, 0.9955, -0.0944, 0.8222, 0.0538, 0.5667, -6.9, 0.55, 14.6)
+fov = 54
+near = 0.03
+far = 80.0
+environment = ExtResource("67_env_norah_ya")
+editor_description = "Low at the corner of his lawn: the split door under the porch light, Mary in the bed"
+
+[node name="LH1_LivingNE" type="Camera3D" parent="Cameras"]
+transform = Transform3D(-0.7682, -0.185, 0.6129, 0, 0.9574, 0.2889, -0.6402, 0.222, -0.7355, 1, 2.25, 9.4)
+fov = 70
+near = 0.03
+far = 80.0
+environment = ExtResource("68_env_norah_ho")
+editor_description = "Living room, high in the NE corner: front door, armchair and Bible, foot of the stairs"
+
+[node name="LH2_LivingSW" type="Camera3D" parent="Cameras"]
+transform = Transform3D(0.8558, 0.1184, -0.5035, -0, 0.9735, 0.2289, 0.5173, -0.1959, 0.8331, -2.75, 2.25, 13.75)
+fov = 66
+near = 0.03
+far = 80.0
+environment = ExtResource("68_env_norah_ho")
+editor_description = "Living room, high SW: couch and crucifix, the kitchen doorway"
+
+[node name="LH3_Kitchen" type="Camera3D" parent="Cameras"]
+transform = Transform3D(0.8054, -0.2178, 0.5512, 0, 0.93, 0.3675, -0.5927, -0.296, 0.7491, 3.85, 2.2, 12)
+fov = 68
+near = 0.03
+far = 80.0
+environment = ExtResource("68_env_norah_ho")
+editor_description = "Kitchen, SE ceiling corner: stove and pot, toolbox, the doorway"
+
+[node name="LH4_Bedroom" type="Camera3D" parent="Cameras"]
+transform = Transform3D(-0.7152, -0.353, 0.6032, 0, 0.8631, 0.505, -0.6989, 0.3612, -0.6173, 3.85, 2.2, 12.4)
+fov = 70
+near = 0.03
+far = 80.0
+environment = ExtResource("68_env_norah_ho")
+editor_description = "Bedroom, NE corner: the torn bed, the safe in the far corner"
+
+[node name="LH5_Stairs" type="Camera3D" parent="Cameras"]
+transform = Transform3D(0.0419, -0.6785, 0.7334, 0, 0.7341, 0.6791, -0.9991, -0.0285, 0.0308, 1.75, 4.25, 14.62)
+fov = 66
+near = 0.03
+far = 80.0
+environment = ExtResource("68_env_norah_ho")
+editor_description = "Top of the stairs, high, looking down: her face as she climbs into the dark"
+
+[node name="LH6_Upstairs" type="Camera3D" parent="Cameras"]
+transform = Transform3D(0.8519, -0.0965, 0.5147, 0, 0.9829, 0.1844, -0.5237, -0.1571, 0.8373, 3.75, 4.3, 14.75)
+fov = 66
+near = 0.03
+far = 80.0
+environment = ExtResource("68_env_norah_ho")
+editor_description = "Upstairs, far corner: the dress form, the open window, curtains blowing"
+
+[node name="LH7_Window" type="Camera3D" parent="Cameras"]
+transform = Transform3D(0.6703, -0.2049, 0.7133, 0, 0.9611, 0.2761, -0.7421, -0.1851, 0.6442, 1.75, 3.75, 10.3)
+fov = 60
+near = 0.03
+far = 80.0
+environment = ExtResource("68_env_norah_ho")
+editor_description = "Beside the open window: rain, the dark yard, the wet sill, Norah at the edge of frame"

@@ -1,0 +1,39 @@
+== ACROSS LANDING AREA
+LandingClearArea (x -15.1..-12.2, z -17.2..-13.6): clear
+BreachGlass node: found
+
+== ROUTE (tank controls, walking pace)
+approach entrance      OK    at ( 0.00,  1.21)   2.2s  camera Cam1_LotArrival      
+foyer                  OK    at ( 0.00, -1.79)   1.8s  camera CamF_Foyer           
+hallway south          OK    at ( 0.07, -7.80)   3.5s  camera Cam2a_HallSouth      
+hallway end            OK    at ( 0.12, -14.31)   3.8s  camera Cam2b_HallNorth      
+through doorway        OK    at (-2.11, -14.50)   1.7s  camera Cam3a_PartyEast      
+party centre           OK    at (-6.81, -13.37)   2.8s  camera Cam3a_PartyEast      
+toward banner          OK    at (-10.79, -12.62)   2.4s  camera Cam3b_PartyWest      
+breach landing area    OK    at (-13.47, -15.06)   2.3s  camera Cam3b_PartyWest      
+past cake table        OK    at (-11.18, -16.23)   2.0s  camera Cam3b_PartyWest      
+cake to gifts          OK    at (-7.00, -16.32)   2.5s  camera Cam3a_PartyEast      
+snack corner           OK    at (-3.18, -15.36)   2.3s  camera Cam3a_PartyEast      
+punch table            OK    at (-2.61, -11.79)   2.4s  camera Cam3a_PartyEast      
+south side             OK    at (-3.15, -9.18)   1.6s  camera Cam3a_PartyEast      
+between chairs and crafts OK    at (-4.80, -9.00)   1.3s  camera Cam3a_PartyEast      
+back east              OK    at (-3.40, -9.19)   1.7s  camera Cam3a_PartyEast      
+back to doorway        OK    at (-2.32, -14.31)   3.4s  camera Cam3a_PartyEast      
+hallway end            OK    at (-0.09, -14.50)   1.6s  camera Cam2b_HallNorth      
+hallway south          OK    at ( 0.12, -4.71)   6.2s  camera Cam2a_HallSouth      
+foyer                  OK    at (-0.01, -1.40)   1.9s  camera CamF_Foyer           
+outside                OK    at ( 0.02,  3.82)   3.1s  camera Cam1_LotArrival      
+route time 50s
+
+== WALL / FURNITURE COLLISION (walk forward 2 s into each)
+hallway east wall                HELD  x=0.92 (surface 1.20)
+hallway west wall (solid part)   HELD  x=-0.82 (surface -1.10)
+hallway north wall               HELD  z=-15.72 (surface -16.00)
+party north wall under window    HELD  z=-17.72 (surface -18.00)
+party west wall / breach window  HELD  x=-14.92 (surface -15.20)
+party south window               HELD  z=-8.83 (surface -8.00)
+foyer west wall                  HELD  x=-1.47 (surface -2.20)
+cake table                       HELD  z=-16.62 (surface -16.90)
+punch table                      HELD  x=-2.28 (surface -2.00)
+
+RESULT: PASS (0 failures)

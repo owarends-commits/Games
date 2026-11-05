@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://frtw1yvlhpjp"
+path="res://.godot/imported/rib_013.obj-abf2da94395da3c6b4e52a78a2b3b50b.mesh"
+
+[deps]
+
+files=["res://.godot/imported/rib_013.obj-abf2da94395da3c6b4e52a78a2b3b50b.mesh"]
+
+source_file="res://assets/meshes/ch1_roads/rib_013.obj"
+dest_files=["res://.godot/imported/rib_013.obj-abf2da94395da3c6b4e52a78a2b3b50b.mesh", "res://.godot/imported/rib_013.obj-abf2da94395da3c6b4e52a78a2b3b50b.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

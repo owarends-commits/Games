@@ -1,0 +1,39 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/environments/community_center.tscn" id="1_community_ce"]
+[ext_resource type="PackedScene" path="res://scenes/characters/player.tscn" id="2_player"]
+[ext_resource type="Shader" path="res://shaders/ps1_post.gdshader" id="3_ps1_post"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1"]
+shader = ExtResource("3_ps1_post")
+
+[node name="CommunityCenterTest" type="Node"]
+
+[node name="Screen" type="SubViewportContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+stretch = true
+stretch_shrink = 3
+texture_filter = 1
+
+[node name="World" type="SubViewport" parent="Screen"]
+handle_input_locally = false
+audio_listener_enable_3d = true
+size = Vector2i(320, 240)
+render_target_update_mode = 4
+
+[node name="CommunityCenter" parent="Screen/World" instance=ExtResource("1_community_ce")]
+
+[node name="Player" parent="Screen/World" instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
+
+[node name="PostFX" type="CanvasLayer" parent="Screen/World"]
+layer = 10
+
+[node name="Screen" type="ColorRect" parent="Screen/World/PostFX"]
+material = SubResource("ShaderMaterial_1")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2

@@ -1,0 +1,607 @@
+{
+ "_note": "DRAFT dialogue for the prologue. Story beats follow the narrative sheet; the wording is a proposal. Every line shows in the dialogue box with a portrait, one speaker at a time. who = speaker id, mood = neutral|happy|scared|scream|cry|brave, portrait_frame = a specific portrait file (the Stranger's morph frames), cut = fraction of the line shown before an interruption. Conversations played with auto=true (cutscenes) move on by themselves; barks are single lines during gameplay that move on by themselves and never stop the player.",
+ "speakers": {
+  "kenneth": {
+   "name": "Kenneth",
+   "portrait": "kenneth",
+   "color": "#9cc4ff",
+   "blip": 0.85
+  },
+  "adaline": {
+   "name": "Adaline",
+   "portrait": "adaline",
+   "color": "#ffd860",
+   "blip": 1.45
+  },
+  "stranger": {
+   "name": "Stranger",
+   "portrait": "stranger",
+   "color": "#b8d8a8",
+   "blip": 0.95
+  },
+  "rachel": {
+   "name": "Rachel",
+   "portrait": "rachel",
+   "color": "#f4a0c0",
+   "blip": 1.15
+  },
+  "marcus": {
+   "name": "Marcus",
+   "portrait": "marcus",
+   "color": "#f08070",
+   "blip": 0.8
+  },
+  "denise": {
+   "name": "Denise",
+   "portrait": "denise",
+   "color": "#70d0c8",
+   "blip": 1.2
+  },
+  "dad2": {
+   "name": "Stranger",
+   "portrait": "dad2",
+   "color": "#c8c8c8",
+   "blip": 0.9
+  },
+  "mom2": {
+   "name": "Stranger",
+   "portrait": "mom2",
+   "color": "#a8c890",
+   "blip": 1.15
+  },
+  "dad3": {
+   "name": "Stranger",
+   "portrait": "dad3",
+   "color": "#a0b0e0",
+   "blip": 0.85
+  },
+  "kidboy": {
+   "name": "Stranger",
+   "portrait": "kidboy",
+   "color": "#a8e0a0",
+   "blip": 1.6
+  },
+  "kidgirl": {
+   "name": "Stranger",
+   "portrait": "kidgirl",
+   "color": "#ffc0d0",
+   "blip": 1.7
+  }
+ },
+ "conversations": {
+  "arrival_car": [
+   {
+    "who": "adaline",
+    "mood": "happy",
+    "text": "Daddy, we're here! We're here, we're here!"
+   },
+   {
+    "who": "kenneth",
+    "mood": "neutral",
+    "text": "We're here. Listen to that rain."
+   },
+   {
+    "who": "adaline",
+    "mood": "happy",
+    "text": "Can I give Amelia her present first? Before everybody?"
+   },
+   {
+    "who": "kenneth",
+    "mood": "happy",
+    "text": "You can. Hood up, and you hold my hand across the lot. It's slippery."
+   },
+   {
+    "who": "adaline",
+    "mood": "neutral",
+    "text": "Okaaay."
+   }
+  ],
+  "hallway": [
+   {
+    "who": "adaline",
+    "mood": "scared",
+    "text": "It's dark in here..."
+   },
+   {
+    "who": "kenneth",
+    "mood": "neutral",
+    "text": "It's just the hallway. Hear that? That's the party."
+   },
+   {
+    "who": "adaline",
+    "mood": "scared",
+    "text": "Daddy! Amelia's present! I left it in the car!"
+   },
+   {
+    "who": "kenneth",
+    "mood": "happy",
+    "text": "We'll grab it after cake, bug. She won't mind."
+   },
+   {
+    "who": "adaline",
+    "mood": "happy",
+    "text": "Okay! Amelia's party!"
+   }
+  ],
+  "party_entry": [
+   {
+    "who": "rachel",
+    "mood": "happy",
+    "text": "You made it! Hi, Adaline! Look at that dress!"
+   },
+   {
+    "who": "adaline",
+    "mood": "happy",
+    "text": "It's yellow! Where's Amelia?"
+   },
+   {
+    "who": "rachel",
+    "mood": "happy",
+    "text": "On the mats with everybody. Go on, sweetie."
+   }
+  ],
+  "party_entry_2": [
+   {
+    "who": "kenneth",
+    "mood": "neutral",
+    "text": "Thanks for having us, Rachel."
+   },
+   {
+    "who": "rachel",
+    "mood": "happy",
+    "text": "Of course. Punch is right there by the door. Make yourself at home, Ken."
+   }
+  ],
+  "punch": [
+   {
+    "who": "kenneth",
+    "mood": "neutral",
+    "text": "Red punch. Sugar with a little extra sugar."
+   },
+   {
+    "who": "kenneth",
+    "mood": "happy",
+    "text": "She's going to be up until midnight."
+   }
+  ],
+  "talk_rachel": [
+   {
+    "who": "rachel",
+    "mood": "happy",
+    "text": "Cake's at seven. Don't let me forget the candles."
+   }
+  ],
+  "talk_denise": [
+   {
+    "who": "denise",
+    "mood": "happy",
+    "text": "Oh, you're Adaline's dad! She's a little firecracker, isn't she?"
+   },
+   {
+    "who": "kenneth",
+    "mood": "happy",
+    "text": "That's one word for it."
+   },
+   {
+    "who": "denise",
+    "mood": "neutral",
+    "text": "Awful night to be out. My husband couldn't get through to anybody on the house phone all afternoon."
+   },
+   {
+    "who": "denise",
+    "mood": "happy",
+    "text": "Probably the storm knocking the lines down. Anyway, no television at a kids' party, right? Just cake and screaming."
+   }
+  ],
+  "talk_stranger": [
+   {
+    "who": "stranger",
+    "mood": "happy",
+    "text": "Well, hello there! You must be Adaline's father. I'd know that smile anywhere. She's got yours."
+   },
+   {
+    "who": "kenneth",
+    "mood": "happy",
+    "text": "Guilty. Have we met?"
+   },
+   {
+    "who": "stranger",
+    "mood": "happy",
+    "text": "Not properly. I'm the deacon over at Kennedy Community Church. Half this town comes through our doors on a Sunday."
+   },
+   {
+    "who": "stranger",
+    "mood": "happy",
+    "text": "Your girl came to our Easter egg hunt with Rachel's family. Found the golden egg and showed it to every soul in the building."
+   },
+   {
+    "who": "kenneth",
+    "mood": "happy",
+    "text": "She still keeps it on her dresser."
+   },
+   {
+    "who": "stranger",
+    "mood": "happy",
+    "text": "Ha! Good. Good. You're doing right by her, I can tell. Don't let anybody tell you different."
+   },
+   {
+    "who": "stranger",
+    "mood": "happy",
+    "text": "Go on, now, enjoy yourself. And save me a slice of that cake if the little ones leave any."
+   }
+  ],
+  "talk_stranger_again": [
+   {
+    "who": "stranger",
+    "mood": "happy",
+    "text": "Bless you. Go on, enjoy the party."
+   }
+  ],
+  "talk_adaline": [
+   {
+    "who": "adaline",
+    "mood": "happy",
+    "text": "Daddy, watch! Watch me jump!"
+   },
+   {
+    "who": "kenneth",
+    "mood": "happy",
+    "text": "I'm watching, bug."
+   }
+  ],
+  "talk_kid": [
+   {
+    "who": "kidboy",
+    "mood": "happy",
+    "text": "We're playing lava! Don't touch the floor!"
+   }
+  ],
+  "talk_kidgirl": [
+   {
+    "who": "kidgirl",
+    "mood": "happy",
+    "text": "My mom did my pigtails for the party. Do you like them?"
+   },
+   {
+    "who": "kenneth",
+    "mood": "happy",
+    "text": "Very fancy."
+   }
+  ],
+  "talk_parent": [
+   {
+    "who": "dad2",
+    "mood": "happy",
+    "text": "Rachel really went all out, huh? I think there's more balloons than kids."
+   }
+  ],
+  "talk_mom": [
+   {
+    "who": "mom2",
+    "mood": "happy",
+    "text": "Is yours the one in yellow? She's been teaching mine how to cartwheel."
+   }
+  ],
+  "talk_dad3": [
+   {
+    "who": "dad3",
+    "mood": "neutral",
+    "text": "Third party this month. I think I've had more cake than my kids."
+   }
+  ],
+  "marcus_wait": [
+   {
+    "who": "marcus",
+    "mood": "happy",
+    "text": "Grab a drink first, man. Trust me, it's going to be a long one."
+   }
+  ],
+  "smalltalk_marcus": [
+   {
+    "who": "marcus",
+    "mood": "happy",
+    "text": "Ken, right? Adaline's dad. Marcus. I've got the one in the dinosaur shirt."
+   },
+   {
+    "who": "kenneth",
+    "mood": "happy",
+    "text": "Good to meet you. She hasn't stopped talking about this party all week."
+   },
+   {
+    "who": "marcus",
+    "mood": "happy",
+    "text": "Ha. Mine either. Rachel went all out this year. Balloons, the cake, the whole thing."
+   },
+   {
+    "who": "marcus",
+    "mood": "neutral",
+    "text": "Hey, you hear anything about the lights out on the highway? My brother-in-law swears half the county lost power."
+   }
+  ],
+  "breach_landed": [
+   {
+    "who": "dad2",
+    "mood": "scared",
+    "text": "...What was that?"
+   },
+   {
+    "who": "mom2",
+    "mood": "scared",
+    "text": "Is somebody hurt?"
+   }
+  ],
+  "breach_inspect": [
+   {
+    "who": "dad3",
+    "mood": "scared",
+    "text": "Hey. Hey, buddy... are you okay?"
+   },
+   {
+    "who": "denise",
+    "mood": "scared",
+    "text": "Is that... is that a person?"
+   },
+   {
+    "who": "rachel",
+    "mood": "scared",
+    "text": "Kids, stay back. Stay by the table."
+   }
+  ],
+  "lot_reunion": [
+   {
+    "who": "kenneth",
+    "mood": "scream",
+    "text": "Adaline!"
+   },
+   {
+    "who": "adaline",
+    "mood": "cry",
+    "text": "Daddy!"
+   },
+   {
+    "who": "kenneth",
+    "mood": "cry",
+    "text": "I've got you. I've got you. Are you hurt? Look at me."
+   },
+   {
+    "who": "adaline",
+    "mood": "cry",
+    "text": "The man held my hand. He found me."
+   },
+   {
+    "who": "stranger",
+    "mood": "cry",
+    "text": "Please... please, take me with you. My car, I can't... I can't stay out here with those things."
+   },
+   {
+    "who": "kenneth",
+    "mood": "scared",
+    "text": "..."
+   },
+   {
+    "who": "stranger",
+    "mood": "cry",
+    "text": "Please. I'll sit in the back. I won't be any trouble. Please."
+   },
+   {
+    "who": "kenneth",
+    "mood": "brave",
+    "text": "Get in. Both of you, in the back. Now."
+   }
+  ],
+  "car_1": [
+   {
+    "who": "adaline",
+    "mood": "cry",
+    "text": "Daddy, what were those? What happened to everybody?"
+   },
+   {
+    "who": "kenneth",
+    "mood": "scared",
+    "text": "I don't know, bug. Keep your belt on. Stay down."
+   },
+   {
+    "who": "stranger",
+    "mood": "cry",
+    "text": "Thank you. Thank you, thank you. God bless you."
+   },
+   {
+    "who": "adaline",
+    "mood": "scared",
+    "text": "Can we call Mommy?"
+   },
+   {
+    "who": "kenneth",
+    "mood": "neutral",
+    "text": "...No signal. Nothing's going through."
+   },
+   {
+    "who": "kenneth",
+    "mood": "brave",
+    "text": "We'll drive straight to her. Okay? Straight there."
+   }
+  ],
+  "car_hit": [
+   {
+    "who": "adaline",
+    "mood": "scream",
+    "text": "DADDY!"
+   },
+   {
+    "who": "kenneth",
+    "mood": "brave",
+    "text": "Hold on! Both of you, hold on!"
+   }
+  ],
+  "car_church": [
+   {
+    "who": "adaline",
+    "mood": "scared",
+    "text": "Mister... your shoulder's smoking."
+   },
+   {
+    "who": "stranger",
+    "mood": "neutral",
+    "text": "..."
+   },
+   {
+    "who": "adaline",
+    "mood": "scared",
+    "text": "Is that a burn? Did the fire get you?"
+   },
+   {
+    "who": "adaline",
+    "mood": "scared",
+    "text": "It looks like a cross. Does it hurt?"
+   },
+   {
+    "who": "stranger",
+    "mood": "neutral",
+    "text": "..."
+   },
+   {
+    "who": "kenneth",
+    "mood": "neutral",
+    "text": "Bug, leave him be. He's had a night."
+   },
+   {
+    "who": "adaline",
+    "mood": "scared",
+    "text": "Daddy... he stopped crying."
+   }
+  ],
+  "car_reveal_1": [
+   {
+    "who": "kenneth",
+    "mood": "scared",
+    "text": "Hey... your shoulder. That's smoke. You need a hospital."
+   },
+   {
+    "who": "stranger",
+    "portrait_frame": "stranger_m1",
+    "text": "You can slow down now, Kenneth."
+   },
+   {
+    "who": "kenneth",
+    "mood": "scared",
+    "text": "...I never told you my name."
+   },
+   {
+    "who": "stranger",
+    "portrait_frame": "stranger_m3",
+    "text": "You didn't have to."
+   }
+  ],
+  "car_reveal_2": [
+   {
+    "who": "stranger",
+    "portrait_frame": "stranger_m4",
+    "text": "I know all of their names."
+   },
+   {
+    "who": "stranger",
+    "portrait_frame": "stranger_m5",
+    "text": "...",
+    "auto": 1.2
+   },
+   {
+    "who": "adaline",
+    "mood": "scream",
+    "text": "DADDY!",
+    "auto": 0.6
+   }
+  ],
+  "marcus_again": [
+   {
+    "who": "marcus",
+    "mood": "neutral",
+    "text": "Once the cake hits, it's over for all of us. Sugar crash city."
+   }
+  ]
+ },
+ "barks": {
+  "panic": [
+   [
+    "denise",
+    "Get the kids out!",
+    "scream"
+   ],
+   [
+    "mom2",
+    "Where's my son? WHERE'S MY SON?",
+    "scream"
+   ],
+   [
+    "dad2",
+    "Move! MOVE!",
+    "scream"
+   ],
+   [
+    "kidgirl",
+    "Mommy!",
+    "scream"
+   ],
+   [
+    "rachel",
+    "Amelia! AMELIA!",
+    "scream"
+   ],
+   [
+    "marcus",
+    "The door! Go, go!",
+    "scream"
+   ]
+  ],
+  "kenneth_shout": [
+   [
+    "kenneth",
+    "ADALINE!",
+    "scream"
+   ],
+   [
+    "kenneth",
+    "Adaline! Where are you?!",
+    "scream"
+   ],
+   [
+    "kenneth",
+    "ADALINE!",
+    "scream"
+   ]
+  ],
+  "chase": [
+   [
+    "kenneth",
+    "It's coming! Go!",
+    "scream"
+   ],
+   [
+    "dad2",
+    "It's in the hall! It's in the hall!",
+    "scream"
+   ]
+  ],
+  "lot": [
+   [
+    "dad2",
+    "Get in the car! Get in the car!",
+    "scream"
+   ],
+   [
+    "mom2",
+    "They're coming from the street!",
+    "scream"
+   ],
+   [
+    "kidboy",
+    "Daddy!",
+    "cry"
+   ],
+   [
+    "dad2",
+    "Come on, come on, START!",
+    "scared"
+   ]
+  ]
+ }
+}

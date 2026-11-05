@@ -1,0 +1,878 @@
+{
+ "speakers": {
+  "norah": {
+   "name": "Norah",
+   "portrait": "norah",
+   "color": "#e8c9a0",
+   "blip": 1.1
+  },
+  "tv": {
+   "name": "EMERGENCY BROADCAST",
+   "color": "#ff5a4a",
+   "blip": 0.6
+  },
+  "journal": {
+   "name": "Norah's journal",
+   "color": "#d8cfb8",
+   "blip": 1.0
+  },
+  "examine": {
+   "name": "",
+   "color": "#c8c4b8",
+   "blip": 1.0
+  },
+  "sign": {
+   "name": "Hand-painted sign",
+   "color": "#e8e0c8",
+   "blip": 0.9
+  },
+  "note": {
+   "name": "A slip of paper",
+   "color": "#d8cfb8",
+   "blip": 1.0
+  },
+  "louis_j": {
+   "name": "Louis's journal",
+   "color": "#d8c8a8",
+   "blip": 1.0
+  },
+  "radio": {
+   "name": "Car radio",
+   "color": "#b8c8a0",
+   "blip": 0.9
+  }
+ },
+ "conversations": {
+  "c1_call": [
+   {
+    "who": "norah",
+    "mood": "neutral",
+    "text": "I'll call Kenneth's line when I get home."
+   }
+  ],
+  "c1_sign": [
+   {
+    "who": "sign",
+    "mood": "neutral",
+    "text": "ALL MAY TAKE REFUGE IN THE RED COUNTY COMMUNAL CHAPEL",
+    "auto": 2.6
+   },
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "Someone painted these tonight. The paint's still running.",
+    "auto": 2.4
+   }
+  ],
+  "c1_signs_more": [
+   {
+    "who": "norah",
+    "mood": "neutral",
+    "text": "Another one. And another.",
+    "auto": 1.6
+   }
+  ],
+  "c1_turn": [
+   {
+    "who": "norah",
+    "mood": "brave",
+    "text": "Town's that way. Addie's that way.",
+    "auto": 2.0
+   },
+   {
+    "who": "norah",
+    "mood": "neutral",
+    "text": "...If anybody knows what's happening, it's whoever painted those.",
+    "auto": 2.4
+   },
+   {
+    "who": "norah",
+    "mood": "brave",
+    "text": "Just for a minute. Then Addie.",
+    "auto": 1.8
+   }
+  ],
+  "c1_bounds": [
+   {
+    "who": "norah",
+    "mood": "neutral",
+    "text": "I don't need to go this way.",
+    "auto": 1.4
+   }
+  ],
+  "c1_light_works": [
+   {
+    "who": "norah",
+    "mood": "neutral",
+    "text": "There we go.",
+    "auto": 1.2
+   }
+  ],
+  "c1_arrive": [
+   {
+    "who": "norah",
+    "mood": "neutral",
+    "text": "Lights on at Louis's. Okay. Everything's fine."
+   }
+  ],
+  "c1_figure": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "...Hello?"
+   },
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "Who's out there?"
+   }
+  ],
+  "c1_figure_wait": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "Are you hurt? Do you need help?"
+   }
+  ],
+  "c1_headlight": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "No. No, no, no."
+   }
+  ],
+  "c1_reveal": [
+   {
+    "who": "norah",
+    "mood": "scream",
+    "text": "Louis?!"
+   }
+  ],
+  "c1_keys": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "Keys. Keys, keys—"
+   }
+  ],
+  "c1_inside": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "That was Louis. That was Louis's face."
+   },
+   {
+    "who": "norah",
+    "mood": "brave",
+    "text": "The door. Block the door!"
+   }
+  ],
+  "c1_barricaded": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "..."
+   },
+   {
+    "who": "norah",
+    "mood": "brave",
+    "text": "The lockbox. Under my bed."
+   }
+  ],
+  "c1_lockbox_open": [
+   {
+    "who": "norah",
+    "mood": "brave",
+    "text": "Okay. You hope you never need it."
+   }
+  ],
+  "c1_lockbox_wrong": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "No. Think. Addie's birthday. Month, then day."
+   }
+  ],
+  "c1_lockbox_noclue": [
+   {
+    "who": "norah",
+    "mood": "neutral",
+    "text": "Three numbers. I always use the same three... Addie's birthday. It's on the kitchen calendar, in her crayon."
+   }
+  ],
+  "c1_window_scratch": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "The bedroom window. He's at the bedroom window."
+   }
+  ],
+  "c1_wardrobe_done": [
+   {
+    "who": "norah",
+    "mood": "brave",
+    "text": "That'll hold. That has to hold."
+   }
+  ],
+  "c1_crash": [
+   {
+    "who": "norah",
+    "mood": "scream",
+    "text": "No—!"
+   }
+  ],
+  "c1_body": [
+   {
+    "who": "norah",
+    "mood": "cry",
+    "text": "..."
+   },
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "It's still smoking. Why is it still smoking?"
+   }
+  ],
+  "c1_body_look": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "Under the burned skin, the cardigan he wore every Sunday. His glasses, bent into his face."
+   }
+  ],
+  "c1_broadcast": [
+   {
+    "who": "tv",
+    "mood": "neutral",
+    "text": "THIS IS AN EMERGENCY ALERT FOR THE CITY OF KENNEDY AND SURROUNDING AREAS."
+   },
+   {
+    "who": "tv",
+    "mood": "neutral",
+    "text": "AT APPROXIMATELY 7:40 P.M. A WIDESPREAD EVENT OF UNKNOWN ORIGIN WAS REPORTED WITHIN THE CITY OF KENNEDY."
+   },
+   {
+    "who": "tv",
+    "mood": "neutral",
+    "text": "RESIDENTS ARE ADVISED TO REMAIN INDOORS. LOCK ALL DOORS AND WINDOWS."
+   },
+   {
+    "who": "tv",
+    "mood": "neutral",
+    "text": "DO NOT APPROACH PERSONS WHO APPEAR INJURED OR DISORIENTED."
+   },
+   {
+    "who": "tv",
+    "mood": "neutral",
+    "text": "DO NOT ATTEMPT TO TRAVEL. ROADS INTO KENNEDY ARE CLOSED."
+   },
+   {
+    "who": "tv",
+    "mood": "neutral",
+    "text": "FURTHER INFORMATION WILL BE PROVIDED AS IT BECOMES AVAILABLE."
+   }
+  ],
+  "c1_after_broadcast": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "Addie."
+   }
+  ],
+  "c1_landline": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "Come on, come on—"
+   },
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "Nothing. The line's dead."
+   },
+   {
+    "who": "norah",
+    "mood": "cry",
+    "text": "Addie's with Kenneth. In town."
+   },
+   {
+    "who": "norah",
+    "mood": "brave",
+    "text": "Okay. I'm coming to get you."
+   }
+  ],
+  "c1_gathered": [
+   {
+    "who": "norah",
+    "mood": "brave",
+    "text": "Light. Bullets. Okay."
+   },
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "He's still out there."
+   },
+   {
+    "who": "norah",
+    "mood": "brave",
+    "text": "The car."
+   }
+  ],
+  "c1_exit_shelf": [
+   {
+    "who": "norah",
+    "mood": "brave",
+    "text": "Okay. Okay."
+   }
+  ],
+  "c1_car_wrecked": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "The windshield is caved in. The hood is torn up, and the front tyre is shredded."
+   },
+   {
+    "who": "norah",
+    "mood": "cry",
+    "text": "Louis... while I was inside."
+   },
+   {
+    "who": "norah",
+    "mood": "cry",
+    "text": "It's not going anywhere."
+   },
+   {
+    "who": "norah",
+    "mood": "brave",
+    "text": "His truck. He kept it running."
+   }
+  ],
+  "c1_truck_locked": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "An old pickup, more rust than paint. Locked."
+   },
+   {
+    "who": "norah",
+    "mood": "neutral",
+    "text": "He never left the keys in it. They'll be in the house."
+   }
+  ],
+  "c1_truck_keys": [
+   {
+    "who": "norah",
+    "mood": "brave",
+    "text": "Okay. Please start."
+   }
+  ],
+  "c1_louis_door": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "What the f—"
+   },
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "The door is split down the middle, one half still swinging from the top hinge."
+   }
+  ],
+  "c1_louis_inside": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "..."
+   },
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "I can't see a thing."
+   }
+  ],
+  "c1_photo_school": [
+   {
+    "who": "norah",
+    "mood": "neutral",
+    "text": "Her first day of kindergarten. Kenneth took it. She made me promise not to cry at the door. I lied."
+   }
+  ],
+  "c1_photo_lake": [
+   {
+    "who": "norah",
+    "mood": "neutral",
+    "text": "Kenneth and Addie at Lake Ruth, both squinting into the sun like the same person, forty years apart."
+   }
+  ],
+  "c1_photo_birthday": [
+   {
+    "who": "norah",
+    "mood": "neutral",
+    "text": "Addie's birthday. She blew the candles out twice, because the first time \"didn't count.\""
+   }
+  ],
+  "c1_photo_christmas": [
+   {
+    "who": "norah",
+    "mood": "neutral",
+    "text": "Christmas morning. Addie was up at five, which meant I was up at five."
+   }
+  ],
+  "c1_calendar": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "Addie's week circled in red. Next Monday."
+   },
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "Flipped back to June: the 12th circled in pink, in Addie's own crayon. \"MY BIRTHDAY!!\""
+   }
+  ],
+  "c1_tv_off": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "The TV. Dark."
+   }
+  ],
+  "c1_fridge": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "Addie's drawing. A purple cat with a very long tail: \"PICKLE.\""
+   }
+  ],
+  "c1_addie_bed": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "Addie's bed, made the way she likes it, with Pickle on the pillow."
+   }
+  ],
+  "c1_journal": [
+   {
+    "who": "journal",
+    "mood": "neutral",
+    "text": "Oct 14. Addie's week starts Monday. I bought the cereal with the marshmallows even though I swore I wouldn't."
+   },
+   {
+    "who": "journal",
+    "mood": "neutral",
+    "text": "She's decided the cat on her backpack is called \"Pickle.\" I've been informed this is final."
+   },
+   {
+    "who": "journal",
+    "mood": "neutral",
+    "text": "Work was the usual. Sergeant Dale lost his reading glasses on his own head again. Somebody called in a cow on the county road. Twice."
+   },
+   {
+    "who": "journal",
+    "mood": "neutral",
+    "text": "Louis finished the porch step. Addie \"helped.\" She has her own hammer now, God help us. He wouldn't take money, so he went home with the rest of the lasagna."
+   },
+   {
+    "who": "journal",
+    "mood": "neutral",
+    "text": "He says the tulips go in next month, and Addie's in charge of the bulbs."
+   },
+   {
+    "who": "journal",
+    "mood": "neutral",
+    "text": "Note to self: the lockbox code is still Addie's birthday. Change it. (I won't.)"
+   }
+  ],
+  "c1_bible_journal": [
+   {
+    "who": "louis_j",
+    "mood": "neutral",
+    "text": "For Rose. Eleven years tomorrow. Some mornings I still set out two cups before I remember."
+   },
+   {
+    "who": "louis_j",
+    "mood": "neutral",
+    "text": "Lord, keep the girls next door. The little one asks me a hundred questions about the saints and remembers every answer. Her mother works too hard and won't sit down."
+   },
+   {
+    "who": "louis_j",
+    "mood": "neutral",
+    "text": "Father Abel asked about the truck again. I told him I'll drive it once more, to the chapel for Christmas Eve. The keys stay in the safe until then. Rose's verse keeps them: John 3:16."
+   },
+   {
+    "who": "louis_j",
+    "mood": "neutral",
+    "text": "Oct 21. My back burns. There is a mark there I can't see in the mirror. I hear something under my own voice. I've locked the doors."
+   },
+   {
+    "who": "louis_j",
+    "mood": "neutral",
+    "text": "If I am not myself, Lord, let them be far away."
+   }
+  ],
+  "c1_bible_found": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "A small leather journal in the drawer. Louis's handwriting."
+   }
+  ],
+  "c1_rosary": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "Louis's rosary, tucked behind the toilet tank like it was hidden in a hurry. A paper tag on the cord: \"Rose's. For keeping.\""
+   }
+  ],
+  "c1_rose_photo": [
+   {
+    "who": "norah",
+    "mood": "neutral",
+    "text": "Louis and Rose outside the chapel. He kept it by the door, so she'd be the first thing he saw coming home."
+   },
+   {
+    "who": "norah",
+    "mood": "neutral",
+    "text": "I only met her twice. She called me \"the new girl\" for three years."
+   }
+  ],
+  "c1_grave": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "A little wooden cross in the flower bed, hand-carved: ROSE."
+   }
+  ],
+  "c1_well": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "The old well. Louis kept a board over it for Addie's sake."
+   }
+  ],
+  "c1_l_wardrobe": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "His coats, still smelling of pipe smoke. In a pocket: a battery, half used."
+   }
+  ],
+  "c1_l_wardrobe_empty": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "Coats. Nothing else."
+   }
+  ],
+  "c1_desk_empty": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "Pencils, a magnifying glass, his reading glasses' case. Empty."
+   }
+  ],
+  "c1_upstairs": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "..."
+   }
+  ],
+  "c1_l_bed": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "The sheets are torn apart from the inside. The tears are scorched brown at the edges."
+   },
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "Like something hatched."
+   }
+  ],
+  "c1_l_window": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "The window's open."
+   },
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "Rain blows in across the sill. Wet footprints cross the floor to the window. Bare feet."
+   },
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "Going out. Not in."
+   }
+  ],
+  "c1_fridge_meds": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "Behind the milk, pills in an orange bottle. A few left."
+   }
+  ],
+  "c1_fridge_empty": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "Milk, butter, a covered dish. Nothing she needs."
+   }
+  ],
+  "c1_l_safe_locked": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "A heavy safe. Three dials."
+   },
+   {
+    "who": "norah",
+    "mood": "neutral",
+    "text": "I don't know his numbers."
+   }
+  ],
+  "c1_l_safe_wrong": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "The handle won't turn."
+   }
+  ],
+  "c1_l_safe_open": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "Inside: a ring of keys on a red fob, and a photo."
+   }
+  ],
+  "c1_l_safe_photo": [
+   {
+    "who": "norah",
+    "mood": "cry",
+    "text": "...Oh, Louis."
+   }
+  ],
+  "c1_car_go": [
+   {
+    "who": "norah",
+    "mood": "brave",
+    "text": "I'm coming, Addie."
+   }
+  ],
+  "c1_screams": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "That's the Pruitts' place—"
+   },
+   {
+    "who": "norah",
+    "mood": "cry",
+    "text": "Keep driving. Just keep driving."
+   }
+  ],
+  "c1_flash_low": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "Come on, stay on..."
+   }
+  ],
+  "c1_flash_dead": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "No. No, not now."
+   }
+  ],
+  "c1_med_full": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "She's not hurt enough to need them."
+   }
+  ],
+  "c1_heal": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "She dry-swallows two of the pills."
+   }
+  ],
+  "c1_already": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "Nothing else here."
+   }
+  ],
+  "c1_nothing": [
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "Nothing useful."
+   }
+  ],
+  "c1_storm_photo": [
+   {
+    "who": "norah",
+    "mood": "neutral",
+    "text": "Me and Louis fixing up his porch after that storm, all those years back. A branch took out the post and half the rail."
+   },
+   {
+    "who": "norah",
+    "mood": "neutral",
+    "text": "He wouldn't let me pay for the lumber, so I paid him in coffee. He still says I owe him."
+   }
+  ],
+  "c1_step_photo": [
+   {
+    "who": "norah",
+    "mood": "neutral",
+    "text": "Louis and Addie, the day they fixed my porch step. She wouldn't put that hammer down for a week."
+   },
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "On the border, in his handwriting: \"Step fixed! Head carpenter: Addie.\""
+   }
+  ],
+  "c1_radio": [
+   {
+    "who": "radio",
+    "mood": "neutral",
+    "text": "...the Red County Sheriff's office is asking folks to check on their neighbors tonight. We've had a number of missing persons reports come in since this afternoon."
+   },
+   {
+    "who": "radio",
+    "mood": "neutral",
+    "text": "Three more in the last hour. Two out along the county road, one in Kennedy proper. A woman who went out to get her mail and didn't come back in."
+   },
+   {
+    "who": "radio",
+    "mood": "neutral",
+    "text": "If you have any information, call the Sheriff's office. And, folks... lock your doors tonight."
+   },
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "Missing? Since this afternoon?"
+   },
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "I hope Adaline is safe."
+   }
+  ],
+  "c1_gone": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "..."
+   },
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "No. No, no—"
+   },
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "Where he lay, only a dark smear. It drags across the floor toward the bedroom, and the broken window."
+   },
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "He was dead. I watched him go down. He was dead."
+   }
+  ],
+  "c1_stalk_reveal": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "No..."
+   },
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "I shot you. I watched you go down."
+   },
+   {
+    "who": "norah",
+    "mood": "scream",
+    "text": "Stay away from me!"
+   }
+  ],
+  "c1_stalk_down": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "Stay down. Please, Louis. Just stay down."
+   }
+  ],
+  "c1_up_crash": [
+   {
+    "who": "norah",
+    "mood": "scream",
+    "text": "LOUIS—!"
+   },
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "The truck. Get to the truck!"
+   }
+  ],
+  "c1_truck_finale": [
+   {
+    "who": "norah",
+    "mood": "scream",
+    "text": "GET OFF!"
+   }
+  ],
+  "c1_louis_killed": [
+   {
+    "who": "norah",
+    "mood": "cry",
+    "text": "...I'm sorry, Louis."
+   },
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "Something glints beside him. A thin gold chain, snapped, and a ring on it."
+   }
+  ],
+  "c1_l_window_back": [
+   {
+    "who": "norah",
+    "mood": "scared",
+    "text": "The window."
+   },
+   {
+    "who": "examine",
+    "mood": "neutral",
+    "text": "Glass and rain across the floor. Wet footprints go out over the sill, and come back in."
+   }
+  ]
+ },
+ "barks": {
+  "c1_hurt": [
+   [
+    "norah",
+    "Get off me!",
+    "scream"
+   ],
+   [
+    "norah",
+    "No—!",
+    "scream"
+   ],
+   [
+    "norah",
+    "Louis, stop!",
+    "scream"
+   ]
+  ]
+ }
+}

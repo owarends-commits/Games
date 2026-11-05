@@ -1,0 +1,952 @@
+{
+ "version": 1,
+ "base_ids": [
+  "fce7kzq",
+  "fcawgd5",
+  "fng5abr",
+  "f0mm4k6",
+  "f6ryt09",
+  "w845vya",
+  "wo94al1",
+  "wk1ax5i",
+  "f50dj3m",
+  "w2jituy",
+  "w5baas9",
+  "wgtu41v",
+  "wbumvxh",
+  "f1twrm0",
+  "w58od41",
+  "wg00uop",
+  "wpffc42",
+  "hyt50ng",
+  "s9iua4z",
+  "shg33qi",
+  "wbo3jvw",
+  "hck9qrj",
+  "pvo1tb2"
+ ],
+ "app": "extrecated-map-designer",
+ "name": "Chapel",
+ "units": "m",
+ "notes": "",
+ "levels": [
+  {
+   "id": "L0",
+   "name": "Ground",
+   "elev": 0,
+   "height": 2.4
+  },
+  {
+   "id": "Ljn7j5f",
+   "name": "Upstairs",
+   "elev": 2.6,
+   "height": 2.4
+  },
+  {
+   "id": "Lbase",
+   "name": "Basement",
+   "elev": -2.6,
+   "height": 2.4,
+   "dark": true
+  }
+ ],
+ "textures": [],
+ "assets": [],
+ "objects": [
+  {
+   "id": "fce7kzq",
+   "type": "floor",
+   "level": "L0",
+   "x": -12,
+   "z": -8,
+   "w": 26,
+   "d": 22,
+   "tex": "b:grass",
+   "scale": 2,
+   "ground": true
+  },
+  {
+   "id": "fcawgd5",
+   "type": "floor",
+   "level": "L0",
+   "x": -13.5,
+   "z": -24.5,
+   "w": 31,
+   "d": 55,
+   "tex": "b:grass",
+   "scale": 1,
+   "ground": true,
+   "tex2": "",
+   "tex2a": 1
+  },
+  {
+   "id": "fng5abr",
+   "type": "floor",
+   "level": "L0",
+   "x": -44.5,
+   "z": -22.5,
+   "w": 30.5,
+   "d": 53,
+   "tex": "b:grass",
+   "scale": 1,
+   "ground": true,
+   "tex2": "",
+   "tex2a": 1
+  },
+  {
+   "id": "f0mm4k6",
+   "type": "floor",
+   "level": "L0",
+   "x": -14.5,
+   "z": -23.5,
+   "w": 4.5,
+   "d": 71.5,
+   "tex": "b:grass",
+   "scale": 1,
+   "ground": true,
+   "tex2": "",
+   "tex2a": 1
+  },
+  {
+   "id": "f6ryt09",
+   "type": "floor",
+   "level": "L0",
+   "x": -42,
+   "z": 30,
+   "w": 58.5,
+   "d": 18.5,
+   "tex": "b:grass",
+   "scale": 1,
+   "ground": true,
+   "tex2": "",
+   "tex2a": 1
+  },
+  {
+   "id": "w845vya",
+   "type": "wall",
+   "level": "L0",
+   "a": [
+    -28,
+    -6
+   ],
+   "b": [
+    -17.5,
+    -6
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:whitewash_ruined",
+   "texB": "b:whitewash_worn",
+   "openings": [],
+   "texA2": "",
+   "texA2a": 1,
+   "texB2": "",
+   "texB2a": 1,
+   "scale": 1,
+   "note": "The exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.. The inside should keep this same texture of white worn wood, but much less damages and no torn off planks."
+  },
+  {
+   "id": "wo94al1",
+   "type": "wall",
+   "level": "L0",
+   "a": [
+    -18,
+    -2.5
+   ],
+   "b": [
+    -18,
+    8.5
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:whitewash_ruined",
+   "texB": "b:whitewash_worn",
+   "openings": [],
+   "texA2": "",
+   "texA2a": 1,
+   "texB2": "",
+   "texB2a": 1,
+   "scale": 1,
+   "note": "The exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.. The inside should keep this same texture of white worn wood, but much less damages and no torn off planks."
+  },
+  {
+   "id": "wk1ax5i",
+   "type": "wall",
+   "level": "L0",
+   "a": [
+    -28,
+    8.5
+   ],
+   "b": [
+    -28,
+    -6
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:whitewash_ruined",
+   "texB": "b:whitewash_worn",
+   "openings": [],
+   "texA2": "",
+   "texA2a": 1,
+   "texB2": "",
+   "texB2a": 1,
+   "scale": 1,
+   "note": "The exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.. The inside should keep this same texture of white worn wood, but much less damages and no torn off planks."
+  },
+  {
+   "id": "f50dj3m",
+   "type": "floor",
+   "level": "Ljn7j5f",
+   "x": -18,
+   "z": -5.5,
+   "w": 4.5,
+   "d": 2.5,
+   "tex": "b:planks",
+   "scale": 1,
+   "ground": false
+  },
+  {
+   "id": "w2jituy",
+   "type": "wall",
+   "level": "Ljn7j5f",
+   "a": [
+    -18,
+    -5.5
+   ],
+   "b": [
+    -13.5,
+    -5.5
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:whitewash_chipped",
+   "texB": "b:wallpaper",
+   "openings": [],
+   "texA2": "",
+   "texB2": ""
+  },
+  {
+   "id": "w5baas9",
+   "type": "wall",
+   "level": "Ljn7j5f",
+   "a": [
+    -13.5,
+    -5.5
+   ],
+   "b": [
+    -13.5,
+    -3
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:whitewash_chipped",
+   "texB": "b:wallpaper",
+   "openings": [],
+   "texA2": "",
+   "texB2": ""
+  },
+  {
+   "id": "wgtu41v",
+   "type": "wall",
+   "level": "Ljn7j5f",
+   "a": [
+    -13.5,
+    -3
+   ],
+   "b": [
+    -18,
+    -3
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:whitewash_chipped",
+   "texB": "b:wallpaper",
+   "openings": [],
+   "texA2": "",
+   "texB2": ""
+  },
+  {
+   "id": "wbumvxh",
+   "type": "wall",
+   "level": "Ljn7j5f",
+   "a": [
+    -18,
+    -3
+   ],
+   "b": [
+    -18,
+    -5.5
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:whitewash_chipped",
+   "texB": "b:wallpaper",
+   "openings": [],
+   "texA2": "",
+   "texA2a": 1,
+   "texB2": "",
+   "texB2a": 1,
+   "scale": 1
+  },
+  {
+   "id": "f1twrm0",
+   "type": "floor",
+   "level": "L0",
+   "x": -18,
+   "z": -6,
+   "w": 5,
+   "d": 3.5,
+   "tex": "b:stone",
+   "scale": 1,
+   "ground": false,
+   "tex2": "",
+   "tex2a": 1
+  },
+  {
+   "id": "w58od41",
+   "type": "wall",
+   "level": "L0",
+   "a": [
+    -17.5,
+    -6
+   ],
+   "b": [
+    -13,
+    -6
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:whitewash_ruined",
+   "texB": "b:whitewash_worn",
+   "openings": [],
+   "texA2": "",
+   "texA2a": 1,
+   "texB2": "",
+   "texB2a": 1,
+   "scale": 1,
+   "note": "Make the wood on the extThe exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.erior a destroyed and worn down white with planks half torn off and missing."
+  },
+  {
+   "id": "wg00uop",
+   "type": "wall",
+   "level": "L0",
+   "a": [
+    -13,
+    -6
+   ],
+   "b": [
+    -13,
+    -2.5
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:whitewash_ruined",
+   "texB": "b:whitewash_worn",
+   "openings": [],
+   "note": "Make the wood on the extThe exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.erior a destroyed and worn down white with planks half torn off and missing.",
+   "texA2": "",
+   "texB2": "",
+   "scale": 1
+  },
+  {
+   "id": "wpffc42",
+   "type": "wall",
+   "level": "L0",
+   "a": [
+    -13,
+    -2.5
+   ],
+   "b": [
+    -18,
+    -2.5
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:whitewash_ruined",
+   "texB": "b:whitewash_worn",
+   "openings": [],
+   "texA2": "",
+   "texA2a": 1,
+   "texB2": "",
+   "texB2a": 1,
+   "scale": 1,
+   "note": "Make the wood on the extThe exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.erior a destroyed and worn down white with planks half torn off and missing."
+  },
+  {
+   "id": "hyt50ng",
+   "type": "figure",
+   "level": "L0",
+   "who": "norah",
+   "x": -21.44,
+   "z": -1.62,
+   "rot": 0,
+   "player": true
+  },
+  {
+   "id": "s9iua4z",
+   "type": "stairs",
+   "level": "L0",
+   "to": "Ljn7j5f",
+   "kind": "stairs",
+   "x": -16.69,
+   "z": -4.95,
+   "rot": 270,
+   "width": 1,
+   "note": "should look made of concrete",
+   "run": 3.51,
+   "tex": "b:concrete_steps"
+  },
+  {
+   "id": "shg33qi",
+   "type": "stairs",
+   "level": "L0",
+   "to": "Lbase",
+   "kind": "stairs",
+   "x": -16.71,
+   "z": -3.4299999999999997,
+   "rot": -90,
+   "width": 1,
+   "note": "These will be going into the basement, couldn't change them to be like that, should look made of concrete and should make the basement incredibly dark.",
+   "run": 3.51,
+   "tex": "b:concrete_steps"
+  },
+  {
+   "id": "wbo3jvw",
+   "type": "wall",
+   "level": "L0",
+   "a": [
+    -28,
+    8.5
+   ],
+   "b": [
+    -18,
+    8.5
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:whitewash_worn",
+   "texB": "b:whitewash_ruined",
+   "openings": [],
+   "texA2": "",
+   "texA2a": 1,
+   "texB2": "",
+   "texB2a": 1,
+   "scale": 1,
+   "note": "The exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.. The inside should keep this same texture of white worn wood, but much less damages and no torn off planks."
+  },
+  {
+   "id": "hck9qrj",
+   "type": "figure",
+   "level": "L0",
+   "who": "bellemood",
+   "x": -23.5,
+   "z": -5,
+   "rot": 345,
+   "player": false,
+   "note": "This is a place-holder model for the real CCROSS that will be here  called \"Bellemood\" (Demon name) He will wear a white priest's get-up with a red Chasuble with a large brunet cross burnt through the robes and Chasuble revealing the bearing cross on the center of his chest, releasing little steam into the air.",
+   "y": 0.6
+  },
+  {
+   "id": "pvo1tb2",
+   "type": "prop",
+   "level": "L0",
+   "asset": "altar",
+   "x": -23.5,
+   "z": -3,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1,
+   "solid": true,
+   "y": 0.6
+  },
+  {
+   "id": "sdc001",
+   "type": "platform",
+   "level": "L0",
+   "x": -27.85,
+   "z": -5.85,
+   "w": 8.45,
+   "d": 4.35,
+   "h": 0.6,
+   "tex": "b:walnut_planks",
+   "texSide": "b:whitewash_worn",
+   "steps": [
+    {
+     "edge": "s",
+     "at": 0.089,
+     "width": 1.0
+    },
+    {
+     "edge": "s",
+     "at": 0.911,
+     "width": 1.0
+    }
+   ],
+   "note": "The sanctuary stage (0.6 m). Steps at both front corners; the front edge is a ledge she can drop from (brief stun on landing)."
+  },
+  {
+   "id": "pdc002",
+   "type": "prop",
+   "level": "L0",
+   "asset": "crucifix_wall",
+   "x": -23.5,
+   "z": -5.9,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1,
+   "y": -0.55,
+   "solid": false
+  },
+  {
+   "id": "pdc003",
+   "type": "prop",
+   "level": "L0",
+   "asset": "candlestick_tall",
+   "x": -25.5,
+   "z": -3.0,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1,
+   "y": 0.6
+  },
+  {
+   "id": "pdc004",
+   "type": "prop",
+   "level": "L0",
+   "asset": "candlestick_tall",
+   "x": -21.5,
+   "z": -3.0,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1,
+   "y": 0.6
+  },
+  {
+   "id": "pdc005",
+   "type": "prop",
+   "level": "L0",
+   "asset": "credence_table",
+   "x": -26.7,
+   "z": -5.45,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1,
+   "y": 0.6
+  },
+  {
+   "id": "pdc006",
+   "type": "prop",
+   "level": "L0",
+   "asset": "tabernacle",
+   "x": -26.7,
+   "z": -5.45,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1,
+   "y": 1.48
+  },
+  {
+   "id": "pdc007",
+   "type": "prop",
+   "level": "L0",
+   "asset": "sanctuary_lamp",
+   "x": -25.9,
+   "z": -4.9,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1,
+   "y": -0.62,
+   "solid": false
+  },
+  {
+   "id": "pdc008",
+   "type": "prop",
+   "level": "L0",
+   "asset": "sedilia",
+   "x": -21.0,
+   "z": -5.3,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1,
+   "y": 0.6
+  },
+  {
+   "id": "pdc009",
+   "type": "prop",
+   "level": "L0",
+   "asset": "ambo",
+   "x": -20.4,
+   "z": -2.4,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1,
+   "y": 0.6
+  },
+  {
+   "id": "pdc010",
+   "type": "prop",
+   "level": "L0",
+   "asset": "processional_cross",
+   "x": -19.9,
+   "z": -5.4,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1,
+   "y": 0.6
+  },
+  {
+   "id": "pdc011",
+   "type": "prop",
+   "level": "L0",
+   "asset": "paschal_candle",
+   "x": -26.9,
+   "z": -2.3,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1,
+   "y": 0.6
+  },
+  {
+   "id": "pdc012",
+   "type": "prop",
+   "level": "L0",
+   "asset": "corporal",
+   "x": -23.45,
+   "z": -2.95,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1,
+   "y": 1.66,
+   "solid": false
+  },
+  {
+   "id": "pdc013",
+   "type": "prop",
+   "level": "L0",
+   "asset": "chalice",
+   "x": -23.3,
+   "z": -2.9,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1,
+   "y": 1.664,
+   "solid": false
+  },
+  {
+   "id": "pdc014",
+   "type": "prop",
+   "level": "L0",
+   "asset": "paten",
+   "x": -23.65,
+   "z": -2.92,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1,
+   "y": 1.664,
+   "solid": false
+  },
+  {
+   "id": "pdc015",
+   "type": "prop",
+   "level": "L0",
+   "asset": "missal_stand",
+   "x": -24.25,
+   "z": -2.85,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1,
+   "y": 1.66,
+   "solid": false
+  },
+  {
+   "id": "pdc016",
+   "type": "prop",
+   "level": "L0",
+   "asset": "cruets",
+   "x": -26.45,
+   "z": -5.3,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1,
+   "y": 1.48,
+   "solid": false
+  },
+  {
+   "id": "pdc017",
+   "type": "prop",
+   "level": "L0",
+   "asset": "thurible",
+   "x": -20.2,
+   "z": -4.6,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1,
+   "y": 0.6
+  },
+  {
+   "id": "fdc018",
+   "type": "floor",
+   "level": "Lbase",
+   "x": -19.5,
+   "z": -6.5,
+   "w": 10.0,
+   "d": 6.0,
+   "tex": "b:concrete_rough",
+   "scale": 1,
+   "ground": false
+  },
+  {
+   "id": "wdc019",
+   "type": "wall",
+   "level": "Lbase",
+   "a": [
+    -19.5,
+    -6.5
+   ],
+   "b": [
+    -19.5,
+    -0.5
+   ],
+   "height": 2.4,
+   "thick": 0.2,
+   "texA": "b:basement_block",
+   "texB": "b:concrete_rough",
+   "openings": [],
+   "scale": 1
+  },
+  {
+   "id": "wdc020",
+   "type": "wall",
+   "level": "Lbase",
+   "a": [
+    -19.5,
+    -0.5
+   ],
+   "b": [
+    -9.5,
+    -0.5
+   ],
+   "height": 2.4,
+   "thick": 0.2,
+   "texA": "b:basement_block",
+   "texB": "b:concrete_rough",
+   "openings": [],
+   "scale": 1
+  },
+  {
+   "id": "wdc021",
+   "type": "wall",
+   "level": "Lbase",
+   "a": [
+    -9.5,
+    -0.5
+   ],
+   "b": [
+    -9.5,
+    -6.5
+   ],
+   "height": 2.4,
+   "thick": 0.2,
+   "texA": "b:basement_block",
+   "texB": "b:concrete_rough",
+   "openings": [],
+   "scale": 1
+  },
+  {
+   "id": "wdc022",
+   "type": "wall",
+   "level": "Lbase",
+   "a": [
+    -9.5,
+    -6.5
+   ],
+   "b": [
+    -19.5,
+    -6.5
+   ],
+   "height": 2.4,
+   "thick": 0.2,
+   "texA": "b:basement_block",
+   "texB": "b:concrete_rough",
+   "openings": [],
+   "scale": 1
+  },
+  {
+   "id": "cdc023",
+   "type": "ceiling",
+   "level": "Lbase",
+   "x": -19.5,
+   "z": -6.5,
+   "w": 10.0,
+   "d": 6.0,
+   "h": 2.4,
+   "tex": "b:concrete_rough",
+   "scale": 1,
+   "note": "The basement: no light at all. Norah needs the flashlight down here."
+  },
+  {
+   "id": "pdc024",
+   "type": "prop",
+   "level": "Lbase",
+   "asset": "metal_shelving",
+   "x": -11.6,
+   "z": -6.05,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1
+  },
+  {
+   "id": "pdc025",
+   "type": "prop",
+   "level": "Lbase",
+   "asset": "crate_stack",
+   "x": -10.3,
+   "z": -1.3,
+   "rot": 15,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1
+  },
+  {
+   "id": "pdc026",
+   "type": "prop",
+   "level": "Lbase",
+   "asset": "cardboard_boxes",
+   "x": -18.7,
+   "z": -1.3,
+   "rot": -20,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1
+  },
+  {
+   "id": "pdc027",
+   "type": "prop",
+   "level": "Lbase",
+   "asset": "steamer_trunk",
+   "x": -18.8,
+   "z": -5.7,
+   "rot": 90,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1
+  },
+  {
+   "id": "pdc028",
+   "type": "prop",
+   "level": "Lbase",
+   "asset": "barrel",
+   "x": -12.8,
+   "z": -1.1,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1
+  },
+  {
+   "id": "pdc029",
+   "type": "prop",
+   "level": "Lbase",
+   "asset": "sacristy_vestment_chest",
+   "x": -15.0,
+   "z": -6.05,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1
+  },
+  {
+   "id": "cdc030",
+   "type": "ceiling",
+   "level": "L0",
+   "x": -28,
+   "z": -6,
+   "w": 10,
+   "d": 14.5,
+   "h": 2.4,
+   "tex": "b:whitewash_worn",
+   "scale": 1,
+   "note": ""
+  },
+  {
+   "id": "rdc031",
+   "type": "roof",
+   "level": "L0",
+   "x": -28,
+   "z": -6,
+   "w": 10,
+   "d": 14.5,
+   "style": "gable",
+   "ridge": "z",
+   "high": "n",
+   "pitch": 40,
+   "overhang": 0.35,
+   "base": 2.4,
+   "thick": 0.12,
+   "tex": "b:shingle_dark",
+   "texGable": "b:whitewash_ruined",
+   "note": ""
+  },
+  {
+   "id": "rdc032",
+   "type": "roof",
+   "level": "Ljn7j5f",
+   "x": -18,
+   "z": -5.5,
+   "w": 4.5,
+   "d": 2.5,
+   "style": "shed",
+   "ridge": "x",
+   "high": "w",
+   "pitch": 18,
+   "overhang": 0.25,
+   "base": 2.4,
+   "thick": 0.12,
+   "tex": "b:shingle_dark",
+   "texGable": "b:whitewash_chipped",
+   "note": ""
+  }
+ ],
+ "version_tag": "chapel-2026-10-27b"
+}

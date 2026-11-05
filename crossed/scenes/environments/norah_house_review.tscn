@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://tests/house_review_driver.gd" id="1_house_review"]
+[ext_resource type="PackedScene" path="res://scenes/environments/norah_house.tscn" id="2_norah_house"]
+[ext_resource type="Shader" path="res://shaders/ps1_post.gdshader" id="3_ps1_post"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1"]
+shader = ExtResource("3_ps1_post")
+
+[node name="NorahHouseReview" type="Node"]
+script = ExtResource("1_house_review")
+
+[node name="Screen" type="SubViewportContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+stretch = true
+stretch_shrink = 3
+texture_filter = 1
+
+[node name="World" type="SubViewport" parent="Screen"]
+size = Vector2i(320, 240)
+render_target_update_mode = 4
+
+[node name="House" parent="Screen/World" instance=ExtResource("2_norah_house")]
+
+[node name="PostFX" type="CanvasLayer" parent="Screen/World"]
+layer = 10
+
+[node name="Rect" type="ColorRect" parent="Screen/World/PostFX"]
+material = SubResource("ShaderMaterial_1")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2

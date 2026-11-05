@@ -1,0 +1,158 @@
+   0.0s  PHASE OPENING
+   4.7s    camera -> CamFlight
+  31.0s  PHASE ARRIVAL
+  31.5s    camera -> CamCarFront
+  32.7s    [arrival_car #0] adaline: Daddy, we're here! We're here, we're here!
+  32.7s    camera -> CamCarAdaline
+  34.5s    [arrival_car #1] kenneth: We're here. Listen to that rain.
+  34.5s    camera -> CamCarKenneth
+  35.9s    [arrival_car #2] adaline: Can I give Amelia her present first? Before everybody?
+  35.9s    camera -> CamCarAdaline
+  37.8s    [arrival_car #3] kenneth: You can. Hood up, and you hold my hand across the lot. It's slippery.
+  37.8s    camera -> CamCarKenneth
+  40.3s    [arrival_car #4] adaline: Okaaay.
+  40.3s    camera -> CamCarAdaline
+  41.1s    camera -> CamCarFront
+  41.7s    camera -> CamOpeningLow
+  43.8s    camera -> OTSCam
+  43.9s  objective: enter
+  45.8s    [line #0] adaline: It's raining SO hard!
+  45.9s  PHASE WALK_IN
+  45.9s  autopilot route: walk_in
+  54.3s    [hallway #0] adaline: It's dark in here...
+  54.3s  objective: hall
+  55.5s    [hallway #1] kenneth: It's just the hallway. Hear that? That's the party.
+  57.4s    [hallway #2] adaline: Daddy! Amelia's present! I left it in the car!
+  59.2s    [hallway #3] kenneth: We'll grab it after cake, bug. She won't mind.
+  61.0s    [hallway #4] adaline: Okay! Amelia's party!
+  62.2s  objective: party
+  62.2s  autopilot route: walk_in
+  68.8s    camera -> CamPartyEntry
+  68.8s  PHASE PARTY_ENTRY
+  68.8s  objective: 
+  72.0s    [party_entry #0] rachel: You made it! Hi, Adaline! Look at that dress!
+  73.8s    [party_entry #1] adaline: It's yellow! Where's Amelia?
+  75.2s    [party_entry #2] rachel: On the mats with everybody. Go on, sweetie.
+  77.5s    [party_entry_2 #0] kenneth: Thanks for having us, Rachel.
+  78.9s    [party_entry_2 #1] rachel: Of course. Punch is right there by the door. Make yourself at home, Ken.
+  81.4s    camera -> OTSCam
+  81.4s  PHASE PARTY
+  81.4s  objective: punch
+  81.4s  autopilot route: punch
+  83.8s    [punch #0] kenneth: Red punch. Sugar with a little extra sugar.
+  85.5s    [punch #1] kenneth: She's going to be up until midnight.
+  87.0s  objective: mingle
+  87.0s  autopilot route: marcus
+  88.5s    [smalltalk_marcus #0] marcus: Ken, right? Adaline's dad. Marcus. I've got the one in the dinosaur shirt.
+  91.0s    [smalltalk_marcus #1] kenneth: Good to meet you. She hasn't stopped talking about this party all week.
+  93.4s    [smalltalk_marcus #2] marcus: Ha. Mine either. Rachel went all out this year. Balloons, the cake, the whole thing.
+  96.1s    [smalltalk_marcus #3] marcus: Hey, you hear anything about the lights out on the highway? My brother-in-law swears half the county lost power.
+ 101.1s    [marcus_again #0] marcus: Once the cake hits, it's over for all of us. Sugar crash city.
+ 104.9s    [marcus_again #0] marcus: Once the cake hits, it's over for all of us. Sugar crash city.
+ 108.7s    [marcus_again #0] marcus: Once the cake hits, it's over for all of us. Sugar crash city.
+ 112.5s    [marcus_again #0] marcus: Once the cake hits, it's over for all of us. Sugar crash city.
+ 116.3s    [marcus_again #0] marcus: Once the cake hits, it's over for all of us. Sugar crash city.
+ 120.1s    [marcus_again #0] marcus: Once the cake hits, it's over for all of us. Sugar crash city.
+ 123.9s    [marcus_again #0] marcus: Once the cake hits, it's over for all of us. Sugar crash city.
+ 127.7s    [marcus_again #0] marcus: Once the cake hits, it's over for all of us. Sugar crash city.
+ 131.5s    [marcus_again #0] marcus: Once the cake hits, it's over for all of us. Sugar crash city.
+ 135.3s    [marcus_again #0] marcus: Once the cake hits, it's over for all of us. Sugar crash city.
+ 139.1s    [marcus_again #0] marcus: Once the cake hits, it's over for all of us. Sugar crash city.
+ 142.9s    [marcus_again #0] marcus: Once the cake hits, it's over for all of us. Sugar crash city.
+ 146.7s    [marcus_again #0] marcus: Once the cake hits, it's over for all of us. Sugar crash city.
+ 147.0s  breach state: WINDOW_IMPACT
+ 147.0s    camera -> Cam4_Breach
+ 147.0s  PHASE BREACH
+ 147.0s  objective: 
+ 148.2s  breach state: CREATURE_LANDED
+ 149.5s    camera -> Cam3_PartyOverview
+ 149.5s    [breach_landed #0] dad2: ...What was that?
+ 151.6s    [breach_landed #1] mom2: Is somebody hurt?
+ 153.9s  breach state: CROWD_INSPECTION
+ 153.9s    camera -> Cam5_CrowdInspection
+ 155.9s    [breach_inspect #0] dad3: Hey. Hey, buddy... are you okay?
+ 158.7s    [breach_inspect #1] denise: Is that... is that a person?
+ 161.4s    [breach_inspect #2] rachel: Kids, stay back. Stay by the table.
+ 165.1s  breach state: NEAR_SILENCE
+ 170.6s  breach state: ACROSS_AWAKENS
+ 171.4s  breach state: FIRST_LUNGE
+ 171.7s    camera -> Cam3_PartyOverview
+ 172.7s  breach state: PANIC_AND_ESCAPE
+ 172.7s    [line #0] kenneth: ADALINE!
+ 172.7s    camera -> OTSCam
+ 172.7s  PHASE ESCAPE
+ 172.7s  objective: escape
+ 172.7s  autopilot route: escape
+ 175.1s    [line #0] denise: Get the kids out!
+ 177.2s    [line #0] mom2: Where's my son? WHERE'S MY SON?
+ 178.9s    camera -> Cam7_LotAftermath
+ 178.9s  PHASE LOT
+ 179.9s    [line #0] mom2: They're coming from the street!
+ 182.1s    camera -> OTSCam
+ 182.1s  objective: car
+ 182.1s  autopilot route: lot
+ 182.4s  autopilot stuck at (-0.005342, 0.000115, 1.111019) heading to (-1.5, 0.0, 1.8)
+ 183.2s    camera -> CamReunion
+ 183.2s  PHASE REUNION
+ 183.2s  objective: 
+ 183.8s    [lot_reunion #0] kenneth: Adaline!
+ 184.7s    [lot_reunion #1] adaline: Daddy!
+ 185.5s    [lot_reunion #2] kenneth: I've got you. I've got you. Are you hurt? Look at me.
+ 187.4s    [lot_reunion #3] adaline: The man held my hand. He found me.
+ 188.9s    [lot_reunion #4] stranger: Please... please, take me with you. My car, I can't... I can't stay out here with those things.
+ 192.2s    [lot_reunion #5] kenneth: ...
+ 193.0s    [lot_reunion #6] stranger: Please. I'll sit in the back. I won't be any trouble. Please.
+ 195.2s    [lot_reunion #7] kenneth: Get in. Both of you, in the back. Now.
+ 198.7s    camera -> Cam7_LotAftermath
+ 201.5s    camera -> CamDriveStreet
+ 205.3s    camera -> CamCarFront
+ 205.7s    [car_1 #0] adaline: Daddy, what were those? What happened to everybody?
+ 205.7s    camera -> CamCarBackTwo
+ 207.6s    [car_1 #1] kenneth: I don't know, bug. Keep your belt on. Stay down.
+ 207.6s    camera -> CamCarKenneth
+ 209.5s    [car_1 #2] stranger: Thank you. Thank you, thank you. God bless you.
+ 209.5s    camera -> CamCarFront
+ 211.4s    [car_1 #3] adaline: Can we call Mommy?
+ 211.4s    camera -> CamCarBackTwo
+ 212.5s    [car_1 #4] kenneth: ...No signal. Nothing's going through.
+ 212.5s    camera -> CamCarKenneth
+ 214.2s    [car_1 #5] kenneth: We'll drive straight to her. Okay? Straight there.
+ 216.1s    camera -> CamDriveCorner
+ 218.2s    camera -> CamChurch
+ 220.1s    camera -> CamCarFront
+ 220.5s    [car_church #0] adaline: Mister... your shoulder's smoking.
+ 220.5s    camera -> CamCarBackTwo
+ 222.1s    [car_church #1] stranger: ...
+ 222.1s    camera -> CamCarMirror
+ 223.0s    [car_church #2] adaline: Is that a burn? Did the fire get you?
+ 223.0s    camera -> CamCarBackTwo
+ 224.6s    [car_church #3] adaline: It looks like a cross. Does it hurt?
+ 226.1s    [car_church #4] stranger: ...
+ 226.1s    camera -> CamCarMirror
+ 227.0s    [car_church #5] kenneth: Bug, leave him be. He's had a night.
+ 227.0s    camera -> CamCarKenneth
+ 228.5s    [car_church #6] adaline: Daddy... he stopped crying.
+ 228.5s    camera -> CamCarBackTwo
+ 229.9s    camera -> CamStore
+ 232.7s    camera -> CamCarFront
+ 233.2s    [car_hit #0] adaline: DADDY!
+ 234.5s    [car_hit #1] kenneth: Hold on! Both of you, hold on!
+ 237.2s    [car_reveal_1 #0] kenneth: Hey... your shoulder. That's smoke. You need a hospital.
+ 237.2s    camera -> CamCarKenneth
+ 239.3s    [car_reveal_1 #1] stranger: You can slow down now, Kenneth.
+ 239.3s    camera -> CamCarMirror
+ 240.7s    [car_reveal_1 #2] kenneth: ...I never told you my name.
+ 240.7s    camera -> CamCarKenneth
+ 242.2s    [car_reveal_1 #3] stranger: You didn't have to.
+ 242.2s    camera -> CamCarMirror
+ 243.3s    camera -> CamCarKenneth
+ 244.1s    camera -> CamCarMirror
+ 244.1s    [car_reveal_2 #0] stranger: I know all of their names.
+ 245.4s    [car_reveal_2 #1] stranger: ...
+ 246.9s    [car_reveal_2 #2] adaline: DADDY!
+ 246.9s    camera -> CamCarAdaline
+ 247.7s    camera -> CamCarFront
+ 248.0s    camera -> CamCrash
+ 251.8s    camera -> @Camera3D@118
+ 261.9s    camera -> CamFinalEnd
+ 265.3s  PHASE END

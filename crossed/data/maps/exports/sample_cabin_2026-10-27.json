@@ -1,0 +1,568 @@
+{
+ "app": "extrecated-map-designer",
+ "version": 1,
+ "name": "Sample cabin",
+ "units": "m",
+ "notes": "",
+ "levels": [
+  {
+   "id": "L0",
+   "name": "Ground",
+   "elev": 0,
+   "height": 2.4
+  },
+  {
+   "id": "Ljn7j5f",
+   "name": "Upstairs",
+   "elev": 2.6,
+   "height": 2.4
+  }
+ ],
+ "textures": [],
+ "assets": [],
+ "objects": [
+  {
+   "id": "fce7kzq",
+   "type": "floor",
+   "level": "L0",
+   "x": -12,
+   "z": -8,
+   "w": 26,
+   "d": 22,
+   "tex": "b:grass",
+   "scale": 2,
+   "ground": true
+  },
+  {
+   "id": "fcawgd5",
+   "type": "floor",
+   "level": "L0",
+   "x": -13.5,
+   "z": -24.5,
+   "w": 31,
+   "d": 55,
+   "tex": "b:grass",
+   "scale": 1,
+   "ground": true,
+   "tex2": "",
+   "tex2a": 1
+  },
+  {
+   "id": "fng5abr",
+   "type": "floor",
+   "level": "L0",
+   "x": -44.5,
+   "z": -22.5,
+   "w": 30.5,
+   "d": 53,
+   "tex": "b:grass",
+   "scale": 1,
+   "ground": true,
+   "tex2": "",
+   "tex2a": 1
+  },
+  {
+   "id": "f0mm4k6",
+   "type": "floor",
+   "level": "L0",
+   "x": -14.5,
+   "z": -23.5,
+   "w": 4.5,
+   "d": 71.5,
+   "tex": "b:grass",
+   "scale": 1,
+   "ground": true,
+   "tex2": "",
+   "tex2a": 1
+  },
+  {
+   "id": "f6ryt09",
+   "type": "floor",
+   "level": "L0",
+   "x": -42,
+   "z": 30,
+   "w": 58.5,
+   "d": 18.5,
+   "tex": "b:grass",
+   "scale": 1,
+   "ground": true,
+   "tex2": "",
+   "tex2a": 1
+  },
+  {
+   "id": "w845vya",
+   "type": "wall",
+   "level": "L0",
+   "a": [
+    -28,
+    -6
+   ],
+   "b": [
+    -17.5,
+    -6
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:planks",
+   "texB": "b:planks",
+   "openings": [],
+   "texA2": "",
+   "texA2a": 1,
+   "texB2": "",
+   "texB2a": 1,
+   "scale": 1,
+   "note": "The exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.. The inside should keep this same texture of white worn wood, but much less damages and no torn off planks."
+  },
+  {
+   "id": "wo94al1",
+   "type": "wall",
+   "level": "L0",
+   "a": [
+    -18,
+    -2.5
+   ],
+   "b": [
+    -18,
+    8.5
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:planks",
+   "texB": "b:planks",
+   "openings": [],
+   "texA2": "",
+   "texA2a": 1,
+   "texB2": "",
+   "texB2a": 1,
+   "scale": 1,
+   "note": "The exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.. The inside should keep this same texture of white worn wood, but much less damages and no torn off planks."
+  },
+  {
+   "id": "wk1ax5i",
+   "type": "wall",
+   "level": "L0",
+   "a": [
+    -28,
+    8.5
+   ],
+   "b": [
+    -28,
+    -6
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:planks",
+   "texB": "b:planks",
+   "openings": [],
+   "texA2": "",
+   "texA2a": 1,
+   "texB2": "",
+   "texB2a": 1,
+   "scale": 1,
+   "note": "The exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.. The inside should keep this same texture of white worn wood, but much less damages and no torn off planks."
+  },
+  {
+   "id": "f50dj3m",
+   "type": "floor",
+   "level": "Ljn7j5f",
+   "x": -18,
+   "z": -5.5,
+   "w": 4.5,
+   "d": 2.5,
+   "tex": "b:planks",
+   "scale": 1,
+   "ground": false
+  },
+  {
+   "id": "w2jituy",
+   "type": "wall",
+   "level": "Ljn7j5f",
+   "a": [
+    -18,
+    -5.5
+   ],
+   "b": [
+    -13.5,
+    -5.5
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:wallpaper",
+   "texB": "b:siding",
+   "openings": []
+  },
+  {
+   "id": "w5baas9",
+   "type": "wall",
+   "level": "Ljn7j5f",
+   "a": [
+    -13.5,
+    -5.5
+   ],
+   "b": [
+    -13.5,
+    -3
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:wallpaper",
+   "texB": "b:siding",
+   "openings": []
+  },
+  {
+   "id": "wgtu41v",
+   "type": "wall",
+   "level": "Ljn7j5f",
+   "a": [
+    -13.5,
+    -3
+   ],
+   "b": [
+    -18,
+    -3
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:wallpaper",
+   "texB": "b:siding",
+   "openings": []
+  },
+  {
+   "id": "wbumvxh",
+   "type": "wall",
+   "level": "Ljn7j5f",
+   "a": [
+    -18,
+    -3
+   ],
+   "b": [
+    -18,
+    -5.5
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:wallpaper",
+   "texB": "b:siding",
+   "openings": [],
+   "texA2": "",
+   "texA2a": 1,
+   "texB2": "",
+   "texB2a": 1,
+   "scale": 1
+  },
+  {
+   "id": "f1twrm0",
+   "type": "floor",
+   "level": "L0",
+   "x": -18,
+   "z": -6,
+   "w": 5,
+   "d": 3.5,
+   "tex": "b:stone",
+   "scale": 1,
+   "ground": false,
+   "tex2": "",
+   "tex2a": 1
+  },
+  {
+   "id": "w58od41",
+   "type": "wall",
+   "level": "L0",
+   "a": [
+    -17.5,
+    -6
+   ],
+   "b": [
+    -13,
+    -6
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:planks",
+   "texB": "b:planks",
+   "openings": [],
+   "texA2": "",
+   "texA2a": 1,
+   "texB2": "",
+   "texB2a": 1,
+   "scale": 1,
+   "note": "Make the wood on the extThe exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.erior a destroyed and worn down white with planks half torn off and missing."
+  },
+  {
+   "id": "wg00uop",
+   "type": "wall",
+   "level": "L0",
+   "a": [
+    -13,
+    -6
+   ],
+   "b": [
+    -13,
+    -2.5
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:planks",
+   "texB": "b:planks",
+   "openings": [],
+   "note": "Make the wood on the extThe exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.erior a destroyed and worn down white with planks half torn off and missing."
+  },
+  {
+   "id": "wpffc42",
+   "type": "wall",
+   "level": "L0",
+   "a": [
+    -13,
+    -2.5
+   ],
+   "b": [
+    -18,
+    -2.5
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:planks",
+   "texB": "b:planks",
+   "openings": [],
+   "texA2": "",
+   "texA2a": 1,
+   "texB2": "",
+   "texB2a": 1,
+   "scale": 1,
+   "note": "Make the wood on the extThe exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.erior a destroyed and worn down white with planks half torn off and missing."
+  },
+  {
+   "id": "hyt50ng",
+   "type": "figure",
+   "level": "L0",
+   "who": "norah",
+   "x": -21.44,
+   "z": -1.62,
+   "rot": 0,
+   "player": true
+  },
+  {
+   "id": "s9iua4z",
+   "type": "stairs",
+   "level": "L0",
+   "to": "Ljn7j5f",
+   "kind": "stairs",
+   "x": -16.69,
+   "z": -4.95,
+   "rot": 270,
+   "width": 1,
+   "note": "should look made of concrete",
+   "run": 3.51
+  },
+  {
+   "id": "shg33qi",
+   "type": "stairs",
+   "level": "L0",
+   "to": "Ljn7j5f",
+   "kind": "stairs",
+   "x": -16.71,
+   "z": -3.4299999999999997,
+   "rot": -90,
+   "width": 1,
+   "note": "These will be going into the basement, couldn't change them to be like that, should look made of concrete and should make the basement incredibly dark.",
+   "run": 3.51
+  },
+  {
+   "id": "wbo3jvw",
+   "type": "wall",
+   "level": "L0",
+   "a": [
+    -28,
+    8.5
+   ],
+   "b": [
+    -18,
+    8.5
+   ],
+   "height": 2.4,
+   "thick": 0.15,
+   "texA": "b:planks",
+   "texB": "b:planks",
+   "openings": [],
+   "texA2": "",
+   "texA2a": 1,
+   "texB2": "",
+   "texB2a": 1,
+   "scale": 1,
+   "note": "The exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.. The inside should keep this same texture of white worn wood, but much less damages and no torn off planks."
+  },
+  {
+   "id": "hck9qrj",
+   "type": "figure",
+   "level": "L0",
+   "who": "louis",
+   "x": -23.5,
+   "z": -5,
+   "rot": 345,
+   "player": false,
+   "note": "This is a place-holder model for the real CCROSS that will be here  called \"Bellemood\" (Demon name) He will wear a white priest's get-up with a red Chasuble with a large brunet cross burnt through the robes and Chasuble revealing the bearing cross on the center of his chest, releasing little steam into the air."
+  },
+  {
+   "id": "pvo1tb2",
+   "type": "prop",
+   "level": "L0",
+   "asset": "altar",
+   "x": -23.5,
+   "z": -3,
+   "rot": 0,
+   "scale": 1,
+   "ptex": "",
+   "ptex2": "",
+   "ptex2a": 1,
+   "solid": true
+  }
+ ],
+ "exported": "2026-10-27T20:03:36.565Z",
+ "levelElevations": {
+  "L0": 0,
+  "Ljn7j5f": 2.6
+ },
+ "summary": {
+  "walls": 11,
+  "cameras": [],
+  "props": 1,
+  "levels": [
+   "Ground (Ground, floor at 0 m, ceiling 2.4 m)",
+   "Upstairs (Upper, floor at 2.6 m, ceiling 2.4 m)"
+  ],
+  "stairs": [
+   {
+    "id": "s9iua4z",
+    "kind": "stairs",
+    "from": "Ground",
+    "to": "Upstairs",
+    "start": [
+     -16.69,
+     -4.95
+    ],
+    "facing": 270,
+    "width": 1,
+    "run": 3.51,
+    "rise": 2.6,
+    "hole_in_upper_floor": [
+     -16.69,
+     -5.45,
+     -13.18,
+     -4.45
+    ]
+   },
+   {
+    "id": "shg33qi",
+    "kind": "stairs",
+    "from": "Ground",
+    "to": "Upstairs",
+    "start": [
+     -16.71,
+     -3.4299999999999997
+    ],
+    "facing": -90,
+    "width": 1,
+    "run": 3.51,
+    "rise": 2.6,
+    "hole_in_upper_floor": [
+     -16.71,
+     -3.93,
+     -13.2,
+     -2.93
+    ]
+   }
+  ],
+  "notes": [
+   {
+    "what": "WALL",
+    "level": "Ground",
+    "at": [
+     -22.75,
+     -6
+    ],
+    "note": "The exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.. The inside should keep this same texture of white worn wood, but much less damages and no torn off planks."
+   },
+   {
+    "what": "WALL",
+    "level": "Ground",
+    "at": [
+     -18,
+     3
+    ],
+    "note": "The exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.. The inside should keep this same texture of white worn wood, but much less damages and no torn off planks."
+   },
+   {
+    "what": "WALL",
+    "level": "Ground",
+    "at": [
+     -28,
+     1.25
+    ],
+    "note": "The exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.. The inside should keep this same texture of white worn wood, but much less damages and no torn off planks."
+   },
+   {
+    "what": "WALL",
+    "level": "Ground",
+    "at": [
+     -15.25,
+     -6
+    ],
+    "note": "Make the wood on the extThe exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.erior a destroyed and worn down white with planks half torn off and missing."
+   },
+   {
+    "what": "WALL",
+    "level": "Ground",
+    "at": [
+     -13,
+     -4.25
+    ],
+    "note": "Make the wood on the extThe exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.erior a destroyed and worn down white with planks half torn off and missing."
+   },
+   {
+    "what": "WALL",
+    "level": "Ground",
+    "at": [
+     -15.5,
+     -2.5
+    ],
+    "note": "Make the wood on the extThe exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.erior a destroyed and worn down white with planks half torn off and missing."
+   },
+   {
+    "what": "STAIRS · up to Upstairs",
+    "level": "Ground",
+    "at": [
+     -16.69,
+     -4.95
+    ],
+    "note": "should look made of concrete"
+   },
+   {
+    "what": "STAIRS · up to Upstairs",
+    "level": "Ground",
+    "at": [
+     -16.71,
+     -3.43
+    ],
+    "note": "These will be going into the basement, couldn't change them to be like that, should look made of concrete and should make the basement incredibly dark."
+   },
+   {
+    "what": "WALL",
+    "level": "Ground",
+    "at": [
+     -23,
+     8.5
+    ],
+    "note": "The exterior for these walls should be a white, destroyed wood with dest and paint chipped off the sides of some boards with others half ripped off the building.. The inside should keep this same texture of white worn wood, but much less damages and no torn off planks."
+   },
+   {
+    "what": "FIGURE · Louis (standing)",
+    "level": "Ground",
+    "at": [
+     -23.5,
+     -5
+    ],
+    "note": "This is a place-holder model for the real CCROSS that will be here  called \"Bellemood\" (Demon name) He will wear a white priest's get-up with a red Chasuble with a large brunet cross burnt through the robes and Chasuble revealing the bearing cross on the center of his chest, releasing little steam into the air."
+   }
+  ]
+ }
+}

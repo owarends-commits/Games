@@ -1,0 +1,442 @@
+Game style - Gritty and dark Old playstation style, fixed camera pov. 64x64 3d models with unique animations. Using Godot 4x to create and run the game.
+
+
+Prologue.
+	The prologue opens in Kennedy, Washington USA (A fictional small town). 
+*The camera starts from a view of America - slowly steers down, zooming into the state of Washington and then further, showing the player a large rural town, the town is vibrant but is dimmed by a heavy rain that falls upon the streets. We get a view of a small community center and a car parked outside in the rain. 
+The prologue begins with Kenneth Martin, a tall and slender white man, short professional brown hair and blue eyes with a narrow and long face, he wears slight stubble and has thin tannish-pink lips. His demeanor as a quiet and caring father is shown by his respectful straight posture and pursed expression. He wears a slim black puffer jacket and slim fit blue jeans held by a brown belt. He is attending a birthday party for his daughter’s friend. His daughter is barely 6, she has brown hair and blue eyes like her father, she is joyful and hyper with her excitement for the part they are attending. As the scene opens the two are just arriving at the celebration (Held at a small community center in the busy part of town) they are sitting in his parked compact black BMW. The rain beats down heavy on the two as they grab their bearings and go inside. Kenneth makes sure to grasp his daughter's hand slightly as they enter the building. They go down a dark narrow hallway and turn left into a brightly illuminated room decorated with bright birthday signs. One large sign on the far wall reads “Happy Birthday Amelia”. The room is packed with many small groups of parents making small talk as well as many kids running about and playing on mats that are set around the building. The room itself has 2 windows on each of the 3 walls. The windows pile with the rain and the darkness from outside holds an eerie air. His daughter (Named: Adaline) runs off alone and is lost in the crowd. Kenneth grabs some punch from a surrounding folding table and tries to make small talk with the surrounding parents. A little while after arriving, as Kenneth makes small talk with a parent the loud piercing shatter of glass fills the room. As the party freezes all attention is drawn to the scrawny, elongated white figure (ACross) that lays twitching among the broken glass. The pale beast looks human, however it's malnourished, almost looking vacuum sealed into itself. Its ghastly thin skin reveals the coarse and spikey nature of the human body (jagged ribs and vertebrates poke out from its stomach and back). The face is pale and has remnants of a full head of hair. The eyes of the creature are fully white with no pupils or iris. On the lower hip of the human a large cross seems to be branded on, It's almost as if the cauterized skin is still smoking. The beast jolts to life and begins running like a rabid wolf on all fours at the crowd now huddled in uncertainty across the room. The children react first, screaming and crying as they run towards the crowd of parents. As the room explodes into sudden and animalistic movement and fear, parents grab their kids and others yell out the names of their children. Kenneth begins yelling for Adaline as he is pushed through the wave of fleeing parents. The crowd bottlenecks and shoves fleeing children and parents to the side in an effort to get through the small door of the room. The ACROSS lunges at a parent and takes them to the ground, killing them with a fierce flurry of bites to the neck. As the crowd continues to push through the door the ACROSS swings its bony arms, waking pairs of fleeing parents and children to the floor and leaving them there unconscious. Kenneth makes it out to the hallway and to the exit. As he runs to the car he sees the town around him is in shambles, the rain falls heavily on small fires coming out of cars and the screams of unseen victims echo down the streets. More ACROSS begin approaching the parking lot, now filled with screaming and crying families. They approach from alley ways and from down the street. As Kenneth runs to his car he sees Adaline waiting there for him with a stranger that he recognized from the party. The man, short, plump and bald in his early 40s, wearing straight khakis with a brown belt and a white and green knit sweater begs Kenneth to let him come along with tears streaming down his chubby cheeks. Kenneth obliges and the three get into the car. (The man is in the back with Adaline and Kenneth is in the driver's seat). As the crowd leaving the community center continues to get overrun by the ACROSS, Kenneth accelerates forward, jumping the curb and continuing down the once busy street. Now in ruin.
+
+
+Intro.
+CH1 
+Norah Augustine. A woman in her early 30s, her hair is a deep brown and her eyes are hazelnut. She has soft plump lips and a smaller nose that complements her round and full cheekbones. She is divorced with a single child. Her ex-husband was Kenneth from the prologue and their child is Adaline. The plot of the game will focus on Norah getting back to Adaline and leaving the city with her, in order to find a new life living off the grid. The story will start out in the countryside, where Norah lives alone (she gets custody of Adaline every other week). Norah is driving in her car on a dark, rainy fall evening. The heavy raindrops hit her windshield as she speeds down an isolated highway. Tall trees line each side of the street, each tree has either lost all its leaves or is in the process of slowly shedding the orange and golden yellow thin parchment. As Norah drives her view is temporarily obstructed by an explosion of light from above the car. She is shocked and surprised, muttering profanity to herself. The light quickly dissipates but Norah remains on edge. She continued her drive pondering what the flash could have possibly meant. She shortly arrives in her neighborhood. A small dirt road divides the lawns of small rustic country houses, the neighborhood is surrounded by forest and is a culmination of no more than 14 houses, all warm and sad in the depressing and beating rain. It's been an hour since the flash now and nothing seems off to Norah.
+ As she walks from her car into her small old house, covered in a peeling coat of gray paint. As she enters her house she spots a figure just shy of the treeline behind her house. She freezes as a cold shudder of animalistic fear shoots down her spine, locking her feet in place. She squints in an attempt to make out what or who this skulking nuisance might be, the figure remains still. Norah’s gazing trance is interrupted by a “CRACK!”. The sharp metallic discrepancy was a feature of her old car’s headlight turning off. As she looked back to investigate what had happened a reality set in for Norah. The headlights were her only source of light in guiding her vision to what the mysterious figure may have been. As she quickly retrained her eyes to the figure that had once been clear to her she found a void in its place. The creature had been swallowed by the dark. 
+She moved forward, dust and gravel crunching under her leather boots. Then, like a bullet piercing through the crisp fall air. That same terrifying and mysterious pale figure threw itself at Norah. The creature snarled as it drew its long, thin arms just short of Norah. She acted fast, recoiling from the beast and hugging the wall of her house tightly in an effort to escape the beast in any way possible. As it flew past her the rest of the monster's small frame was revealed to her in the light illumination of her porch lights. It was her neighbor from next door, Louis. This new revelation sent Norah reeling in thought. However, none of that mattered now, Norah had to act fast before Louis was able to recover from his last offensive. Norah sprinted from her place on the side of the house to her front door. Removing her keys from the side pocket of her jeans she quickly opened the door and in the same fashion slammed it behind her. Norah then sprinted to her bedroom, dropping to her knees and sliding out a small metal case. As she finnicks with the small dials of the lock box she the moaning and growling of a beastly Louis can be heard just outside the thin walls of her old home. She finally unlocks the case. Revealing an old, small pistol, the kind fashioned for homeowners that would hopefully never have to use it. However, in this hour it would be Norah’s last line of defense between her and her now rabid 54 year neighbor. 
+As Norah hunkered down in her home she pushed the lightly amount of furniture she had to the front doors. As she began to push a large wardrobe in front of her bedroom window the friction gave way to a deep rumbling noise. Unbenounced to Norah this sound was heard by the beast who swiftly came crashing through that same window she tried to barricade. Norah screamed as the monster laid in the middle of her bed, covered in glass and small cuts that seemed to fill the air with steam. She sprinted back to her bathroom, once she arrived she locked the door and sat flat against her bathtub parallel from the door. 
+She thought to herself about all that she had seen. Louis Fermin was her older next door neighbor, he had always been a warm and welcoming man and, though he was never married, he had always given Norah solace with his fatherly demeanor (Also practicing catholic). So why was he pursuing her so rabidly now? He was a short round man, bald and chubby faced. But the monster did not share much of this physical appearance. The beast Norah saw was skinny, with disproportionate legs and arms to its short torso that had a black searing cross on his right shoulder blade. And even though it looked like Louis in the face it was much too skinny to be him, right? Norah had little time to be focusing on her thoughts as the monster was now off the bed and pounding on the door. Norah mustered all her courage and pulled the gun from her back pocket, pointing it to the door. As she aimed dead in the middle of the door she pulled the trigger three times and the pounding stopped. She gathered herself before opening the door and investigating what the fate of Louis was. She found his lifeless skinny body curled into a ball on the floor. The steam that left its head was heavy and thick. Norah put her right foot on the corpse and turned it over, revealing the 3 bullet wounds that went into the skull of Louis and came out of the back of his head.
+Norah stood over the body, reasoning with the events that just occurred. She is then startled as her once black television set jumps to light with the bright red background and large words “EMERGENCY BROADCAST” she holsters her gun in her back pocket and moves closer. The TV goes, 
+“THIS IS AN EMERGENCY ALERT FOR KENNEDY COUNTRY AND SURROUNDING AREAS.
+AT APPROXIMATELY 7:40 P.M. A WIDESPREAD EVENT OF UNKNOWN ORIGIN WAS REPORTED ACROSS THE REGION.
+RESIDENTS ARE ADVISED TO REMAIN INDOORS. LOCK ALL DOORS AND WINDOWS.
+DO NOT APPROACH PERSONS WHO APPEAR INJURED OR DISORIENTED.
+DO NOT ATTEMPT TO TRAVEL. ROADS INTO KENNEDY ARE CLOSED.
+FURTHER INFORMATION WILL BE PROVIDED AS IT BECOMES AVAILABLE.”.
+Norah bolts to her landline but is met with static, she mutters her worries about Adaline to herself as she begins to frantically check the power to the landline. Norah now knows what she must do, go find what happened to Adaline. (Before leaving the player should investigate Louis’s house) (This should be an expositionary section of the story). Before leaving her house Norah gathers herself. Have the player search for a flashlight, batteries for the flashlight, and a small case of extra bullets. As Norah hikes through the dark of night and crunching of the gravel under her feet she arrives at Louis’s door, now smashed open, splintered into two distinct pieces now. “What the f--” mutters Norah. As she turns on her flashlight and enters the house that she has been in so many times. Louis was kind to Norah, perhaps he knew that when Adaline wasn't around she grew very lonely. “Louis are you there?!” Norah shouts to the empty chasm of a home. No response. SHe goes deeper in the house, finding a note containing a code to a safe that Louis keeps in his room (unlocking it gives the player a small amount of handgun ammo). She can fix the dead headlight with duct tape.
+Louis’s open, lived-in house: a crucifix, a rosary, an open Bible, a cold pot on the stove, and sheets torn apart from the inside.
+She finds ammo and a photo of Louis and Norah fixing her porch step.
+A sound upstairs leads only to an open window.
+(Include a section that includes Norah discovering the headlights being out). Once fixed she pulls out of her neighborhood and drives back the way she came. As she leaves, include distant screams that Norah worriedly comments upon. As she begins driving she sees homemade signs appearing on the side of the road. The signs read “All may take refuge in the Red County Communal Chapel” with a large arrow pointing to a desolate dirt road, traveling deep into a ravine of trees and darkness. Norah pulls off onto an outroad, headed to the church.
+
+CH2 - The Old Chapel
+
+Premis:
+The Christian faith believes in the second coming. In my game I want It to focus on the second coming from the perspective of those left on earth. As the true Christians are being brought into heaven, they leave their bodies behind. From here their bodies are taken over by demons that roam on earth. The main mark of these beasts will be the cross burned into a part of their body.
+
+
+
+
+The enemies or the “Extrecated” are demons that use the bodies of the saved people to their will. The stronger the demon the more they can do with the disregarded human body.
+Crosses:
+ACROSS- Little control over all bodily movement and functioning including human reasoning. The pale beast looks human, however it's malnourished, almost looking vacuum sealed into itself. Its ghastly thin skin reveals the coarse and spikey nature of the human body (jagged ribs and vertebrates poke out from its stomach and back). The face is pale and has remnants of a full head of hair. The eyes of the creature are fully white with no pupils or iris. On the lower hip of the human a large cross seems to be branded on, It's almost as if the cauterized skin is still smoking.
+BCROSS- They BCROSS are mid level demons that have strong control of their bodily functions, some BCROSS can even manipulate small portions of their body to increase physical attributes (ex: Increased arm size for strength, leg size for speed, neck length for long range melee, or even brain size for better strategy). These appear as less pale and less malnourished ACROSS with the described physical attributes. These Cross behave as the medium tear enemy, and the variation of the physical upscaling makes it so the player has to fight each in a different way. Medium health pool.
+CCROSS- Fully in Control of their own body in unimaginable ways, highly intelligent. Can mold the body to their will and are very hard to put down. Most malicious of all the Crosses. 
+The CCROSS are cunning and malicious but just appear normal people. They normally just change their body one piece at a time ex: an arm with an exposed sharp bone to pierce enemies, armor made of hardened bone able to tank low caliber ammunition, and a swapping their human legs for quadrupedal like legs to better improve speed. The CCROSS are designed to specifically root out and destroy even the smartest and most careful survivors. REMEMBER the A & B CROSSES are still skinny and malnourished as when the demons entered the bodies they consumed all the muscle, fat, and organs. This just leaves bone and pale skin behind. The ACross don't need these body parts because they move fully though pure spiritual willpower, causing the ACROSS to be less physically accurate but still stronger than an average human. The BCROSS can manipulate small portions at a time but this does not extend more than muscle or skin growth (Can not manipulate bone). They are still fairly uncalculated but also make themselves a threat through pure adaptability and strength.
+
+
+
+Kindred: Highest level of demons, able to fully control multiple bodies at a single time, usually meshing tens of hundreds of Extrecated bodies into terrible amalgamations of wailing flesh and gore.
+Living Choir- a four legged beast, the front legs have a large yellow eye emerging from the flesh. The legs are made up of flesh covered in the old cracked stone of the chapel wall - decorated with religious symbols and gothic architecture. The remnants still leave cracks showing the red layer of extricated flesh that clings to the stone as armor. On top a flat stage is laid out, the body resembles an arachnid. Humanoid figures emerge from the flesh, the “choir” is the same flesh red and have small beating white eyes and large mouths that tear down their chests. The beast is not only physically strong, but the choir on top is able to produce loud sonic attacks that can disorient and damage the player.
+
+The Archangels- A large stone behemoth with 3 archangels being depicted in a gothic statue-like presence. At the bottom of the statue Michael the Archangel holds a sword in his right hand and a large shield in his left, standing at his shoulder is Uriel, holding a large staff in his left hand and an opened book in his right. In the middle of the two, standing just above them, is Gabriel holding a large stone tablet with two hands above his head. The three are a solid statue of stone, but underneath a large living flesh interior is contained, hiding. When the player encounters this boss they are caught off guard by the sudden movement of Michael’s stone sword slamming down from above them. The player must learn to dodge the attacks in tandem. As the fight goes on the stone begins to crack and crumble away. Revealing large amounts of eyes, jagged bone, and flesh. As the fight goes on the flesh begins to spill out and attack the player using the sharp bone and heavy slamming of large appendages emerging from the “statues”.
+Notes:
+N1- I have never felt such terror in all of my life. My next door neighbor is nearly 60 years old yet she just smashed down my front door with just her body. She had been making a ruckus in her house, screaming and shouting nonstop. So I went to check on her. But when I knocked on her front door she came smashing through her living room window. I thought someone had thrown her out until she started sprinting my way and snarling. I ran inside but my front door didn't stop her. She's been tearing through my belongings. I'm cornered here with nothing to stop her. I don't want to hurt her but she is leaving me no choice.
+
+N2- Norah’s personal journal, includes some portions about Adaline, Norah's job as a secretary at the Kennedy Police precinct, and her friendly relationship with Louis.
+
+
+Master DEBRIEF: MASTER GAME DEVELOPMENT PROMPT — THE EXTRECATED
+1. Project Overview
+Help me plan and develop my survival-horror game, working title The Extrecated, using Godot 4.x.
+The game takes place during a fictional interpretation of the Christian Second Coming, focusing on the people left on Earth after the saved are taken into Heaven. The game should emphasize psychological horror, disturbing creature designs, environmental storytelling, desperation, and the collapse of ordinary life.
+The intended visual style is gritty, dark, and reminiscent of late-1990s PlayStation survival-horror games. The game should use genuine low-poly 3D environments and characters, fixed cinematic camera perspectives, intentionally low-resolution textures, unique character animations, and carefully controlled lighting.
+My original visual target is described as 64×64 3D models. Interpret this as a deliberately low-resolution, retro-inspired presentation, using 64×64 textures where appropriate, rather than assuming that a 3D model itself is a 64×64 sprite.
+Use Godot 4.x to create and run the game. Prioritize a manageable development workflow, reliable scene organization, clear collision geometry, and performance suitable for the intended hardware.
+Do not replace the intended 3D environments with large 2D background images. Environment reference images must guide the placement and proportions of real geometry, models, props, roads, furniture, and other objects.
+2. Core Premise and Lore
+The Christian faith believes in the Second Coming. In this game's interpretation, the true Christians are brought into Heaven, leaving their earthly bodies behind. Demons then inhabit these abandoned bodies, using them to roam the Earth.
+These demons are known collectively as the Extrecated.
+The defining mark of an Extrecated creature is a cross branded or burned into some part of the possessed human body. The mark looks deeply cauterized and may appear to retain heat or emit a faint trace of smoke.
+The cross is an identifying visual element, not automatically a gameplay weakness.
+The demons differ in how much control they possess over their host bodies. Weaker entities struggle with ordinary human movement, stronger ones deliberately manipulate anatomy, and the highest entities can control many bodies simultaneously.
+The original human appearance and the demon's actual behavior should remain distinct concepts. The creature occupies a human body, but its intelligence, intentions, and capabilities belong to the possessing entity.
+Establish consistent world rules and reveal them through encounters, notes, environmental storytelling, and exploration rather than explaining everything immediately.
+3. Visual Direction and Gameplay
+Visual style
+Gritty and dark, inspired by classic PlayStation-era survival horror.
+Low-poly 3D models with restricted palettes and intentionally low-resolution textures.
+Fixed cinematic cameras, with deliberate camera changes at doorways, corners, and major story events.
+Heavy rain, wet surfaces, fog, oppressive darkness, harsh fluorescent lighting, and deep shadows.
+Unique creature silhouettes and distinct animation sets.
+Restrained effects that emphasize movement, lighting, and sound instead of constant visual noise.
+Environmental geometry must be physically present in the 3D world.
+Use actual floors, walls, ceilings, doors, windows, roads, cars, furniture, and obstacles. Add collision geometry so objects that appear solid behave appropriately.
+Camera direction
+Use fixed Camera3D perspectives with predetermined camera positions and trigger-based transitions.
+Plan the environment around camera composition. Players must understand where the exits and important threats are, even when visibility is restricted.
+Maintain consistent character controls across camera changes. Avoid sudden changes of movement direction caused by camera rotation.
+Special camera angles may be used during boss encounters, but attack readability must take priority over spectacle.
+Gameplay direction
+The main game is a survival-horror experience. The exact combat system is not finalized, so do not assume that the game must use firearms, melee combat, or stealth exclusively.
+Explore resource scarcity, deliberate movement, environmental interactions, threatening enemy encounters, and situations where avoiding an enemy may be preferable to fighting it.
+Do not introduce elaborate combat systems before basic character movement, cameras, collision, and enemy animations are reliable.
+4. Enemy Hierarchy: The Extrecated
+ACROSS — Lowest tier
+ACROSS creatures possess limited control over their bodies, bodily functions, and human reasoning.
+Their appearance:
+Extremely thin and malnourished, almost as though the body has been vacuum-sealed around its skeleton.
+Pale skin with sharp ribs and vertebrae protruding through the torso and back.
+Completely white eyes without visible pupils or irises.
+Remnants of the human host's original hair.
+A large branded cross on the lower hip or another clearly visible body area, appearing deeply cauterized and possibly still smoking.
+Their movement should appear poorly coordinated, twitchy, and animalistic. They can crawl and sprint on all fours, make abrupt changes of direction, and lunge at humans.
+They are common enemies that become dangerous through unpredictability, confined spaces, and numbers.
+The ACROSS should not move like a conventional zombie. Its movement should look like a demon attempting to operate a human body without fully understanding how a human body works.
+BCROSS — Middle tier
+BCROSS entities possess significantly greater control over their host bodies. Some can manipulate particular anatomical features to enhance physical capabilities.
+Potential variations include:
+Brutes with enlarged arms for powerful attacks.
+Runners with enlarged legs and explosive acceleration.
+Reachers with elongated necks and arms for extended melee range.
+Tacticians with enlarged, distorted heads and more deliberate behavior.
+Bulwarks with dense, enlarged torsos and greater durability.
+Contortionists with flexible, asymmetrical limbs and unusual attack angles.
+These are initial design concepts. They should not all be implemented immediately.
+BCROSS enemies should have medium health pools and distinct combat behaviors. Their mutations should alter the way the player approaches each encounter, not merely increase their statistics.
+CCROSS — High tier
+CCROSS entities have near-total control over their bodies and are highly intelligent and malicious.
+They can deliberately reshape their anatomy, alter the reach or configuration of their limbs, manipulate body proportions, and use deceptive or coordinated attacks.
+They are difficult to incapacitate because their movement and anatomy are not governed by normal human limitations.
+Their animations should be controlled and intentional, contrasting with the erratic movement of an ACROSS. They should appear to choose their attacks rather than merely react.
+CCROSS enemies are elite threats that reward observation, timing, and learning particular vulnerabilities.
+Kindred — Highest tier
+Kindred entities can control multiple bodies simultaneously and may combine dozens or hundreds of Extrecated bodies into enormous, grotesque amalgamations.
+They can incorporate stone, religious architecture, and other materials into their forms.
+Kindred bosses should be distinct encounters with multiple phases, unique animation languages, readable attacks, and substantial changes in arena conditions.
+They should not simply be larger enemies with more health.
+5. Kindred Boss Concepts
+Living Choir
+A four-legged beast whose front legs feature enormous yellow eyes emerging from the flesh.
+Its legs are covered in the cracked stone of chapel walls, decorated with religious carvings and gothic architectural details. Cracks in the stone reveal red Extrecated flesh underneath.
+Its upper body resembles an arachnid-like platform. Humanoid figures emerge from the flesh, forming the choir. These figures are red, possess small white eyes, and have large mouths that extend down their chests.
+The Living Choir attacks physically and produces powerful sonic attacks that damage and disorient the player.
+Suggested phases:
+The Procession: The boss patrols a chapel or ruined plaza while the singers turn toward the player.
+The First Hymn: Individual singers provide warning cues before coordinated sonic attacks. The player must find safe spaces or use cover.
+Broken Harmony: Damage disrupts the choir, producing irregular sonic attacks and forcing the main body to reposition.
+The Last Verse: The stone armor fractures, exposing flesh. The boss becomes more aggressive and combines physical slams with shorter, overlapping sonic attacks.
+Use sound as both an attack and an atmospheric tool. Sonic effects must be readable and should not remove player control for excessive periods.
+The Archangels
+A massive stone behemoth depicted as three gothic angel statues fused into a single structure.
+At the bottom stands Michael, holding a sword in his right hand and a large shield in his left.
+Beside him stands Uriel, holding a staff in his left hand and an open book in his right.
+Above them stands Gabriel, holding a large stone tablet overhead with both hands.
+The statue contains a living mass of flesh underneath its stone exterior.
+The encounter begins with Michael's sword suddenly striking down toward the player, catching them off guard.
+Suggested phases:
+The Judgment: Teach the player to recognize Michael's overhead sword strike.
+The Threefold Assault: Michael uses the sword and shield, Uriel introduces ranged attacks or area denial, and Gabriel creates delayed attacks with the tablet.
+The Fracture: Stone sections crack and fall away, exposing flesh, bones, and eyes.
+The Unveiling: Flesh spills out of the damaged statue and develops new appendages, changing the boss's reach and attack patterns.
+Each figure must have distinguishable warning animations, sound cues, and attack rhythms. The challenge should come from coordination and positioning rather than unavoidable attacks or excessive screen clutter.
+6. Prologue: Kennedy, Washington
+The prologue opens in Kennedy, a fictional small American town in Washington State.
+A cinematic begins with a view of America, then gradually moves toward Washington and zooms into Kennedy. The town is normally vibrant, but heavy rain darkens the streets.
+The camera reveals a small community center and a compact black BMW parked outside.
+Kenneth Martin
+Kenneth is a tall, slender white man with short professional brown hair and blue eyes. He has a long, narrow face, slight stubble, and thin tannish-pink lips.
+He wears a slim black puffer jacket, slim-fit blue jeans, and a brown belt. His posture is straight, and his expression is reserved and pursed.
+He is a quiet, caring father attending a birthday party with his daughter.
+Adaline Martin
+Adaline is almost six years old. She has brown hair and blue eyes like her father and is joyful, hyperactive, and excited about the birthday party.
+She wears a yellow party dress.
+Rachel and the supporting cast
+Rachel is Amelia's mother and the birthday-party host.
+The existing art bundle also includes supporting partygoers and children. Reuse these character concepts when appropriate, and keep the environment populated enough to feel like a real community event without requiring excessive NPC complexity.
+The Stranger
+A short, plump, bald man in his early forties. He wears straight khaki pants, a brown belt, and a white-and-green knit sweater.
+Initially, he is frightened and overwhelmed by the outbreak. He begs Kenneth to let him join him and Adaline in the car.
+His later transformation is a major story event. Preserve uncertainty around his identity and the exact nature of his transformation until those details are developed deliberately.
+7. Prologue Story Sequence
+Scene 1: Arrival
+Kenneth and Adaline are sitting in their parked black BMW outside the community center while heavy rain falls.
+They get their bearings and exit the vehicle. Kenneth takes Adaline's hand as they enter the building.
+Scene 2: The hallway
+They move through a dark, narrow hallway and turn left into a brightly illuminated birthday room.
+Use the change in lighting and ambience to contrast the oppressive rain outside with the warm, ordinary party.
+Scene 3: The birthday party
+The room contains many groups of parents talking, children running and playing on floor mats, folding tables, balloons, and birthday decorations.
+A large sign reads "Happy Birthday Amelia."
+The room has two windows on each of its three specified window-bearing walls.
+The rain and darkness outside the windows create an eerie contrast with the brightly lit room.
+Adaline runs off to join the other children. Kenneth gets a cup of punch from a nearby folding table and makes small talk with another parent.
+Scene 4: The ACROSS window attack
+This is the signature scare of the prologue. It must be sudden, violent, and disturbing, contrasting with the quiet normality of the party.
+The attack should be a controlled, scripted sequence, not an ordinary AI encounter.
+Beat 1 — The impact
+While the party is busy and noisy, the window suddenly explodes inward as the ACROSS bursts through it.
+The creature lands among broken glass, scattering debris and disrupting nearby furniture.
+Use a disproportionately loud, sharp crash, a brief camera reaction, and an extremely short impact frame. The impact frame should last roughly two to three frames at 60 FPS.
+Return to normal motion immediately. Do not prolong the impact effect.
+Beat 2 — The motionless creature
+The ACROSS lies awkwardly among the glass, with its limbs folded underneath it, its spine rising sharply, and its face angled toward the floor.
+It does not attack immediately.
+The initial impression should be a barely recognizable human body in a disturbing posture. Reveal the branded cross as the crowd gradually approaches rather than emphasizing it immediately.
+Beat 3 — The curious crowd
+Several adults cautiously approach the motionless creature. Others try to see around them.
+One parent steps closer, another leans to look, and someone quietly wonders whether it is a person.
+The ACROSS remains completely still.
+The room's ordinary ambience fades until almost nothing remains. A piece of glass may roll across the floor and settle. A balloon may continue swaying above the mats.
+Allow the silence to last slightly longer than feels comfortable. Keep a faint trace of rain or small environmental sounds so the silence feels deliberate.
+Do not give the ACROSS obvious awakening cues such as a gradual head turn, an ominous musical swell, or a predictable sequence of movements.
+Beat 4 — The sudden awakening
+The ACROSS snaps violently upward without warning.
+Its hands and feet slam against the floor. Its head jerks toward the nearest person, and its white eyes lock onto them.
+The body does not slowly wake up. It moves as if something has suddenly activated a human body that was never meant to function in this way.
+The crowd briefly fails to react because no one understands what they are seeing.
+Then the creature launches itself forward on all fours.
+Do not use a musical warning sting or a slow cinematic turn. The movement itself is the warning.
+Beat 5 — The attack
+The ACROSS lunges at a nearby adult, knocking them down and attacking them. Keep the violence disturbing without relying on prolonged graphic detail.
+The room erupts into panic. Parents shout the names of their children, children scream, and people attempt to escape through the narrow doorway.
+The creature moves in abrupt bursts, swinging its bony arms and crawling between fleeing people.
+Kenneth begins shouting for Adaline.
+The player must transition from observing the horror to desperately trying to find his daughter and escape.
+Scene 5: The escape
+Kenneth is pushed through the fleeing crowd and makes it into the hallway.
+The crowd bottlenecks at the exit. Keep the sequence readable and avoid making the player lose control for excessive periods.
+The ACROSS continues attacking people in the room and striking at fleeing parents and children.
+Kenneth reaches the outside.
+Scene 6: The parking lot
+The town has descended into chaos.
+Heavy rain falls on damaged cars and small fires. Screams from unseen victims echo down the street.
+More ACROSS approach the parking lot from nearby alleys and streets.
+Kenneth sees Adaline waiting beside the BMW with the frightened Stranger from the party.
+The Stranger begs Kenneth to take him along.
+Kenneth agrees. Kenneth gets into the driver's seat, while Adaline and the Stranger sit in the back.
+Scene 7: The drive
+As people continue to flee the community center and get overrun by the ACROSS, Kenneth accelerates, jumps the curb, and drives onto the ruined street.
+The town's geography should remain coherent. The car must travel along real 3D roads past actual buildings, vehicles, intersections, and obstacles.
+The camera may remain scripted and cinematic, but it should depict a vehicle moving through a connected environment rather than sliding over a flat background.
+Continue the story through the drive and the Stranger's eventual transformation.
+8. Supplied Asset Bundle
+The intended asset archive is crossed_prologue_assets(1).zip.
+It is an asset collection, not a Godot project. It contains 128 files: 127 PNG images and one JSON manifest.
+The previous archive, crossed_godot_full_prologue(2).zip, was the wrong file for the intended task. Do not use its flawed prototype as the required implementation foundation.
+The intended asset bundle contains:
+Five environment maps.
+Forty-six character animation sheets.
+Seventy-seven portraits.
+Environment maps
+city_drive.png — 1472 × 768
+Reference for the wider Kennedy road network, street layout, buildings, and driving sequence.
+parking_lot_before.png — 704 × 416
+Reference for the community center parking lot before the outbreak.
+parking_lot.png — 704 × 416
+Reference for the same parking lot after the outbreak.
+party_room.png — 416 × 288
+Reference for the birthday room layout, mats, tables, decorations, balloons, and sign.
+hallway.png — 160 × 416
+Reference for the narrow hallway connecting the entrance area to the party room.
+Treat these images as layout and visual references, not completed 3D environments. Construct floors, walls, windows, doors, furniture, cars, buildings, sidewalks, and roads as separate objects in the 3D world.
+Character art
+The bundle contains animation sheets for Kenneth, Adaline, the Stranger, Rachel, children, supporting partygoers, and multiple ACROSS variants.
+Most character sheets are 256 × 256 pixels and visually arranged in four-by-four grids of 64 × 64 frames. The portraits are approximately 192 × 224 pixels.
+The character sheets are 2D sprite animations, not rigged 3D models. Use them as visual references for modeling and animation, or as temporary actors if a short-lived hybrid prototype is useful.
+Do not falsely treat these sprite sheets as completed 3D characters.
+ACROSS variations in the bundle
+The current asset library groups numerous variations under the ACROSS family, including Walkers, The Fresh, Kneelers, Crawlers, Draggers, Mourners, Matrons, Patients, and Wailers.
+These include variations based on clothing, body appearance, and movement.
+Preserve the distinction between ACROSS variants and higher enemy tiers. Do not automatically classify every unusual ACROSS appearance as a BCROSS.
+The bundle also contains a morphed animation sheet for the Stranger, which should be reviewed when developing his transformation scene.
+The bundle does not supply dedicated native 3D models for the BCROSS, CCROSS, Living Choir, or Archangels.
+9. Mapping and Coordinate System
+Use the following convention for all first-pass Godot maps:
+One Godot unit represents approximately one metre.
+The ground lies on the XZ plane.
+Y is vertical.
+North is negative Z.
+South is positive Z.
+East is positive X.
+West is negative X.
+Establish consistent origins and doorway positions so different areas connect without misalignment.
+Community center mapping
+The first environment should include:
+Entrance foyer.
+Narrow hallway.
+Birthday room.
+Six windows in the party room, with two windows on each of its three specified window-bearing walls.
+The actual entrance doors and connecting passageways.
+A ceiling and lighting system compatible with fixed-camera compositions.
+The hallway and party room must be separate connected 3D spaces.
+Use these first-pass blockout dimensions:
+Area
+Approximate dimensions
+Entrance foyer
+4.4 × 3.5 metres
+Hallway
+2.4 metres wide × 12.5 metres long
+Party room
+14 × 10 metres
+Main entrance opening
+2.8 metres wide
+Party-room doorway
+2 metres wide
+Interior wall thickness
+0.15–0.25 metres
+Ceiling height
+3.2 metres
+
+For the initial layout, put the main entrance threshold at approximately (0, 0, 0), with the building extending northward along negative Z.
+Use the following approximate placement ranges for the first blockout:
+Foyer: X from −2.2 to +2.2; Z from −3.5 to 0.
+Hallway: X from −1.2 to +1.2; Z from −16 to −3.5.
+Party room: X from −15.2 to −1.2; Z from −18 to −8.
+Place the party-room doorway in the east wall near X = −1.2 and Z between approximately −15.5 and −13.5.
+These are starting measurements, not exact dimensions extracted from the source images. Adjust them as necessary to maintain clear connections, correct proportions, and readable gameplay.
+The party room lies west of the hallway. Kenneth enters through the main entrance, proceeds along the hallway, and turns left through the west-side doorway into the birthday room.
+Party-room prop placement
+Build the room in the following order:
+Floor, walls, and wall openings.
+Doors, window frames, and glass.
+Ceiling and structural details.
+Birthday banner, folding tables, chairs, balloons, and party decorations.
+Children's mats and scattered toys.
+NPC groups and scripted interaction points.
+Fixed cameras and the ACROSS encounter triggers.
+Place the large birthday sign on the far western wall, between window openings where appropriate.
+Keep a relatively open landing area beneath the planned breach window so the ACROSS can land and perform its first animation without furniture obstructing the sequence.
+Keep the doorway to the hallway visible enough for the escape scene.
+Parking lot mapping
+Use the two parking lot maps as different states of the same environment.
+Proposed starting dimensions are approximately 36 metres wide by 23 metres deep.
+Start with parking spaces about 2.6 metres wide and 5.2 metres long, with a central aisle approximately 6 metres wide.
+Place Kenneth's BMW near the community center entrance. One proposed initial location is around X = −6.5 and Z = +5.5, with the front of the vehicle facing the street. Adjust this if required by the actual blockout.
+Build:
+Parking spaces and lanes.
+Curbs and sidewalks.
+A clear route from the entrance to the BMW.
+An exit gap through which the car can leave the parking area.
+A road immediately beyond the curb.
+Nearby buildings and streetlights.
+The before and after versions should share the same underlying geometry. The later version introduces fires, damaged cars, debris, fleeing NPCs, and changed lighting rather than an entirely new layout.
+Town and driving route
+Divide Kennedy into modular connected sections:
+The community center block.
+A local street.
+A larger intersection.
+Further town roads and buildings.
+Build roads from real 3D meshes or reusable road segments, and buildings from separate volumes or facades.
+Use city_drive.png to guide the layout and position of recognizable landmarks. Do not slide the entire image across the screen to simulate travel.
+For the initial implementation, use a scripted vehicle path and fixed or follow-camera views. A fully simulated town and traffic system are not required.
+10. Fixed-Camera Layout
+Plan cameras for these key areas:
+Camera 1 — Parking lot arrival: A wide view of the community center, BMW, wet pavement, and entrance.
+Camera 2 — Hallway: A corridor view that shows Kenneth approaching the party room and makes the left-side doorway understandable.
+Camera 3 — Party-room overview: Establish the party, the birthday decorations, the windows, and the crowd.
+Camera 4 — ACROSS breach: A closer view of the window, impact, and creature landing.
+Camera 5 — Crowd inspection: Frame the motionless creature and the approaching adults, keeping the ACROSS visible between NPCs.
+Camera 6 — Escape: A view that keeps the hallway exit and the fleeing crowd understandable.
+Camera 7 — Parking-lot aftermath: A wider view of the BMW, fleeing families, fires, and approaching ACROSS creatures.
+Use Camera3D nodes and Area3D triggers. Scripted camera cuts should be deliberate and predictable.
+Do not sacrifice gameplay readability simply to force a cinematic shot.
+11. ACROSS Encounter Animation and Sound Direction
+The encounter depends on contrast between a normal birthday party and sudden chaos.
+Implement a sequence controller with these states:
+PARTY_NORMAL → WINDOW_IMPACT → CREATURE_LANDED → CROWD_INSPECTION → NEAR_SILENCE → ACROSS_AWAKENS → FIRST_LUNGE → PANIC_AND_ESCAPE
+Each state should have a specific trigger, expected duration, animation, sound behavior, and camera behavior.
+Audio stages
+Normal party: Conversations, children, movement, and rain.
+Impact: A sudden sharp glass crash and low impact accent, with a brief camera reaction.
+After impact: Glass settling and the ordinary ambience dropping away.
+Inspection: Hesitant footsteps, faint murmurs, and background rain.
+Near-silence: Almost all party ambience is reduced, with only faint environmental sounds remaining.
+Awakening: Sudden movement and a sharp, unsettling vocalization.
+Attack: Screams, running, overturned furniture, and abrupt animalistic movement sounds.
+Create a noticeable contrast without using playback levels that are painfully loud.
+Animation requirements
+The ACROSS must be completely still immediately before its awakening. Avoid obvious preparatory movement.
+Synchronize the glass shatter, impact animation, debris, sound, camera reaction, NPC approach, ambience reduction, sudden body movement, and first lunge with animation markers or an explicit sequence controller.
+For this first encounter, scripted movement is preferable to autonomous enemy AI.
+Once the player begins escaping, hand control to the appropriate gameplay system.
+12. Environmental Storytelling
+Survivor notes and environmental details should each have a purpose: revealing events, teaching the player something about the Extrecated, or creating an emotional connection.
+Note N1 — The Neighbor
+The narrator describes an elderly neighbor who had been screaming and shouting inside her house. When the narrator investigates, the neighbor comes crashing through a window and attacks with abnormal strength and speed.
+The narrator retreats inside, but the front door cannot stop her. The narrator becomes trapped and struggles with the idea of hurting someone they know.
+Use this note to communicate that:
+Extrecated entities can inhabit ordinary people regardless of their former physical condition.
+An apparently weak ACROSS may be stronger than a healthy human.
+Recognizing a former person can make an encounter more emotionally difficult.
+Avoidance and escape may be preferable to confrontation.
+Note N2 has not yet been written. Do not invent its established content.
+13. Norah Augustine and the Main Game
+Norah Augustine is a woman in her early thirties with deep brown hair, hazel eyes, soft full lips, a smaller nose, and round, full cheekbones. She is married.
+Her complete history, motivation, family background, and connection to Kenneth's story have not yet been established.
+The main game's proposed narrative milestones are:
+The aftermath of the Second Coming.
+Investigation into the nature and hierarchy of the Extrecated.
+Exploration of locations transformed by the apocalypse.
+Discoveries that challenge Norah's understanding of the event and its meaning.
+A reckoning with the Kindred and the wider consequences of the apocalypse.
+Treat these as planning directions rather than finalized plot events. Develop Norah's personal history deliberately before locking in the full main-game storyline.
+14. Godot Project Architecture
+Use a modular organization with separate scenes and scripts.
+Suggested scene groups:
+scenes/prologue/
+scenes/characters/
+scenes/enemies/
+scenes/environments/
+scenes/cameras/
+scenes/interactions/
+scenes/ui/
+Suggested script groups:
+scripts/player/
+scripts/enemies/
+scripts/combat/
+scripts/cameras/
+scripts/dialogue/
+scripts/cutscenes/
+scripts/systems/
+Avoid concentrating the entire prologue in a single large script. Keep character movement, enemy behavior, camera transitions, dialogue, and scripted scene events separate.
+Use reusable enemy behavior components for common mechanics while allowing each enemy type to have its own model, animations, attack definitions, and special behavior.
+15. Development Roadmap
+Build the game as small, testable milestones.
+Phase 1 — Foundation
+Create the Godot 4.x 3D test scene, establish visual settings, and implement reliable character movement, collisions, and fixed-camera transitions.
+Phase 2 — Community center
+Construct the hallway, foyer, and party room from real 3D geometry. Match the supplied reference images while preserving coherent room connections.
+Phase 3 — Characters
+Create Kenneth, Adaline, the Stranger, Rachel, supporting partygoers, and the first ACROSS. Establish animation and collision systems.
+Phase 4 — First horror encounter
+Implement the complete window breach and attack sequence with scripted camera changes, sound, NPC behavior, and the transition into panic.
+Phase 5 — Escape and parking lot
+Connect the interior to the exterior. Build the parking lot, BMW, curb, entrance walkway, and scripted reunion with Adaline and the Stranger.
+Phase 6 — Town and driving
+Construct the connected roads, intersections, and surrounding buildings. Implement the drive with actual 3D scenery, a scripted vehicle path, and the Stranger's transformation.
+Phase 7 — Polish
+Refine rain, lighting, sound, animation, camera framing, and performance. Test the entire prologue from beginning to end.
+Phase 8 — Main game
+Establish Norah's story, implement BCROSS variants, develop the CCROSS system, construct the first full exploration area, and prototype a Kindred boss.
+Do not build the entire town or all enemy tiers before validating the first environment and encounter.
+16. Immediate Task
+Start with the community center blockout.
+Create a true 3D Godot environment consisting of the entrance foyer, narrow hallway, birthday room, six window openings, the connecting doorway, and basic collision geometry.
+Use the supplied hallway.png and party_room.png as layout references, not as completed background environments.
+The first milestone is complete when a temporary playable character can enter the building, walk down the hallway, turn left into the birthday room, navigate around basic furniture, and return outside through the same entrance.
+Then add the fixed-camera views, actual window geometry, and the staging area for the ACROSS breach.
+Preserve the intended gritty retro visual style, the established story details, and the eventual 3D direction throughout development. Make reasonable decisions without repeatedly asking for clarification, but clearly distinguish established facts from proposals and document important assumptions before they become embedded in the game's design.
+The long-term goal is a cohesive, playable survival-horror game whose environments, character animations, camera design, sound, and creature behavior work together to make the Second Coming and the Extrecated feel frightening, recognizable, and narratively meaningful.
+
+
+Models: 
+
