@@ -1,8 +1,8 @@
 # Tools
 
-## Combat Playground (https://claude.ai/artifact/FzEykM1KVDwwpKjrgcwXzv) — v2, Nov 4
+## Combat Playground (https://claude.ai/artifact/FzEykM1KVDwwpKjrgcwXzv) — v2, Nov 4 (now v14)
 
-A browser sandbox for testing combat outside the game code, playable on the Chromebook. It re-implements the rules in combat-design.md rather than running the Godot scripts, so values tuned here have to be carried into the game by hand ("Copy changed values" gives the JSON). (It has since reached v11; see combat-design.md and stealth-design.md.)
+A browser sandbox for testing combat outside the game code, playable on the Chromebook. It re-implements the rules in combat-design.md rather than running the Godot scripts, so values tuned here have to be carried into the game by hand ("Copy changed values" gives the JSON).
 
 - **Fighting:**
   - **Norah:** aim with feet planted, a 5-chamber revolver with a hammer delay, per-round reload, shove, dodge roll with i-frames, stumbling when hit.
@@ -30,8 +30,37 @@ A browser sandbox for testing combat outside the game code, playable on the Chro
   - **Saved settings:** named slots for the whole panel.
   - **Controller:** sticks, LT/RT aim and fire, X/Y/B/A, Start pause, Back replay.
   - **Touch:** a stick and buttons.
-- **Tested:** against a stand-in for three.js in this workspace, because the real library's CDN is blocked here. It hasn't been seen running in a real browser by Claude.
+- **Tested:** since v14 (Nov 5), headless against the real three.js r128 with software WebGL, so Claude can screenshot it. three.js is fetched by a sparse git clone of mrdoob/three.js at tag r128, because the CDN and npm are blocked here. The game repo is github.com/owarends-commits/Games (`crossed/`).
 - **Not yet in it:** accurate character models, a notes section, BCROSS variants other than the Brute, CCROSS, bosses, and an attack for a legless ACROSS.
+
+### v14 polish (Nov 5)
+- **Norah's model:** the user chose to keep the playground's box Norah. `norah.glb` from the repo was tried and then removed.
+- **Settings panel:**
+  - **Tabs:** Play, Norah, Enemies, Stealth, World. Within each, sections are smaller (for example ACROSS movement, attacks, grabs, and body & wounds). The first section of a tab starts open and the rest are collapsed.
+  - **Search:** "Find a setting…" filters every tab.
+  - **Reset:** double-click a slider's label to put it back to its default.
+  - **Remembered:** the open tab and sections.
+  - **Narrow screens:** the panel starts hidden below 1100 px wide.
+- **HUD:**
+  - **Log:** 5 lines that fade after about 5 s. A scenario load no longer spams "Spawned …".
+  - **Run stats line:** smaller and dimmer.
+  - **Live enemy list:** moved to World → Time & debugging.
+- **Lighting:**
+  - **Lighting strength slider:** default 1.6. It scales the ambient, moon and room lights, but not the stealth light values.
+  - **Fill light:** a soft light above Norah so she reads.
+  - **Fog:** 0.045 → 0.03.
+  - **Flashlight:** on L, adding +0.3 to her visibility.
+- **Frame rate:**
+  - **Merged meshes:** body boxes on the same joint are merged into one mesh, so draw calls drop from about 600–900 to 250–360 in the busy scenarios.
+  - **Particles:** blood pools, sprays and brand smoke are instanced (one draw call each, no per-puff allocation), which fixes a geometry leak from the smoke.
+  - **HUD updates:** only when text changes.
+  - **Readout:** optional, under World → Look.
+- **ACROSS movement, calmer by default:**
+  - **Sliders:** turn 520 → 300 °/s, heading wander 0.8 → 0.35, bursts 0.8–1.7 s, stalls 0.2–0.5 s, and they shuffle at 30% speed during a stall instead of stopping dead. Trips 0.4 → 0.22, falling after a lunge 0.4 → 0.3, jerkiness 1.0 → 0.5.
+  - **Smoothing:** heading wander now eases in and retargets every 0.35–0.95 s. Body twitch retargets every 0.15–0.6 s and eases in more slowly.
+- **Settings storage:** only values that differ from the defaults are saved. A one-time v14 migration resets the changed ACROSS movement values and the fog for existing browsers.
+- **Camera:** the shoulder offset shrinks when a wall is on that side, and the lens stays 0.25 m off walls. The clinic scenario now starts inside the hallway (z 3.1), not in the entrance.
+- **Push:** checked against v13. Shove, furniture push (E) and the grab push-off behave the same.
 
 ## Map Designer (https://claude.ai/artifact/7jF5UaMLE7bqX1BqxHfUhk)
 

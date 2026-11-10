@@ -1,4 +1,4 @@
-# Stealth system (rough draft, playground v11, Nov 4)
+# Stealth system (rough draft, playground v11, Nov 4; vaulting added v12, Nov 5)
 
 The user asked for a stealth system as a rough draft in the Combat Playground (https://claude.ai/artifact/FzEykM1KVDwwpKjrgcwXzv), with a stealth scenario. Every number below has a slider in the playground's "Stealth" panel. Combat rules live in combat-design.md.
 
@@ -19,10 +19,31 @@ The user asked for a stealth system as a rough draft in the Combat Playground (h
 | Pushing furniture | 6 m |
 | Shoving | 3 m |
 | Breaking glass | 15 m |
+| Slow vault | 1 m |
+| Fast vault | 6 m (takeoff and landing) |
 
   Footsteps repeat every 0.38 s while she moves. Noise through walls carries half as far.
 - **Light:** how visible she is depends on how lit her spot is: ambient light (0.1) plus nearby lights, falling off with distance.
 - **HUD:** "SEEN" shows her visibility as a bar and a percentage. "NOISE" shows the radius of the last sound she made, and "CROUCHED" shows when she's crouched.
+
+## Vaulting (playground v12, Nov 5)
+Only Norah can vault; ACROSS and Louis can't (crawlers still go under tall furniture).
+- **Input:** Space next to a vaultable surface does a slow vault; hold Shift + Space for a fast vault. Pad: LB, or B + LB for fast. Touch: the VAULT button, fast when RUN is held.
+- **What counts as vaultable:** a box 0.35–1.3 m tall and no deeper than 2.3 m that's within 0.75 m of her, that she's facing (within about 60°), with room to land on the far side and no wall or closed door in the way. Pews, crates, tables, beds, counters, desks and couches all count. The chapel stage (2.6 m deep) doesn't.
+- **Prompt:** the HUD shows "SPACE: vault over the <name> · SHIFT+SPACE: fast and loud" when one is in reach, then "VAULTING (slow, quiet)" or "(fast, loud)" during it.
+
+| | Slow vault | Fast vault |
+|---|---|---|
+| Time | 1.4 s × (0.75 + 0.25 × depth in m), so about 1.6 s over a 1.6 m crate | 0.5 s |
+| Noise | 1 m (quieter than crouch-walking) | 6 m on takeoff and again on landing |
+| Motion | Climbs on, shuffles across on her knees, lowers herself down | One hand on the top, legs swung over to the side, drops on the far side |
+
+- **During a vault:** she can't aim, reload or dodge, and her reload is cancelled. She's committed to the landing spot.
+- **Grabbed mid-vault:** the vault is cancelled, she drops to the floor where she is, and the grab QTE starts as normal.
+- **Tested headlessly:** slow and fast both land 0.42 m past the far edge. Facing away or standing 1.7 m off gives no vault. An unaware ACROSS 4.2 m away ignores a slow vault and turns suspicious at a fast one.
+- **Sliders:** Norah panel has slow vault time, fast vault time, vault reach and highest vaultable. Stealth panel has slow and fast vault noise.
+- **Run stats:** the vault count is on the results card.
+- **Open questions for later:** whether a fast vault should stagger her if she lands next to an ACROSS; whether ACROSS should climb over (slowly, falling off) instead of routing around; and vaulting through smashed windows.
 
 ## ACROSS awareness
 - **States:**
@@ -107,3 +128,4 @@ The user asked for a stealth system as a rough draft in the Combat Playground (h
 - Distractions: throwing a bottle or brick to make a noise elsewhere.
 - Sounds per subclass that carry through walls.
 - Feeding ACROSS that go back to their meal after a search.
+- Vaulting follow-ups: landing stagger near enemies, ACROSS clumsily climbing over, vaulting through smashed windows.

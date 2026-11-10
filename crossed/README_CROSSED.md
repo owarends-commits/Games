@@ -15,7 +15,7 @@ This folder is the whole Godot project plus every design and story document, kep
 | Stealth draft | `docs/project/stealth-design.md` |
 | Character models, and the target model style | `docs/project/character-model-notes.md`, `docs/project/model-style-reference.md` |
 | Dialogue portraits | `docs/project/portrait-spec.md` |
-| Browser tools (Map Designer, Item Modeler, Combat Playground, Character Creator) | `docs/project/tools-roadmap.md`, `docs/project/character-creator.md` |
+| Browser tools (Map Designer, Item Modeler, Combat Playground, Character Creator) | `docs/project/tools-roadmap.md`, `docs/project/character-creator.md`; page copies in `tools/map_designer.html`, `tools/item_modeler.html`, `tools/combat_playground.html` (v14), `tools/creator/character_creator.html` |
 | Working preferences and setting rules (late 1990s, no cell phones) | `docs/project/working-preferences.md` |
 | Prologue pass notes (blockout, story, ending, models) | `docs/BLOCKOUT_NOTES.md`, `docs/STORY_PASS_NOTES.md`, `docs/ENDING_PASS_NOTES.md`, `docs/MODEL_PASS_NOTES.md` |
 | Older Chapter One notes | `docs/CHAPTER1_PLAYTEST.md` (superseded by `docs/project/chapter1-playtest-notes.md`) |
