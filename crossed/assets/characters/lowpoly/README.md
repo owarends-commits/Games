@@ -9,7 +9,7 @@ Every model built in the locked early-2000s photo-textured low-poly style, as of
 - About 900-3,900 triangles each, one texture atlas per model (inside the GLB). The two-armed
   Brutes are heavier (about 8,800-13,800) and are **static and posed, with no rig yet**.
 
-## What's here (83 models)
+## What's here (84 models)
 
 | Folder | Models | Notes |
 |---|---|---|
@@ -25,6 +25,7 @@ Every model built in the locked early-2000s photo-textured low-poly style, as of
 | `bcross/reacher/` | 5 | Three neck Reachers, two arm Reachers |
 | `bcross/tactician/` | 1 | Base male with the big vertical eye, plus `tactician_m01_atlas_eye_open.png` (swap this texture in when the eye opens) |
 | `bcross/contortionist/` | 8 | See the README in that folder |
+| `bosses/hob/` | 1 | The Hob, the Chapter 2 final boss (static, no rig). **Its face texture is a placeholder from a reference video; replace before release.** See the README there. |
 
 Lineup images sit next to the models they show.
 
