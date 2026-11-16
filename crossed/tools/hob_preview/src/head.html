@@ -1,0 +1,73 @@
+<title>Hob Animation Preview</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;600&display=swap">
+<style>
+/* layout: the stage beside a rail of animations; the same dark review-bay look as the Brute, ACROSS and Runner previews */
+:root{
+  --bg:#141312; --panel:#1d1b19; --line:#34302b; --fg:#e7e1d6; --dim:#9b9284; --accent:#d8723a; --gold:#e8c77a;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif; --body:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:14px;display:flex;flex-direction:column;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px;gap:12px;box-sizing:border-box}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+h1{font-family:var(--display);font-weight:600;font-size:28px;letter-spacing:.06em;text-transform:uppercase;margin:0}
+header p{margin:0;color:var(--dim);max-width:80ch;line-height:1.45}
+.wrap{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:12px}
+.stage{position:relative;min-height:340px;border:1px solid var(--line);background:#0e0d0c;overflow:hidden}
+#c{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.hud{position:absolute;left:12px;top:10px;font-family:var(--mono);font-size:12px;color:var(--dim);display:flex;flex-direction:column;gap:2px;pointer-events:none}
+.hud b{font-family:var(--display);font-size:30px;letter-spacing:.08em;color:var(--fg);font-weight:600;line-height:1}
+.hud .ph{color:var(--accent)}
+.load{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim);font-family:var(--mono);text-align:center;padding:16px}
+.load[hidden]{display:none}
+.cams{position:absolute;right:10px;top:10px;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;max-width:70%}
+.rail{display:flex;flex-direction:column;gap:8px;min-height:0;overflow:auto}
+.anim{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;text-align:left;font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);padding:10px 12px;cursor:pointer}
+.anim:hover{border-color:#5a5045}
+.anim[aria-pressed="true"]{border-color:var(--accent);background:#261e18}
+.anim .k{grid-row:span 2;font-family:var(--mono);color:var(--dim);font-size:12px;padding-top:3px;font-style:normal}
+.anim strong{font-family:var(--display);font-size:20px;letter-spacing:.05em;text-transform:uppercase;font-weight:600}
+.anim span{color:var(--dim);font-size:12.5px;line-height:1.4}
+.opts{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+button.t{font:inherit;font-size:12.5px;color:var(--fg);background:var(--panel);border:1px solid var(--line);padding:6px 9px;cursor:pointer}
+button.t[aria-pressed="true"]{border-color:var(--accent);color:#fff}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.note{font-size:12px;color:var(--dim);line-height:1.45;margin:0}
+#cue{position:absolute;left:12px;bottom:16px;font-family:var(--mono);font-size:13px;color:var(--gold);opacity:0;transition:opacity .5s;pointer-events:none;max-width:70%}
+.dmg{position:absolute;right:14px;bottom:16px;opacity:0;pointer-events:none}
+@media (max-width:820px){ .wrap{grid-template-columns:minmax(0,1fr);grid-template-rows:56vh auto} .stage{min-height:300px} .cams button.t{padding:4px 7px} }
+@media (prefers-reduced-motion:reduce){ #cue{transition:none} }
+</style>
+<div class="wrap">
+  <div class="stage">
+    <canvas id="c" aria-label="Hob animation preview"></canvas>
+    <div class="hud"><b id="hName">Crawl</b><span>phase <span class="ph" id="hPh">—</span></span><span id="hSp"></span></div>
+    <div class="cams" role="group" aria-label="Camera">
+      <button class="t" data-cam="side" aria-pressed="true">Side</button><button class="t" data-cam="three">¾</button><button class="t" data-cam="front">Front (her view)</button><button class="t" data-cam="top">Top</button><button class="t" data-cam="back">Back</button><button class="t" data-cam="skin">Torso close</button><button class="t" data-cam="pov">Her eyes</button>
+    </div>
+    <div class="dmg" id="dmg"></div>
+    <div id="cue"></div>
+    <div class="load" id="load">Loading and rigging the Hob…</div>
+  </div>
+  <div class="rail">
+    <button class="anim" data-a="crawl" aria-pressed="true"><i class="k">1</i><strong>Crawl</strong><span>Hand over hand. One hand reaches ahead and digs its fingers in, then hauls, dragging the whole starved body forward along the floor. Meanwhile the other hand swings through. The torso sags and ripples behind, the back legs trail and scrape, and the face stays level.</span></button>
+    <button class="anim" data-a="fast"><i class="k">2</i><strong>Fast crawl</strong><span>The same pull, quick and frantic: short, hard hauls one after another. The body surges between them and the legs bounce, while the swellings inside slosh back with every surge.</span></button>
+    <button class="anim" data-a="screech"><i class="k">3</i><strong>Screech</strong><span>It tenses and the swellings bulge. It shoves up onto straight arms with the face tipping back, the jaw drops open, and it screams. The head shudders and everything under the skin goes frantic. Then it settles.</span></button>
+    <button class="anim" data-a="grabL"><i class="k">4</i><strong>Grab · left hand</strong><span>A chase. Norah walks away ahead, glancing back. The Hob drags itself after her on its right hand alone while the left arm stays stretched out in front, hand open, inching closer until the fingertips just reach her back. Then the fingers close right round her, it lifts her, squeezes down hard three times and drops her.</span></button>
+    <button class="anim" data-a="grabR"><i class="k">5</i><strong>Grab · right hand</strong><span>The same chase on the other side: it crawls on its left hand while the long right arm reaches out after her, slowly, until it just reaches her back. Then it closes on her, lifts her, squeezes down hard three times and drops her.</span></button>
+    <button class="anim" data-a="throne"><i class="k">6</i><strong>Throne grab</strong><span>While crawling at her it plants both hands and shoves off once, hard, launching itself forward fast and a little into the air. Both arms stretch out for her, and as the body crashes flat both hands close on her. Its arms come round both sides of the head and hold her centred in front of its face. It lies still, head up, looking at her, then slowly draws her toward its mouth. The burning cross on its right upper arm, just below the shoulder, is in plain view from her position: Two ways out: <b>2 shots to the cross</b>, or <b>2 shots to its eyes</b> (one in each). Either way it spasms, lets go, and she scrambles clear.</span></button>
+    <div class="opts">
+      <button class="t" id="oSlow" aria-pressed="false">Slow ×0.25</button>
+      <button class="t" id="oAll" aria-pressed="false">Play all in order</button>
+      <button class="t" id="oBones" aria-pressed="false">Show bones</button>
+    </div>
+    <label class="note" for="oEscape" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">Throne grab escape <select id="oEscape" style="font:inherit;font-size:12.5px;color:var(--fg);background:var(--panel);border:1px solid var(--line);padding:6px 9px"><option value="alt">Alternate</option><option value="cross">Shoot the cross (2)</option><option value="eyes">Shoot the eyes (2)</option></select></label>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/SkeletonUtils.js"></script>
+<script>
+"use strict";

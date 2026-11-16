@@ -178,6 +178,7 @@ Every Cross can carry a hit-zone body (`scripts/enemies/cross_body.gd`). A shot 
   - Gabriel: delayed attacks.
   - The stone cracks to expose flesh, and the final phase overturns the patterns learned earlier.
 - **The Living Choir:** singers telegraph its sonic attacks, pillars give cover, shooting a singer interrupts a hymn, and the eye-legs are the weak points.
+- **The Hob (Chapter 2 final boss):** can't be killed; the fight is an escape. Its animations, the throne grab (2 shots to the cross on its right arm, or to its eyes, to escape) and the agreed rules are in `hob-boss.md`.
 - **Build order:**
   1. A combat test room.
   2. ACROSS AI.

@@ -2,6 +2,8 @@
 
 Working name in the design notes: "the Congregation". Full design: `ch2-final-boss.md` in the project notes.
 
+**Animations and fight design:** `crossed/docs/project/hob-boss.md`. A rigged copy and a browser preview of its animations are in `crossed/tools/hob_preview/` (rigged by `crossed/tools/rig_hob.py`).
+
 | File | What it is |
 |---|---|
 | `hob.glb` | The current model. **Static, no rig.** About 23,800 triangles, one 1024 atlas. |
