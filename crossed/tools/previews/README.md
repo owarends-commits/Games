@@ -15,7 +15,7 @@ Then open, for example, http://localhost:8000/reacher-preview.html. three.js r12
 ## Pages
 | Page | What it is |
 |---|---|
-| `combat_playground.html` | The Combat Playground (the sandbox): map builder, every enemy type with its AI, Norah's controls. |
+| `combat_playground.html` | The Combat Playground (the sandbox): map builder, every enemy type with its AI, Norah's controls. The Contortionist, the Reachers, the split-head Reacher, the Hob, Norah's player animations and the weapons run on their preview's own code (`src/mkpv.py`, `src/mkhob.py`, `src/pv_host.js`). |
 | `across-preview.html` | ACROSS attacks and movement. |
 | `brute-preview.html` | The two-armed Brute, the legless one, the split one and the armoured one. |
 | `clubfist-preview.html` | The club-fist Brute. |
@@ -49,6 +49,7 @@ Each page is assembled by a script in `src/` from an earlier page plus its own c
 | `splithead-preview.html` | `mksh.py` | `sh.js` |
 | `norah-player-preview.html` | `mkpl.py` | `pl.js` |
 | `norah-weapons-preview.html` | `mkwp.py` | `pl.js`, `wp.js` |
+| `src/pv_*.js` (modules in the playground) | `mkpv.py <page> <NAME> <live.js> <out.js> [patch.py]`, and `mkhob.py` for the Hob | `cn_live.js`, `rc_live.js`, `sh_live.js`, `pl_live.js`, `hob_live.js` and their patches |
 
 `build.py` reads the models from `crossed/assets/characters/lowpoly/` and `m/` (or `LOWPOLY` and `WEBM` if set).
 

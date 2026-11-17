@@ -15,7 +15,8 @@ function plvInit(){ if(PLV.loading||PLV.ready||CFG.norah.liveAnims===false) retu
 function plvToStage(v){ const s=PLV.stage; s.updateMatrixWorld(true); return s.worldToLocal(v.clone()); }
 function plvAimAt(){ let p;
   if(isFixed()){ const tg=player.aimTarget&&!player.aimTarget.dead?player.aimTarget:null; if(tg){ p=new THREE.Vector3(tg.pos.x,1.25+0.45*(player.aimHeight||0),tg.pos.z); } else p=new THREE.Vector3(player.pos.x+Math.sin(player.yaw)*6,1.3+0.6*(player.aimHeight||0),player.pos.z+Math.cos(player.yaw)*6); }
-  else { const d=new THREE.Vector3(); camera.getWorldDirection(d); p=camera.position.clone().addScaledVector(d,10); }
+  else { const d=new THREE.Vector3(); camera.getWorldDirection(d); const fw=new THREE.Vector3(Math.sin(player.yaw),0,Math.cos(player.yaw));
+    if(!player.aiming||d.dot(fw)<0.6||Math.abs(d.y)>0.7) p=new THREE.Vector3(player.pos.x,1.3+groundY(player.pos.x,player.pos.z),player.pos.z).addScaledVector(fw,6); else p=camera.position.clone().addScaledVector(d,10); }
   return plvToStage(p); }
 function plvShot(){ PLV.S.shots.push(PLV.t); if(PLV.S.shots.length>8) PLV.S.shots.shift(); PLV.S.shotN++; }
 function plvClick(){ PLV.S.click=PLV.t; }

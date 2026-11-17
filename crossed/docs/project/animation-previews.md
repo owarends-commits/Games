@@ -91,7 +91,7 @@ Animation proposals for the Tactician: a man's body under a head nearly a metre 
 ## Contortionist
 Page: `contortionist-preview.html`.
 
-Animation proposals for the Contortionist: spider-like, in three movement subclasses on one body. Its hands and feet plant at fixed points and swing to the next, and the physics guard holds it up on them (centre of mass from the mesh volume). Same animations for every size: the small ones are quicker and lighter, the big ones slower and heavier. Nothing here is in the playground yet.
+Animation proposals for the Contortionist: spider-like, in three movement subclasses on one body. Its hands and feet plant at fixed points and swing to the next, and the physics guard holds it up on them (centre of mass from the mesh volume). Same animations for every size: the small ones are quicker and lighter, the big ones slower and heavier. In the Combat Playground (see below), apart from the wall climb and drop.
 
 - **Spider crawl:** Subclass 1. Face down and low, elbows and knees jutting high over its back like a spider's legs. It scuttles in quick bursts and freezes, head up, watching.
 - **Backbend spider walk:** Subclass 2. Bent over backward, belly to the ceiling, walking head first on its hands and feet with the head twisted round the right way up. Fast and skittering.
@@ -105,7 +105,7 @@ Animation proposals for the Contortionist: spider-like, in three movement subcla
 ## Reachers (neck and arm)
 Page: `reacher-preview.html`.
 
-Animation proposals for the Reachers: three with necks two or three times a person's length, two with arms near four metres long. They loom at the edge of their reach and strike from there. The long parts bend along their whole length on a chain of joints added at load (the model files are untouched), and the physics guard weighs them by volume like the rest of the body. Nothing here is in the playground yet.
+Animation proposals for the Reachers: three with necks two or three times a person's length, two with arms near four metres long. They loom at the edge of their reach and strike from there. The long parts bend along their whole length on a chain of joints added at load (the model files are untouched), and the physics guard weighs them by volume like the rest of the body. All five are in the Combat Playground (see below).
 
 - **Looms at range:** It comes on slowly, swaying from the hips, and stops at the very edge of its reach. When she steps in, it backs off to keep that distance and settles again. The neck sways over her like a reed; the arm ones drag their arms along the floor ahead of them.
 - **Whip headbutt:** The neck draws back into an S (the tell), then snaps out straight, the base first and the head last, and the head slams into her from out of her reach.
@@ -120,7 +120,7 @@ Animation proposals for the Reachers: three with necks two or three times a pers
 ## Split-head Reacher (unique, f01)
 Page: `splithead-preview.html`.
 
-The f01 Reacher: her head is split across, the skull and upper fangs on top, a fanged flap below, and her own face hanging upside-down beneath it. Her body sits in the next room; the neck, stretched to 5 m at load (the model file is untouched), runs along the floor and through the doorway, and the head hunts on it. The head is quick and hard to hurt; the body is the weak point. Nothing here is in the playground yet.
+The f01 Reacher: her head is split across, the skull and upper fangs on top, a fanged flap below, and her own face hanging upside-down beneath it. Her body sits in the next room; the neck, stretched to 5 m at load (the model file is untouched), runs along the floor and through the doorway, and the head hunts on it. The head is quick and hard to hurt; the body is the weak point. In the Combat Playground (see below).
 
 - **The neck hunts:** The head comes through the doorway low along the floor, the face dragging, rises into her room, sways and searches, and finds her. The slack coiled beside the body pays out as it comes.
 - **Face swings like bait:** It holds off at her eye level and lets the hanging face down on a strand, swinging it slowly. She lowers the gun and steps in; the face is snatched up and the split snaps at her.
@@ -189,3 +189,14 @@ Three firearms, three hand weapons, a road flare and a flare gun, each built in 
 **Flare gun**
 - **Fire:** Hammer back, aimed high; the flare arcs out burning and lands far off.
 - **Reload:** Breaks it open, the spent shell drops, a fresh one in, snapped shut.
+
+
+## In the Combat Playground
+These run in `combat_playground.html` on their preview's own code: each preview page is wrapped whole into a module and a playground enemy (or the player) drives it, so they move exactly as approved.
+
+- **The Contortionist** (key 7): the crawl, backbend and upright styles; leg wrap and drag (break free), the wrong-angle strike, the neck-twist bite, folding down. Not yet: the wall climb and drop.
+- **The Reachers** (key 8): neck Reachers loom at the edge of their reach and whip, or step in to bite from above or coil round her (break free or it bites her face). Arm Reachers swipe, snatch and reel her in to bite, or sweep her feet and pin her. A shot in the neck mid-whip spoils it; enough shots at an arm joint take the arm off there.
+- **The split-head Reacher** (key 9): the body sits in its own room by the nearest doorway and the neck runs out through it. The head searches low along the floor, holds off at her eye level, darts aside when she aims, baits with the hanging face, bites with the split, or engulfs her head. Shots into the open split make it recoil; the body is the weak point, and the neck drops like a rope when it dies.
+- **The Hob** (key K): crawls after her on its hands and turns as it goes; screeches; grabs her one-handed and squeezes (break free or be crushed); lunges into the throne grab, where two real shots to the cross on its right arm or to its eyes free her, or it bites. A shot to the cross while it crawls stops it dead. It can't be killed. Its code comes from `crossed/tools/hob_preview/` (`src/mkhob.py`).
+- **Norah**: what you see of the player is Norah posed by the player-animation code from her real state each frame (idle, walk, run, crouch, aim, shots, the empty click, the reload, dodge, shove, flinch, stagger, knocked down, grabbed, death), with the revolver's and flashlight's working parts.
+- **The weapons**: picked up as items (placed in the editor; J gives the whole armoury), switched with B, reloaded with R. Shotgun (a spread of pellets), rifle, 9mm pistol, flare gun (the flare burns where it lands), hatchet, crowbar, kitchen knife (stab free of a grab), road flares (strike, then throw). Each plays its approved clips. The long guns take both hands, so the flashlight goes off while one is out.
