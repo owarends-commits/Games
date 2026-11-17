@@ -33,7 +33,7 @@ b = b[:help_start] + '''<div id="help">
   <b>Use</b> E: search furniture that glints, pick things up, open doors, push furniture<br>
   <b>Bag</b> I or Tab: use pills and batteries, read notes · <b>Flashlight</b> L (its light makes Norah easier to see)<br>
   <b>Vault</b> Space next to a low surface (slow, quiet) · Shift + Space (fast, loud)<br><br>
-  <b>N</b> restart the map · <b>1</b> random ACROSS · <b>4</b> upright · <b>5</b> Crawler · <b>2</b> Louis · <b>3</b> dummy · <b>0</b> clear<br>
+  <b>N</b> restart the map · <b>1</b> random ACROSS · <b>4</b> upright · <b>5</b> Crawler · <b>2</b> Louis · <b>3</b> dummy · <b>6</b> Tactician · <b>7</b> Contortionist · <b>8</b> Reacher · <b>9</b> split-head Reacher · <b>K</b> the Hob · <b>0</b> clear<br>
   <b>P</b> pause · <b>.</b> one frame · <b>Y</b> replay the last 10 s · <b>H</b> hit zones · <b>T</b> slow motion · <b>G</b> overlays · <b>`</b> tuning panel<br><br>
   <b>Pad:</b> sticks move/look · LT aim · RT fire · X reload · Y shove · B run/dodge · A use · Start pause · Back replay · D-pad ↑ restart<br>
   <div class="btns" style="margin-top:8px"><button id="helpok">Start</button></div>
@@ -173,6 +173,7 @@ exec(open(os.path.join(D,'move.py')).read())
 exec(open(os.path.join(D,'runner.py')).read())
 exec(open(os.path.join(D,'tactician.py')).read())
 exec(open(os.path.join(D,'tactician2.py')).read())
+exec(open(os.path.join(D,'pv.py')).read())
 import importlib.util as _ilu
 _sp=_ilu.spec_from_file_location('catalog',os.path.join(D,'catalog.py')); _cm=_ilu.module_from_spec(_sp); _sp.loader.exec_module(_cm)
 MODEL_LIB=_cm.catalog(os.environ.get('LOWPOLY') or (os.path.join(D,'models') if os.path.isdir(os.path.join(D,'models')) else os.path.join(D,'..','..','..','assets','characters','lowpoly')), os.environ.get('WEBM') or (os.path.join(D,'m') if os.path.isdir(os.path.join(D,'m')) else os.path.join(D,'..','m')))
@@ -232,6 +233,8 @@ out.append(rd("move_rt.js"))
 out.append(rd("runner_rt.js"))
 out.append(rd("tac_bulbs.js"))
 out.append(rd("tactician_rt.js"))
+for _pv in ["pv_cn.js","pv_host.js","cn_ai.js"]:
+    if os.path.exists(os.path.join(D,_pv)): out.append(rd(_pv))
 out.append(rd("presets.js"))
 out.append(rd("editor.js"))
 out.append(rd("menu.js"))
