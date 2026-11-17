@@ -790,5 +790,5 @@ LIVE.die={ start(ctx){ ctx.dT=null; },
     J.aLx=-2.3; J.aRx=-2.0; J.aLz=0.65; J.aRz=0.5; J.eL=0.7; J.eR=0.5; J.lLx=-0.2; J.lRx=0.15; J.kL=0.5; J.kR=0.3; J.lLz=0.25; J.lRz=0.2;
     const from=ctx.dJ||(ctx.dJ=crawlBody(t,0)); ctx.phase="dead"; return mix(from,J,u); } };
 
-return { A, LIVE, makeChar, pvSetup, pvBind, pvStep, pvFx, PHYS, P0, mix, PVHOOK, get NX(){ return NX; } };
+return { A, LIVE, makeChar, pvPrep:(typeof pvPrep==="function"?pvPrep:null), pvPost:(typeof pvPost==="function"?pvPost:null), pvSetup, pvBind, pvStep, pvFx, PHYS, P0, mix, PVHOOK, get NX(){ return NX; } };
 })();

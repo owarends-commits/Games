@@ -28,3 +28,6 @@ j = rep(j, '  ["Hit zones", "Damage × · knockback (m) · stagger (s)", [', '''
   ["The Hob (boss)", "Chapter 2's giant: can't be killed. Crawls after her, screeches, grabs her one-handed, and lunges into the throne grab: two shots to the cross on its right arm or to its eyes to get out.", [
     ["hob.crawl","Crawl (m/s)",0.2,3,0.05],["hob.fast","Fast crawl (m/s)",0.5,5,0.1],["hob.grabDamage","One-hand grab: damage",0,60,1],["hob.throneBiteDamage","Throne grab: bite if she doesn't get out",0,150,1],["hob.stun","Stunned by a shot to the cross (s)",0,8,0.25]]],
   ["Hit zones", "Damage × · knockback (m) · stagger (s)", [''')
+
+# a preview body holds her while it plays its grab clip (its state stays "pv"): only let go when it dies or the clip ends
+j = rep(j, 'if(g.by.dead || g.by.state!=="grab"){ player.grabbed=null;', 'if(g.by.dead || (g.by.kind==="pv" ? !(g.by.pv&&g.by.pv.holding()) : g.by.state!=="grab")){ player.grabbed=null;')

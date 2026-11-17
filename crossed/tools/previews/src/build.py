@@ -233,7 +233,7 @@ out.append(rd("move_rt.js"))
 out.append(rd("runner_rt.js"))
 out.append(rd("tac_bulbs.js"))
 out.append(rd("tactician_rt.js"))
-for _pv in ["pv_cn.js","pv_host.js","cn_ai.js"]:
+for _pv in ["pv_cn.js","pv_rc.js","pv_host.js","cn_ai.js","rc_ai.js"]:
     if os.path.exists(os.path.join(D,_pv)): out.append(rd(_pv))
 out.append(rd("presets.js"))
 out.append(rd("editor.js"))

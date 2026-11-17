@@ -11,11 +11,14 @@ class PVBody{
   constructor(e,type,key){ this.e=e; this.type=type; this.K=PVK[type]; this.mod=this.K.mod; this.key=key; this.stage=new THREE.Group(); scene.add(this.stage);
     this.M=new THREE.Matrix4(); this.Mi=new THREE.Matrix4(); this.a=0; this.ctx={events:[],x:0,z:0,yaw:Math.PI/2,v:0,live:true,T:{}}; this.t=0; this.ct=0; this.C=null; this.ready=false; this.hits=[];
     this.norah=this.makeNorah(); this.clip=null; this.clipName=null;
-    mdlLoad(key).then(g=>{ if(e.removed) return; this.withStage(()=>{ this.mod.pvBind(this.rec()); this.C=this.mod.makeChar(g); if(this.K.prep) this.K.prep(this); this.mod.pvSetup(this.C); }); this.makeHits(); this.ready=true; if(this.K.start) this.K.start(e,this); })
+    mdlLoad(key).then(g=>{ if(e.removed) return; this.withStage(()=>{ this.mod.pvBind(this.rec()); if(this.mod.pvPrep) this.mod.pvPrep(g,this); this.C=this.mod.makeChar(g); if(this.mod.pvPost) this.mod.pvPost(this.C,this); this.mod.pvSetup(this.C); }); this.makeHits(); this.ready=true; if(this.K.start) this.K.start(e,this); })
       .catch(err=>{ log(`${e.name}: model failed (${err&&err.message||err})`,"#ff7070"); }); }
   // the stage: world = M · stage. Posing runs with the stage at the origin, so its world is the preview's world
-  anchor(worldPos,worldDir,stageX=0,stageZ=0){ const a=Math.atan2(-worldDir.z,worldDir.x)+Math.PI/2; this.a=a; const R=new THREE.Matrix4().makeRotationY(a-Math.PI/2);
-    const off=new THREE.Vector3(stageX,0,stageZ).applyMatrix4(R); this.M.copy(R).setPosition(worldPos.x-off.x,0,worldPos.z-off.z); this.Mi.copy(this.M).invert(); this.place(); }
+  anchor(worldPos,worldDir,stageX=0,stageZ=0){ const a=Math.atan2(-worldDir.z,worldDir.x)+Math.PI/2, M0=this.M.clone(); this.a=a; const R=new THREE.Matrix4().makeRotationY(a-Math.PI/2);
+    const off=new THREE.Vector3(stageX,0,stageZ).applyMatrix4(R); this.M.copy(R).setPosition(worldPos.x-off.x,0,worldPos.z-off.z); this.Mi.copy(this.M).invert();
+    // what it left lying in the world (a cut-off arm, blood, dust) stays where it is when the stage moves
+    if(this.C){ const T=this.Mi.clone().multiply(M0); for(const o of this.stage.children){ if(o===this.C.group||o===this.C.shadow) continue; o.applyMatrix4(T); } }
+    this.place(); }
   place(){ this.stage.position.setFromMatrixPosition(this.M); this.stage.quaternion.setFromRotationMatrix(this.M); this.stage.updateMatrixWorld(true); }
   withStage(fn){ const s=this.stage; s.position.set(0,0,0); s.quaternion.identity(); s.updateMatrixWorld(true); try{ return fn(); } finally { this.place(); } }
   toStage(v){ return v.clone().applyMatrix4(this.Mi); } toWorld(v){ return v.clone().applyMatrix4(this.M); }
@@ -32,11 +35,12 @@ class PVBody{
     const seg=(bn,child,r,zone,limb)=>{ const b=B[bn], c=child&&B[child]; if(!b) return; const d=c? c.position.clone() : new THREE.Vector3(0,0.2,0), L=d.length()||0.2;
       const m=new THREE.Mesh(new THREE.BoxGeometry(r*2,L,r*2),mat); m.position.copy(d).multiplyScalar(0.5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.clone().normalize()); b.add(m);
       m.userData={enemy:this.e,zone,limb,pv:true,hitbox:true}; this.hits.push(m); };
-    const hb=new THREE.Mesh(new THREE.SphereGeometry(0.13,8,6),mat); hb.position.set(0,0.1,0); B.head.add(hb); hb.userData={enemy:this.e,zone:"head",pv:true,hitbox:true}; this.hits.push(hb);
+    if(!(this.K.noHeadHit&&this.K.noHeadHit(this))){ const hb=new THREE.Mesh(new THREE.SphereGeometry(0.13,8,6),mat); hb.position.set(0,0.1,0); B.head.add(hb); hb.userData={enemy:this.e,zone:"head",pv:true,hitbox:true}; this.hits.push(hb); }
     seg("chest","neck",0.17,"torso"); seg("hips","chest",0.16,"torso");
-    for(const s of ["L","R"]){ seg("upperarm_"+s,"forearm_"+s,0.06,"arm","arm"+s); seg("forearm_"+s,"hand_"+s,0.055,"arm","arm"+s); seg("thigh_"+s,"shin_"+s,0.08,"leg","leg"+s); seg("shin_"+s,"foot_"+s,0.065,"leg","leg"+s); }
+    for(const s of ["L","R"]){ if(!(this.K.noArmHits&&this.K.noArmHits(this))){ seg("upperarm_"+s,"forearm_"+s,0.06,"arm","arm"+s); seg("forearm_"+s,"hand_"+s,0.055,"arm","arm"+s); } seg("thigh_"+s,"shin_"+s,0.08,"leg","leg"+s); seg("shin_"+s,"foot_"+s,0.065,"leg","leg"+s); }
     if(this.K.hits) this.K.hits(this,seg,mat); }
   // play a clip. anchor: "face" (stage +x toward her from where it stands now), "keep" (same stage)
+  holding(){ return (this.K.holds||["wrap","coil","snatch","engulf","grab","throne","oneHand"]).includes(this.clipName); }
   play(name,o={}){ const clip=this.K.clips[name]; if(!clip){ log(`no clip ${name}`,"#ff7070"); return; }
     const e=this.e, prev=this.ctx, here=new THREE.Vector3(e.pos.x,0,e.pos.z);
     if(o.anchor!=="keep"){ const to=new THREE.Vector3(player.pos.x-e.pos.x,0,player.pos.z-e.pos.z); if(to.lengthSq()<1e-4) to.set(Math.sin(e.yaw),0,Math.cos(e.yaw)); to.normalize();
