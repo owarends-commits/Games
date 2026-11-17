@@ -174,6 +174,7 @@ exec(open(os.path.join(D,'runner.py')).read())
 exec(open(os.path.join(D,'tactician.py')).read())
 exec(open(os.path.join(D,'tactician2.py')).read())
 exec(open(os.path.join(D,'pv.py')).read())
+exec(open(os.path.join(D,'nw.py')).read())
 import importlib.util as _ilu
 _sp=_ilu.spec_from_file_location('catalog',os.path.join(D,'catalog.py')); _cm=_ilu.module_from_spec(_sp); _sp.loader.exec_module(_cm)
 MODEL_LIB=_cm.catalog(os.environ.get('LOWPOLY') or (os.path.join(D,'models') if os.path.isdir(os.path.join(D,'models')) else os.path.join(D,'..','..','..','assets','characters','lowpoly')), os.environ.get('WEBM') or (os.path.join(D,'m') if os.path.isdir(os.path.join(D,'m')) else os.path.join(D,'..','m')))
@@ -233,7 +234,7 @@ out.append(rd("move_rt.js"))
 out.append(rd("runner_rt.js"))
 out.append(rd("tac_bulbs.js"))
 out.append(rd("tactician_rt.js"))
-for _pv in ["pv_cn.js","pv_rc.js","pv_sh.js","pv_hob.js","pv_host.js","cn_ai.js","rc_ai.js","sh_ai.js","hob_ai.js"]:
+for _pv in ["pv_cn.js","pv_rc.js","pv_sh.js","pv_hob.js","pv_nw.js","pv_host.js","cn_ai.js","rc_ai.js","sh_ai.js","hob_ai.js","nw_host.js"]:
     if os.path.exists(os.path.join(D,_pv)): out.append(rd(_pv))
 out.append(rd("presets.js"))
 out.append(rd("editor.js"))

@@ -1,0 +1,72 @@
+// ================================================================ Norah, live (the playground player)
+// Her approved poses, composed from what the player is really doing each frame (ctx.S, set by the host):
+//   S = {fwdV, sideV (m/s, her own frame), run, crouch, aim, aimAt (stage point), shots:[drive times], shotN, rounds,
+//        click (time), reload (0..1 or null), dodge {t, side}, shove (time), hurt (time), stagger (time),
+//        down {t, up (time she gets up)}, grabbed (bool), dead (time), light (bool), tier (0 fine .. 2 critical)}
+const LIVE={}; let NX=3.2;   /* the creature pages keep a target here; Norah has none */
+const LEN_W=1.15, LEN_R=2.1, LEN_C=0.85;
+const ease=(D,k,to,r,dt)=>{ D[k]=(D[k]??to)+(to-(D[k]??to))*Math.min(1,dt*r); return D[k]; };
+LIVE.drive={ start(ctx){ nStart(ctx,0); ctx.D={ph:0}; ctx.aimT=1.5; },
+  step(t,dt,ctx){ const S=ctx.S||{}, D=ctx.D, P=TP(), fv=S.fwdV||0, sv=S.sideV||0, sp=Math.hypot(fv,sv);
+    const L= S.run?LEN_R: S.crouch?LEN_C: LEN_W, dir= fv<-0.05&&Math.abs(fv)>=Math.abs(sv)?-1:1;
+    D.ph=((D.ph+dir*sp*dt/L)%1+1)%1;
+    const mv=ease(D,"mv",sp>0.12?1:0,8,dt), rn=ease(D,"rn",S.run?1:0,5,dt), cr=ease(D,"cr",S.crouch?1:0,6,dt);
+    let aimTo=S.aim&&!S.reloadOn&&!S.grabbed&&S.dead==null?1:0; const aim0=ease(D,"aim",aimTo,aimTo?9:6,dt);
+    // ---- the legs and body: stand, walk, run, crouch
+    const f=0.75+0.12*(S.tier||0); let J=nStand(t,f); const h=look(J,dt,ctx,0.7*(1-aim0)*(1-mv*0.4));
+    if(mv>0.01){ let W=hLegs(D.ph,nStand(t,0.8)); const s=Math.sin(D.ph*Math.PI*2); W.aLx+=0.05*s; W.aRx-=0.07*s; W.sp=0.14+0.05*(S.tier||0); W.hd=0.01;
+      if(rn>0.01) W=mix(W,hRun(D.ph,t),rn); J=mix(J,W,mv); }
+    if(cr>0.01) J=mix(J,mv>0.05?crouchWalk(D.ph,t):nCrouch(t),cr);
+    // ---- the aim: the upper body goes into the hold; the legs keep doing what they do (forward, sideways, back)
+    let aim=aim0;
+    if(aim>0.01){ const A=nAim(t,0.4), U=mix(J,A,aim); if(mv>0.05){ for(const k of ["lLx","lRx","lLz","lRz","kL","kR","fL","fR","hd"]) U[k]=J[k];
+        if(Math.abs(sv)>Math.abs(fv)){ const s=Math.sin(D.ph*Math.PI*2); U.lLx=A.lLx; U.lRx=A.lRx; U.lLz=(U.lLz||0)+0.18*Math.max(0,s); U.lRz=(U.lRz||0)+0.18*Math.max(0,-s); U.kL=A.kL+0.3*Math.max(0,s); U.kR=A.kR+0.3*Math.max(0,-s); } }
+      J=U; }
+    // ---- shots: the kick throws the aim up; the first after a pause makes her flinch hard; each nudges her back
+    let kick=0, back=0, fl=0; const shots=S.shots||[];
+    for(let i=0;i<shots.length;i++){ const s=shots[i], k=t-s; if(k<0||k>1.6) continue; const gap=i>0?s-shots[i-1]:9, fk=gap>1.5?1:gap>0.8?0.6:0.35;
+      kick+=(0.32+0.12*fk)*Math.exp(-k/0.09)*sat(k/0.02); back+=0.05*Math.exp(-k/0.1)*sat(k/0.02); fl+=fk*Math.exp(-k/0.35)*sat(k/0.03); }
+    J.nx-=0.22*fl; J.ny+=0.35*fl; J.sp-=0.12*fl; J.hd+=0.03*fl; J.aLz+=0.1*fl;
+    // ---- the empty click: she starts
+    if(S.click!=null){ const k=t-S.click, st=k>=0?Math.sin(sat(k/0.35)*Math.PI)*Math.exp(-k*2):0; J.sp-=0.08*st; J.nx-=0.1*st; }
+    // ---- hit: a flinch away; a stagger back on stumbling steps
+    if(S.hurt!=null){ const k=t-S.hurt, j=k>=0?Math.exp(-k/0.25)*sat(k/0.04):0; J.syaw-=0.45*j; J.sroll+=0.25*j; J.nx-=0.15*j; J.ny-=0.5*j; J.hyaw-=0.15*j; aim*=1-0.6*j; kick-=0.25*j; }
+    if(S.stagger!=null){ const k=t-S.stagger; if(k>=0&&k<1.3){ const ph=(k/0.32)%1, s=Math.sin(ph*Math.PI*2), St=nStand(t,1); St.lLx=0.4*s; St.lRx=-0.4*s; St.kL=0.3+0.3*Math.max(0,s); St.kR=0.3+0.3*Math.max(0,-s); St.sp=-0.3*Math.exp(-k/0.4)+0.2; St.nx=-0.3*Math.exp(-k/0.3); St.aLx=-0.8; St.aRx=-0.7; St.aLz=0.45; St.aRz=0.4;
+        const w=1-sm5((k-1.0)/0.3); J=mix(J,St,w); aim*=1-w; } }
+    // ---- the dodge: she lurches aside on stumbling steps, arms out for balance, and comes back up on the aim
+    if(S.dodge){ const k=t-S.dodge.t; if(k>=0&&k<1.6){ const wob=Math.sin(sat((k-0.15)/0.9)*Math.PI)*Math.exp(-k*0.9), sd=S.dodge.side||1, Sd=nStand(t,1), s1=sm5(k/0.2), s2=sm5((k-0.2)/0.24);
+        Sd.kL=0.35+0.25*wob; Sd.kR=0.4+0.35*wob; Sd.sroll=(0.32*wob+0.12*wob)*sd; Sd.hroll=-0.12*wob*sd; Sd.sp=0.28+0.18*wob; Sd.nx=-0.15+0.1*wob;
+        Sd.aLx=-0.9-0.4*wob; Sd.aLz=0.55; Sd.aRx=-0.75; Sd.aRz=0.5; Sd.eL=Sd.eR=0.7; Sd.lLz=0.25*s1*(1-s2)*sd; Sd.lRz=-0.2*s2*(1-sm5((k-0.6)/0.3))*sd;
+        const w=1-sm5((k-1.1)/0.5); J=mix(J,Sd,w); aim*=1-w; } }
+    // ---- the shove: both hands still full, she drives her forearms out into it
+    let shoveW=0; if(S.shove!=null){ const k=t-S.shove; if(k>=-0.05&&k<0.8){ const push=sat(k/0.12)*(1-sm5((k-0.35)/0.35)); shoveW=1-sm5((k-0.5)/0.3); const Sh=nStand(t,1); Sh.lLx=-0.55*push; Sh.kL=0.45; Sh.lRx=0.35; Sh.sp=0.3+0.25*push; Sh.hz=0.12*push; Sh.nx=0.1; J=mix(J,Sh,shoveW); aim*=1-shoveW; D.push=push; } }
+    // ---- knocked down: over backward, dazed on the floor, rolls up and gets up
+    if(S.down){ const k=t-S.down.t; const st=NP.stumble(), sit=NG.sit(), lie=NG.lie(t,0.5); sit.aLx=sit.aRx=-0.9; sit.eL=sit.eR=0.4; sit.nx=0.35; lie.nx=0.4;
+      const a1=Math.pow(sat(k/0.38),2), a2=Math.pow(sat((k-0.38)/0.3),2); let Dn= k<0.12? mix(J,st,sm5(k/0.12)) : k<0.38? mix(st,sit,a1) : k<0.68? mix(sit,lie,a2) : lie;
+      if(S.down.up!=null){ const u=sat((t-S.down.up)/1.2); Dn=u<1?NG.up(t,u):Dn; if(u>0.3) ctx.onLimbs=true; if(u>=1) Dn=J; }
+      J=Dn; aim=0; }
+    // ---- grabbed: struggling, her forearms braced against it
+    let held=0; if(S.grabbed){ const n=s=>noise(t*12,s)*0.12, G=nStand(t,1); G.sp=-0.2+n(1); G.nx=-0.35+n(2); G.ny=0.3; G.lLx=-0.45; G.kL=0.4; G.lRx=0.3; G.kR=0.35; J=G; aim=0; held=1; }
+    // ---- dead: her knees go, the gun drops, she folds onto her side
+    let dead=null; if(S.dead!=null){ const k=t-S.dead, kn=NQknees(t), sl=sm5(k/0.5); J=mix(J,kn,sl); aim=0;
+      if(k>0.8){ const side=P0(); side.hd=HIP0()-0.13; side.hroll=-1.42; side.hp=0.35; side.sp=0.18; side.sroll=-0.1; side.nx=0.15; side.nz=-0.35; side.lLx=-0.85; side.kL=1.15; side.lRx=-0.3; side.kR=0.5; side.fL=side.fR=0.25; side.lLz=0.35;
+        side.aRx=-1.3; side.aRz=0.2; side.eR=0.4; side.aLx=-0.55; side.aLz=0.15; side.eL=0.9; J=mix(kn,side,Math.pow(sat((k-0.8)/0.6),2)); }
+      dead={gun:k>0.45?"gone":"hand",light:k>0.75?"gone":"hand"}; }
+    // ---- the reload: the approved sequence, run at the playground's reload speed
+    if(S.reload!=null&&S.dead==null&&!S.grabbed&&!S.down){ if(!D.rT){ D.rT={}; } const T0=ctx.T, P0x=ctx.post, P2=ctx.post2; ctx.T=D.rT; ctx.out="calm"; const R=A.reload.step(S.reload*6.4,dt,ctx); D.rT=ctx.T; ctx.T=T0;
+      const RL=R; for(const k of ["lLx","lRx","lLz","lRz","kL","kR","fL","fR","hd"]) RL[k]=J[k]; ctx.phase="reloads"; return RL; }
+    if(D.rT){ D.rT=null; if(ctx.rnd) ctx.rnd.visible=false; }
+    // ---- the revolver's working parts, the light
+    const G=gunCycle(t,shots.slice(-6)); const n=S.shotN||0, cylA=(n+(G.cylA*5/(Math.PI*2)-G.n))*Math.PI*2/5;
+    const live=clamp(S.rounds??5,0,5), ch=[0,1,2,3,4].map(i=>i<live?"live":"spent");
+    const H= dead? {aim:0,gun:dead.gun,light:dead.light} : {aim,amp:tremor(ctx,dt,mv<0.05&&fl<0.05)+0.004*(S.tier||0),kick,back,at:S.aimAt,trig:G.trig,cock:Math.max(G.cock,S.cock||0),cylA,ch,lightOn:S.light?1:0,sweep:h*0.8};
+    if(S.click!=null&&t-S.click<0.2) H.trig=Math.max(H.trig,1-sat((t-S.click)/0.2));
+    hands(ctx,H);
+    if(shoveW>0.01||held){ const Hh=ctx.H, w=Math.max(shoveW,held), push=D.push||0;
+      ctx.post=()=>{ holdPost(ctx,Hh); const Sr=runner.R.armR.getWorldPosition(new V3()), Sl=runner.R.armL.getWorldPosition(new V3()), tg=runner.B.chest.getWorldPosition(new V3()).addScaledVector(P.fwd,held?0.42:0.25+0.25*push);
+        armIK(runner,{side:"R",target:tg.clone().addScaledVector(P.right,0.12),pole:Sr.clone().add(new V3(0,-0.5,0)).addScaledVector(P.right,0.18),w,tip:0.075});
+        armIK(runner,{side:"L",target:tg.clone().addScaledVector(P.right,-0.12),pole:Sl.clone().add(new V3(0,-0.5,0)).addScaledVector(P.right,-0.18),w,tip:0.075}); }; }
+    ctx.phase= dead?"dead": S.down?"down": held?"grabbed": aim>0.5?"on the aim": mv>0.5?(rn>0.5?"runs":"walks"):"idle";
+    return fin(J); } };
+LIVE.muzzle=()=>muzzleAt();
+LIVE.props=()=>({GUN,LIGHT,SPOT});

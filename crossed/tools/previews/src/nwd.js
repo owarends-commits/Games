@@ -1,0 +1,8 @@
+const { chromium } = require('playwright'); const fs=require('fs');
+(async()=>{ const b=await chromium.launch({args:['--use-gl=swiftshader']}); const p=await b.newPage({viewport:{width:900,height:600}});
+  const errs=[]; p.on('pageerror',e=>errs.push('PAGEERR '+e.message+' '+(e.stack||'').split('\n').slice(1,4).join(' | '))); p.on('console',m=>{ if(m.type()==='error') errs.push('CONSOLE '+m.text().slice(0,300)); });
+  for(const [re,f] of [[/three\.min\.js/,'three.min.js'],[/GLTFLoader\.js/,'GLTFLoader.js'],[/SkeletonUtils\.js/,'SkeletonUtils.js']]) await p.route(re, r=>r.fulfill({body:fs.readFileSync(f),contentType:'application/javascript'}));
+  await p.route(/fonts\./, r=>r.abort()); await p.goto('http://127.0.0.1:8765/test.html'); await p.waitForTimeout(2500);
+  await p.click('#mmStart'); await p.waitForTimeout(300); await p.click('#suGo'); await p.waitForTimeout(400); await p.click('#helpok'); await p.waitForTimeout(3000);
+  console.log(await p.evaluate(async()=>{ try{ const g=await mdlLoad("norah"); let r=""; try{ plvWith(()=>{ PV_NW.pvBind(plvRec()); PLV.C=PV_NW.makeChar(g); r+="made;"; PV_NW.pvSetup(PLV.C); r+="setup;"; PLV.ctx={events:[],x:0,z:0,yaw:Math.PI/2,v:0,live:true,T:{}}; PV_NW.pvBind(plvRec()); PV_NW.LIVE.drive.start(PLV.ctx); r+="started"; }); }catch(e){ r+=" ERR "+e.message+" "+e.stack.split("\n").slice(1,4).join(" | "); } return r; }catch(e){ return "load "+e.message; } })); console.log(await p.evaluate(()=>JSON.stringify({ready:PLV.ready,loading:PLV.loading,key:PLV.key,skin:!!player.skin,pick:pickModel("norah")})));
+  console.log(errs.join('\n')); await b.close(); })();
