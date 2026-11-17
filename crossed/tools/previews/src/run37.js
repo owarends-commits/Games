@@ -1,0 +1,12 @@
+const { chromium } = require('playwright'); const fs=require('fs');
+(async()=>{ const b=await chromium.launch({args:['--use-gl=swiftshader']}); const p=await b.newPage({viewport:{width:1000,height:700}});
+  for(const [re,f] of [[/three\.min\.js/,'three.min.js'],[/GLTFLoader\.js/,'GLTFLoader.js'],[/SkeletonUtils\.js/,'SkeletonUtils.js']]) await p.route(re, r=>r.fulfill({body:fs.readFileSync(f),contentType:'application/javascript'}));
+  await p.route(/fonts\./, r=>r.abort());
+  await p.goto('http://127.0.0.1:8765/ap_test.html'); for(let i=0;i<40&&!(await p.evaluate(()=>!!(window.__ap&&__ap.ac)));i++) await p.waitForTimeout(400);
+  const out=await p.evaluate(()=>{ window.requestAnimationFrame=()=>0; const A=__ap.ac; A.group.position.set(0,0,0); A.group.rotation.set(0,Math.PI/2,0);
+    const base=()=>{ const J=P0(); J.sp=0.12; J.hp=0.05; J.nx=0.12; J.aLz=0.1; J.kL=0.12; J.kR=0.18; J.hd=0.03; J.eL=0.15; return J; };
+    const yaw=Math.PI/2, left=new THREE.Vector3(-Math.cos(yaw),0,Math.sin(yaw)), fwd=new THREE.Vector3(Math.sin(yaw),0,Math.cos(yaw));
+    const meas=(J)=>{ applyPose(A,J); retarget(A); const h=new THREE.Vector3(); A.B.hand_R.getWorldPosition(h); const tip=new THREE.Vector3(-0.08,0,0); A.B.hand_R.localToWorld(tip); const m=mouthPos(A); const d=tip.clone().sub(m); return {s:d.dot(left),f:d.dot(fwd),u:d.y}; };
+    const solve=(tg)=>{ let best=null; for(let ax=-2.2;ax<=-0.6;ax+=0.1) for(let az=-0.9;az<=0.6;az+=0.1) for(let ay=-1.2;ay<=1.2;ay+=0.2) for(let e=0.8;e<=2.4;e+=0.2){ const J=base(); J.aRx=ax; J.aRz=az; J.aRy=ay; J.eR=e; const r=meas(J); const c=Math.hypot(r.s-tg.s,r.f-tg.f,r.u-tg.u); if(!best||c<best.c) best={c,ax:+ax.toFixed(2),az:+az.toFixed(2),ay:+ay.toFixed(2),e:+e.toFixed(2),r:{s:+r.s.toFixed(3),f:+r.f.toFixed(3),u:+r.u.toFixed(3)}}; } return best; };
+    return JSON.stringify({start:solve({s:0.14,f:0.05,u:0.0}), mid:solve({s:0.0,f:0.04,u:-0.01}), end:solve({s:-0.2,f:0.05,u:0.0}), stare:solve({s:0.0,f:0.3,u:0.07})},null,1); });
+  console.log(out); await b.close(); })();

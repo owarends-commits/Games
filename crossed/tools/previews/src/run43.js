@@ -1,0 +1,10 @@
+const { chromium } = require('playwright'); const fs=require('fs');
+(async()=>{ const b=await chromium.launch({args:['--use-gl=swiftshader']}); const p=await b.newPage({viewport:{width:1000,height:700}});
+  const errs=[]; p.on('pageerror',e=>errs.push('PAGEERR '+e.message));
+  for(const [re,f] of [[/three\.min\.js/,'three.min.js'],[/GLTFLoader\.js/,'GLTFLoader.js'],[/SkeletonUtils\.js/,'SkeletonUtils.js']]) await p.route(re, r=>r.fulfill({body:fs.readFileSync(f),contentType:'application/javascript'}));
+  await p.route(/fonts\./, r=>r.abort());
+  await p.goto('http://127.0.0.1:8765/bp_test.html'); for(let i=0;i<40&&!(await p.evaluate(()=>!!(window.__bp&&__bp.BR)));i++) await p.waitForTimeout(400);
+  await p.evaluate(()=>{ document.getElementById('oModel').value='brute_twoarm_m03_split'; document.getElementById('oModel').dispatchEvent(new Event('change')); });
+  for(let i=0;i<40&&!(await p.evaluate(()=>!!(__bp.BR&&__bp.BR.jaw!==undefined&&document.getElementById('load').hidden)));i++) await p.waitForTimeout(400);
+  console.log(await p.evaluate(()=>JSON.stringify({jaw:__bp.BR.jaw,organs:(__bp.BR.organs||[]).length,lumps:__bp.BR.lumps.length,arms:__bp.BR.arms.length,head:__bp.BR.hasHead,legs:__bp.BR.hasLegs})));
+  console.log(errs.join('\n')||'noerr'); await b.close(); })();

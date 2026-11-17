@@ -1,0 +1,30 @@
+const { chromium } = require('playwright'); const fs=require('fs');
+(async()=>{ const b=await chromium.launch({args:['--use-gl=swiftshader']}); const p=await b.newPage({viewport:{width:1100,height:700}});
+  const errs=[]; p.on('pageerror',e=>errs.push('PAGEERR '+e.message+' '+(e.stack||'').split('\n').slice(1,3).join(' | '))); p.on('console',m=>{ if(m.type()==='error') errs.push('CONSOLE '+m.text()); });
+  await p.route(/three\.min\.js/, r=>r.fulfill({body:fs.readFileSync('three.min.js'),contentType:'application/javascript'}));
+  await p.route(/GLTFLoader\.js/, r=>r.fulfill({body:fs.readFileSync('GLTFLoader.js'),contentType:'application/javascript'}));
+  await p.route(/SkeletonUtils\.js/, r=>r.fulfill({body:fs.readFileSync('SkeletonUtils.js'),contentType:'application/javascript'}));
+  await p.route(/fonts\./, r=>r.abort());
+  await p.goto('http://127.0.0.1:8765/test.html'); await p.waitForTimeout(2500);
+  await p.evaluate(()=>{ const d=sbNormalize(PRESETS.find(x=>x.key==="open").make()); d.objects=d.objects.filter(o=>o.type!=="enemy"); ED.doc=d; edAfterLoad(false); });
+  await p.click('#mmStart'); await p.waitForTimeout(300); await p.click('#suGo'); await p.waitForTimeout(400); await p.click('#helpok');
+  await p.evaluate(()=>{ CFG.norah.god=true; CFG.world.freezeAI=true; player.pos.set(0,0,6); player.yaw=Math.PI; camYaw=Math.PI;
+    window.E=[spawn("across:walker",-2.4,0,{aware:"hunting"}),spawn("across:crawler",-0.8,0,{aware:"hunting"}),spawn("across:matron",0.8,0,{aware:"hunting"}),spawn("across:mourner",2.4,0,{aware:"unaware",idle:"feed",yaw:0}),spawn("brute",0,-3,{})]; });
+  for(let i=0;i<40;i++){ const n=await p.evaluate(()=>E.filter(e=>e.skin&&e.skin.model).length+(player.skin&&player.skin.model?1:0)); if(n===6) break; await p.waitForTimeout(500); }
+  console.log('LOADED', await p.evaluate(()=>JSON.stringify({en:E.map(e=>[e.name,e.mdl,!!(e.skin&&e.skin.model),+e.scale.toFixed(3),e.hp]),norah:player.skin&&player.skin.key, failed:MDL.failed})));
+  await p.evaluate(()=>{ for(let i=0;i<30;i++) step(1/60,1/60); });
+  // check: feet on the ground, model head near the head hitbox
+  console.log('FIT', await p.evaluate(()=>E.concat([{name:"Norah",skin:player.skin,P:player.P}]).map(e=>{ const S=e.skin; if(!S||!S.model) return e.name+" -"; skinSync(S); const v=new THREE.Vector3();
+     const fy=Math.min(S.B.foot_L.getWorldPosition(v).y, S.B.foot_R.getWorldPosition(v).y); const hb=S.B.head.getWorldPosition(new THREE.Vector3()); const hm=(e.P.headMesh||e.P.hbHead).getWorldPosition(new THREE.Vector3());
+     return `${e.name}: foot y ${fy.toFixed(2)} head bone ${hb.y.toFixed(2)} vs hitbox ${hm.y.toFixed(2)} (dx ${(hb.x-hm.x).toFixed(2)} dz ${(hb.z-hm.z).toFixed(2)})`; }).join('\n')));
+  await p.evaluate(()=>{ window.updateCamera=()=>{}; edAmb.intensity=0.9; CFG.world.res=960; resize(); });
+  const shot=async(name,fn)=>{ await p.evaluate(fn); await p.waitForTimeout(150); await p.evaluate(()=>{ skinSyncAll(); renderer.render(scene,camera); }); await p.screenshot({path:name}); };
+  const hitLimb=(n,limb,seg)=>p.evaluate(([n,limb,seg])=>{ const e=E[n]; let h=null; e.root.traverse(o=>{ if(o.userData&&o.userData.limb===limb&&(!seg||o.userData.seg===seg)&&o.userData.hitbox!==undefined&&!h) h=o; }); if(!h) return 'no hitbox';
+      for(let i=0;i<4&&!e.lost[limb];i++){ e.hp=99; e.stagger=0; e.hit(h,h.getWorldPosition(new THREE.Vector3()),new THREE.Vector3(0,0,-1)); } return limb+' lost '+e.lost[limb]+' collapsed '+Object.keys(e.skin.collapsed).join(','); },[n,limb,seg]);
+  console.log('ARM', await hitLimb(0,'armL')); console.log('LEG', await hitLimb(2,'legR','lower'));
+  await p.evaluate(()=>{ for(let i=0;i<20;i++) step(1/60,1/60); });
+  await shot('md3.png',()=>{ camera.position.set(0,1.6,4.2); camera.lookAt(-1,0.8,-0.5); });
+  await p.evaluate(()=>{ const e=E[1]; e.hp=0.1; let h=null; e.root.traverse(o=>{ if(o.userData&&o.userData.zone==="torso"&&!h) h=o; }); e.hit(h,h.getWorldPosition(new THREE.Vector3()),new THREE.Vector3(0,0,-1)); for(let i=0;i<90;i++) step(1/60,1/60); });
+  await p.evaluate(()=>{ CFG.world.freezeAI=false; clearEnemies(); player.pos.set(0,0,0); player.yaw=0; keys.KeyC=true; for(let i=0;i<30;i++) step(1/60,1/60); });
+  await shot('md4.png',()=>{ const f=player.yaw; camera.position.set(player.pos.x+Math.cos(f)*2.2+Math.sin(f)*1.2,1.5,player.pos.z-Math.sin(f)*2.2+Math.cos(f)*1.2); camera.lookAt(player.pos.x+Math.sin(f)*0.4,1.2,player.pos.z+Math.cos(f)*0.4); });
+  console.log(errs.length?errs.slice(0,8).join('\n'):'no errors'); await b.close(); })();

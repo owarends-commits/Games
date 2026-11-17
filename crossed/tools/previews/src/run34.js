@@ -1,0 +1,12 @@
+const { chromium } = require('playwright'); const fs=require('fs');
+(async()=>{ const b=await chromium.launch({args:['--use-gl=swiftshader']}); const p=await b.newPage({viewport:{width:1000,height:700}});
+  for(const [re,f] of [[/three\.min\.js/,'three.min.js'],[/GLTFLoader\.js/,'GLTFLoader.js'],[/SkeletonUtils\.js/,'SkeletonUtils.js']]) await p.route(re, r=>r.fulfill({body:fs.readFileSync(f),contentType:'application/javascript'}));
+  await p.route(/fonts\./, r=>r.abort());
+  await p.goto('http://127.0.0.1:8765/ap_test.html'); for(let i=0;i<40&&!(await p.evaluate(()=>!!(window.__ap&&__ap.ac)));i++) await p.waitForTimeout(400);
+  await p.evaluate(()=>{ window.requestAnimationFrame=()=>0; document.getElementById('oDrag').value='a'; __ap.start('drag'); });
+  const out=await p.evaluate(()=>{ const o=[]; for(let i=0;i<520;i++){ __ap.frame(1/60); if(i%25===0){ const c=__ap.ctx, a=headPos(__ap.ac), nh=new THREE.Vector3(); __ap.nora.B.head.getWorldPosition(nh); const ah=new THREE.Vector3(); __ap.ac.B.hips.getWorldPosition(ah);
+      o.push(`${__ap.t.toFixed(2)} ${c.phase} | ACROSS head ${a.x.toFixed(2)},${a.y.toFixed(2)} hips ${ah.x.toFixed(2)},${ah.y.toFixed(2)} | Norah head ${nh.x.toFixed(2)},${nh.y.toFixed(2)} | ox ${(c.ox||0).toFixed(2)} oy ${(c.oy||0).toFixed(2)}`); } } return o.join('\n'); });
+  console.log(out); 
+  await p.evaluate(()=>{ __ap.start('drag'); while(__ap.t<6.0) __ap.frame(1/60); const c=__ap.cam, n=new THREE.Vector3(); __ap.nora.B.head.getWorldPosition(n); c.position.set(n.x-0.4,0.9,n.z+1.6); c.lookAt(n.x-0.2,0.3,n.z); __ap.renderer.render(__ap.scene,c); });
+  await p.screenshot({path:'dr_close1.png',clip:{x:16,y:62,width:860,height:600}});
+  await b.close(); })();

@@ -1,0 +1,16 @@
+const { chromium } = require('playwright'); const fs=require('fs');
+(async()=>{ const b=await chromium.launch({args:['--use-gl=swiftshader']}); const p=await b.newPage({viewport:{width:1000,height:700}});
+  const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+  for(const [re,f] of [[/three\.min\.js/,'three.min.js'],[/GLTFLoader\.js/,'GLTFLoader.js'],[/SkeletonUtils\.js/,'SkeletonUtils.js']]) await p.route(re, r=>r.fulfill({body:fs.readFileSync(f),contentType:'application/javascript'}));
+  await p.route(/fonts\./, r=>r.abort());
+  await p.goto('http://127.0.0.1:8765/ap_test.html'); for(let i=0;i<40&&!(await p.evaluate(()=>!!(window.__ap&&__ap.ac)));i++) await p.waitForTimeout(400);
+  await p.evaluate(()=>{ window.requestAnimationFrame=()=>0; });
+  const shots=[]; const snap=async(clip,tt,target,off,lab)=>{ await p.evaluate(([clip,tt,target,off])=>{ if(__ap.ctx.__c!==clip){ __ap.start(clip); __ap.ctx.__c=clip; } while(__ap.t<tt) __ap.frame(1/60); const C=target==="nora"?__ap.nora:__ap.ac; const q=new THREE.Vector3(); C.B[off[0]].getWorldPosition(q); const c=__ap.cam; c.position.set(q.x+off[1],q.y+off[2],q.z+off[3]); c.lookAt(q); __ap.renderer.render(__ap.scene,c); },[clip,tt,target,off]);
+    const f=`go_${shots.length}.png`; await p.screenshot({path:f,clip:{x:16,y:62,width:860,height:600}}); shots.push([f,lab]); };
+  await snap('shot',2.6,'ac',['chest',1.1,0.15,0.6],'shot · torso + arm wounds');
+  await snap('shot',3.6,'ac',['hips',1.2,-0.2,0.8],'shot · leg wound, drips');
+  await snap('swipe',3.6,'nora',['hips',-0.9,0.2,0.6],'swipe · cut + bruise on Norah');
+  await snap('swipe',3.9,'ac',['chest',0.8,-0.4,0.9],'swipe · its hand drips');
+  await snap('bite',4.6,'nora',['hips',-0.8,0.2,0.8],'bite · torn flank, spurting');
+  await snap('bite',6.4,'nora',['hips',-1.4,0.4,1.2],'bite · floor spatter');
+  fs.writeFileSync('fr_list.json',JSON.stringify(shots)); console.log(errs.length?errs.join('\n'):'ok'); await b.close(); })();

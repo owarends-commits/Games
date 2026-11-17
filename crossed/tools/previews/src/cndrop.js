@@ -1,0 +1,6 @@
+const { chromium } = require('playwright'); const fs=require('fs');
+(async()=>{ const b=await chromium.launch({args:['--use-gl=swiftshader']}); const p=await b.newPage();
+  for(const [re,f] of [[/three\.min\.js/,'three.min.js'],[/GLTFLoader\.js/,'GLTFLoader.js'],[/SkeletonUtils\.js/,'SkeletonUtils.js']]) await p.route(re, r=>r.fulfill({body:fs.readFileSync(f),contentType:'application/javascript'}));
+  await p.route(/fonts\./, r=>r.abort()); await p.goto('http://127.0.0.1:8765/cn_test.html'); for(let i=0;i<40&&!(await p.evaluate(()=>!!(window.__rp&&__rp.runner)));i++) await p.waitForTimeout(400);
+  console.log(await p.evaluate(()=>{ window.requestAnimationFrame=()=>0; __rp.renderer.render=()=>0; __rp.start("drop"); const o=[];
+    for(let i=0;i<9.5*60;i++){ __rp.frame(1/60); const c=__rp.ctx, g=__rp.runner.gs||{}; if(c.T.ph==="drop"&&i%3===0){ const com=__rp.runner.pb.measure().com; o.push(`${__rp.t.toFixed(2)} gx=${__rp.runner.group.position.x.toFixed(2)} gy=${__rp.runner.group.position.y.toFixed(2)} hx=${(g.hx||0).toFixed(2)} vx=${(g.vx||0).toFixed(2)} vy=${(g.vy||0).toFixed(2)} air=${g.air} com=${com.x.toFixed(2)},${com.y.toFixed(2)} yaw=${c.yaw.toFixed(2)}`); } } return o.slice(0,20).join('\n'); })); await b.close(); })();

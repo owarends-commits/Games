@@ -1,0 +1,15 @@
+const { chromium } = require('playwright'); const fs=require('fs');
+(async()=>{ const b=await chromium.launch({args:['--use-gl=swiftshader']}); const p=await b.newPage({viewport:{width:1280,height:800}});
+  const errs=[]; p.on('pageerror',e=>errs.push('PAGEERR '+e.message+' '+(e.stack||'').split('\n')[1]));
+  await p.route(/three\.min\.js/, r=>r.fulfill({body:fs.readFileSync('three.min.js'),contentType:'application/javascript'})); await p.route(/fonts\./, r=>r.abort());
+  await p.goto('file://'+process.cwd()+'/test.html'); await p.waitForTimeout(2500);
+  await p.evaluate(()=>{ localStorage.clear(); }); await p.reload(); await p.waitForTimeout(2500);
+  await p.click('#mmStart'); await p.waitForTimeout(300); await p.click('#suEdit'); await p.waitForTimeout(800);
+  await p.evaluate(()=>{ Object.assign(ED.orbit,{tx:3,tz:-2.5,dist:14,yaw:-2.4,pitch:0.95}); }); await p.waitForTimeout(400); await p.screenshot({path:'gb1.png'});
+  await p.click('#edPlay'); await p.waitForTimeout(400); await p.click('#helpok');
+  await p.evaluate(()=>{ player.pos.set(2,0,-1.5); player.yaw=0; camYaw=Math.PI*0.85; const e=enemies[0]; e.pos.set(2.5,0,-4.2); CFG.world.freezeAI=true; });
+  await p.waitForTimeout(800); await p.screenshot({path:'gb2.png'});
+  const t=await p.evaluate(()=>new Promise(r=>{ let n=0; const t0=performance.now(); const f=()=>{ if(++n<60) requestAnimationFrame(f); else r((performance.now()-t0)/60); }; requestAnimationFrame(f); }));
+  console.log('ms/frame (software GL)', t.toFixed(1), await p.evaluate(()=>{ let m=0; scene.traverse(o=>{ if(o.isMesh) m++; }); return 'meshes '+m; }));
+  await b.close(); console.log(errs.join('\n')||'no errors');
+})();

@@ -1,0 +1,24 @@
+const { chromium } = require('playwright'); const fs=require('fs');
+(async()=>{ const b=await chromium.launch({args:['--use-gl=swiftshader']}); const p=await b.newPage({viewport:{width:1366,height:820}});
+  const errs=[]; p.on('pageerror',e=>errs.push('PAGEERR '+e.message+' '+(e.stack||'').split('\n')[1]));
+  await p.route(/three\.min\.js/, r=>r.fulfill({body:fs.readFileSync('three.min.js'),contentType:'application/javascript'})); await p.route(/fonts\./, r=>r.abort());
+  await p.route(/GLTFLoader\.js/, r=>r.fulfill({body:fs.readFileSync('GLTFLoader.js'),contentType:'application/javascript'})); await p.route(/SkeletonUtils\.js/, r=>r.fulfill({body:fs.readFileSync('SkeletonUtils.js'),contentType:'application/javascript'}));
+  await p.goto('http://127.0.0.1:8765/test.html'); await p.waitForTimeout(3500);
+  const M=()=>p.evaluate(()=>({mode:MODE, cls:document.body.className, sim:SB.simMenu, en:enemies.length}));
+  console.log('BOOT', JSON.stringify(await M())); await p.screenshot({path:'m_title.png'});
+  await p.click('#mmControls'); await p.waitForTimeout(200); await p.screenshot({path:'m_ctl.png'}); await p.click('#ctlBack');
+  await p.click('#mmStart'); await p.waitForTimeout(800); await p.screenshot({path:'m_setup.png'});
+  for(const s of ["Norah","Enemies","Louis AI","Physics","Camera & controls"]){ await p.click(`.suTab:has-text("${s}")`); await p.waitForTimeout(150); }
+  await p.screenshot({path:'m_setup2.png'});
+  await p.click('.suTab:has-text("Enemies")'); await p.fill('#suMain .suField:has-text("Extra ACROSS") input','3'); await p.waitForTimeout(100);
+  await p.click('.suTab:has-text("Map")'); await p.click('.suCard:has-text("Open arena: Louis")'); await p.waitForTimeout(1200); console.log('SUM', await p.textContent('#suSummary'));
+  await p.click('#suGo'); await p.waitForTimeout(600); console.log('PLAY', JSON.stringify(await M())); await p.click('#helpok'); await p.waitForTimeout(500);
+  await p.keyboard.press('Escape'); await p.waitForTimeout(300); console.log('MENU', JSON.stringify(await M())); await p.screenshot({path:'m_sim.png'});
+  await p.click('.smTog:has-text("Infinite ammo")'); await p.click('.smBtn:has-text("Clear enemies")'); await p.waitForTimeout(100);
+  console.log('OPTS', await p.evaluate(()=>JSON.stringify({inf:CFG.rev.infinite, en:enemies.length})));
+  await p.click('.smBtn:has-text("Restart")'); await p.waitForTimeout(500); console.log('RESTART', JSON.stringify(await M()));
+  await p.keyboard.press('KeyP'); await p.waitForTimeout(200); await p.click('.smBtn:has-text("Back to setup")'); await p.waitForTimeout(600); console.log('SETUP', JSON.stringify(await M()));
+  await p.click('#suEdit'); await p.waitForTimeout(800); console.log('BUILD', JSON.stringify(await M())); await p.screenshot({path:'m_build.png'});
+  await p.click('#edBack'); await p.waitForTimeout(600); console.log('BACK', JSON.stringify(await M()));
+  await b.close(); console.log(errs.join('\n')||'no errors');
+})();

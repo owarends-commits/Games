@@ -1,0 +1,12 @@
+const { chromium } = require('playwright'); const fs=require('fs');
+(async()=>{ const b=await chromium.launch({args:['--use-gl=swiftshader']}); const p=await b.newPage({viewport:{width:900,height:600}});
+  const errs=[]; p.on('pageerror',e=>errs.push('PAGEERR '+e.message+' '+(e.stack||'').split('\n')[1]));
+  await p.route(/three\.min\.js/, r=>r.fulfill({body:fs.readFileSync('three.min.js'),contentType:'application/javascript'})); await p.route(/fonts\./, r=>r.abort());
+  await p.route(/GLTFLoader\.js/, r=>r.fulfill({body:fs.readFileSync('GLTFLoader.js'),contentType:'application/javascript'})); await p.route(/SkeletonUtils\.js/, r=>r.fulfill({body:fs.readFileSync('SkeletonUtils.js'),contentType:'application/javascript'}));
+  await p.goto('http://127.0.0.1:8765/test.html'); await p.waitForTimeout(2500);
+  console.log('VARIANTS', await p.evaluate('VARIANTS.map(v=>v.key).join(",")'));
+  await p.click('#mmStart'); await p.waitForTimeout(300); await p.click('#suGo'); await p.waitForTimeout(400); await p.click('#helpok');
+  const r=await p.evaluate(()=>{ const out=[]; for(const P of PRESETS){ try{ ED.doc=sbNormalize(P.make()); edAfterLoad(false); playMap(); for(let i=0;i<60;i++) step(1/60,1/60); out.push(P.key+":"+enemies.map(e=>e.kind==="brute"?"louis":e.variant).join("/")); }catch(e){ out.push(P.key+" ERR "+e.message+" "+e.stack.split("\n").slice(1,4).join(" | ")); } } return out; });
+  console.log(r.join('\n'));
+  console.log('OLD MAP', await p.evaluate(()=>{ clearEnemies(); const e=spawn("across:wailer",0,0,{}); const f=spawn("across:fresh",2,0,{}); return e.variant+","+f.variant; }));
+  console.log(errs.length?errs.join('\n'):'no errors'); await b.close(); })();

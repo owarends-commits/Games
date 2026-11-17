@@ -1,0 +1,81 @@
+<div id="ed">
+  <header id="edTop">
+    <div class="brand">CROSSED <span>SANDBOX</span></div>
+    <div class="sep"></div>
+    <div class="seg" role="group" aria-label="View"><button id="vPlan" aria-pressed="false" title="Tab">PLAN</button><button id="v3d" aria-pressed="true" title="Tab">3D</button></div>
+    <input type="text" id="edName" aria-label="Map name">
+    <button class="btn small" id="edUndo" title="Ctrl+Z">Undo</button>
+    <button class="btn small" id="edRedo" title="Ctrl+Y">Redo</button>
+    <div class="chipset">
+      <label>SNAP <select id="edSnap"><option value="0">off</option><option value="0.1">0.1 m</option><option value="0.25">0.25 m</option><option value="0.5">0.5 m</option><option value="1">1 m</option></select></label>
+      <label><input type="checkbox" id="edGrid"> Grid</label>
+      <label><input type="checkbox" id="edFog"> Fog</label>
+      <label><input type="checkbox" id="edWork"> Work light</label>
+      <label><input type="checkbox" id="edPixel"> PS1 pixels</label>
+    </div>
+    <button class="btn small" id="edPanelBtn">Panel</button>
+    <button class="btn small" id="edBack">◂ Setup</button>
+    <button class="btn primary" id="edPlay" title="Enter plays from Norah's start · Shift+Enter from the cursor">▶ Test play</button>
+  </header>
+  <nav id="edTools" aria-label="Tools"></nav>
+  <canvas id="edPlan" tabindex="0" aria-label="Map plan" hidden></canvas>
+  <div id="edHint"></div>
+  <aside id="edSide">
+    <div id="edTabs" role="tablist"><button data-tab="inspect" aria-selected="true">INSPECT</button><button data-tab="assets" aria-selected="false">ASSETS</button><button data-tab="map" aria-selected="false">MAP</button><button data-tab="files" aria-selected="false">FILES</button></div>
+    <div class="pane" id="pane-inspect"></div>
+    <div class="pane" id="pane-assets" hidden></div>
+    <div class="pane" id="pane-map" hidden></div>
+    <div class="pane" id="pane-files" hidden></div>
+  </aside>
+  <footer id="edStatus"></footer>
+  <datalist id="keyNames"></datalist>
+</div>
+<div id="edLoading">LOADING…</div>
+<div id="inv" hidden><div class="sheet" role="dialog" aria-labelledby="invTitle"><header><h2 id="invTitle">BAG</h2><span id="invHead"></span><button class="invBtn" id="invClose">Close (I)</button></header><div class="cols"><div id="invList"></div><div id="invDetail"></div></div></div></div>
+<div id="prompt" class="hud"></div>
+<div id="searchbar" class="hud"><div class="lab"></div><div class="track"><div class="fill"></div></div></div>
+<div id="toast" role="status"></div>
+<button id="toBuildBtn">Menu (Esc)</button>
+<div id="mm" hidden>
+  <section id="mmTitle" class="mmScreen">
+    <div class="mmLogo"><span>CROSSED</span><small>COMBAT SANDBOX</small></div>
+    <nav class="mmButtons" aria-label="Main menu"><button id="mmStart">START</button><button id="mmControls">CONTROLS</button></nav>
+    <p class="mmFoot">Plan a fight, build the place, then play it as Norah.</p>
+  </section>
+  <section id="mmCtl" class="mmScreen" hidden>
+    <div class="mmPanel">
+      <h2>CONTROLS</h2>
+      <div class="ctlCols">
+        <table><caption>Keyboard and mouse</caption>
+          <tr><th>Move</th><td>W A S D</td></tr><tr><th>Run</th><td>Shift</td></tr><tr><th>Look / turn</th><td>Mouse or arrow keys</td></tr>
+          <tr><th>Aim</th><td>Right mouse or C</td></tr><tr><th>Fire</th><td>Left mouse or F</td></tr><tr><th>Reload</th><td>R</td></tr>
+          <tr><th>Shove</th><td>V or middle mouse</td></tr><tr><th>Dodge</th><td>Shift + direction while aiming</td></tr>
+          <tr><th>Use · search · doors · push</th><td>E</td></tr><tr><th>Crouch</th><td>Q or X</td></tr>
+          <tr><th>Vault</th><td>Space (Shift + Space: fast, loud)</td></tr><tr><th>Bag</th><td>I or Tab</td></tr><tr><th>Flashlight</th><td>L</td></tr>
+          <tr><th>Break free of a grab</th><td>The key shown on screen</td></tr>
+          <tr><th>Menu (pause, restart, options)</th><td>Esc or P</td></tr><tr><th>Restart</th><td>N</td></tr>
+          <tr><th>Replay the last 10 s</th><td>Y</td></tr><tr><th>Slow motion · hit zones · overlays</th><td>T · H · G</td></tr><tr><th>Tuning panel</th><td>`</td></tr>
+        </table>
+        <table><caption>Controller</caption>
+          <tr><th>Move · look</th><td>Left stick · right stick</td></tr><tr><th>Aim · fire</th><td>LT · RT</td></tr><tr><th>Reload · shove</th><td>X · Y</td></tr>
+          <tr><th>Run, or dodge while aiming</th><td>B</td></tr><tr><th>Use</th><td>A</td></tr><tr><th>Vault</th><td>LB</td></tr><tr><th>Crouch</th><td>Left stick click</td></tr>
+          <tr><th>Menu</th><td>Start</td></tr><tr><th>Replay</th><td>Back</td></tr>
+        </table>
+        <table><caption>Builder</caption>
+          <tr><th>Switch plan / 3D</th><td>Tab</td></tr><tr><th>Orbit · pan · zoom</th><td>Drag · middle-drag · wheel</td></tr>
+          <tr><th>Turn the selection</th><td>Q / E</td></tr><tr><th>Delete · duplicate</th><td>Del · Ctrl+D</td></tr><tr><th>Undo · redo</th><td>Ctrl+Z · Ctrl+Y</td></tr>
+          <tr><th>Test play</th><td>Enter (Shift+Enter from the cursor)</td></tr>
+        </table>
+      </div>
+      <p class="mmFoot">Touch screens get on-screen sticks and buttons once you touch the view.</p>
+      <button id="ctlBack" class="mmBack">◂ BACK</button>
+    </div>
+  </section>
+  <section id="mmSetup" class="mmScreen" hidden>
+    <header class="suTop"><button id="suBack" class="mmBack">◂ TITLE</button><h1>SET UP THE SIMULATION</h1><button id="suReset" class="suBtn">Reset all settings</button></header>
+    <nav id="suNav" aria-label="Setup sections"></nav>
+    <main id="suMain"></main>
+    <footer class="suFoot"><span id="suSummary"></span><button id="suEdit" class="suBtn">Edit map in builder</button><button id="suGo" class="go">BEGIN SIMULATION ▶</button></footer>
+  </section>
+</div>
+<div id="simMenu" hidden><div class="smPanel" role="dialog" aria-labelledby="smTitle"><h2 id="smTitle">PAUSED</h2><div id="smBody"></div></div></div>
