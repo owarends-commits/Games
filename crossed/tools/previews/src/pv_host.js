@@ -47,7 +47,7 @@ class PVBody{
       const dir=o.dir||to; this.ctx={events:[],x:0,z:0,yaw:Math.PI/2,v:0,live:true,T:{},outSel:o.outSel||{}}; this.clip=clip; this.clipName=name; this.ct=0; this.t=0;
       this.withStage(()=>{ this.mod.pvBind(this.rec()); clip.start(this.ctx); });
       this.anchor(here,dir,this.ctx.x,this.ctx.z||0); }
-    else { this.clip=clip; this.clipName=name; this.ct=0; if(clip.start) this.withStage(()=>{ this.mod.pvBind(this.rec()); clip.start(this.ctx); }); }
+    else { this.clip=clip; this.clipName=name; this.ct=0; if(o.reset) this.t=0; if(o.outSel) this.ctx.outSel=o.outSel; if(clip.start) this.withStage(()=>{ this.mod.pvBind(this.rec()); clip.start(this.ctx); }); }
     this.ctx.live=true; this.ctx.clipT0=this.t; e.pvClipT=0; }
   rec(){ return {C:this.C, ctx:this.ctx, t:this.t, stage:this.stage, norah:this.norah, clip:this.clip, mir:this.mir, nx:this.nx}; }
   step(dt){ if(!this.ready||!this.clip) return []; const h=this.rec();
@@ -78,6 +78,7 @@ Enemy.prototype.pvUpdate=function(dt){ const b=this.pv, K=PVK[this.pvType];
   const ev=b.step(dt); b.sync(); if(ev.length&&K.events) K.events(this,ev);
   this.root.position.set(this.pos.x,groundY(this.pos.x,this.pos.z),this.pos.z); this.root.rotation.set(0,this.yaw,0); };
 Enemy.prototype.pvHit=function(mesh,point,dir){ const z=mesh.userData.zone, ZC=CFG.zones, K=PVK[this.pvType], C=CFG[K.cfg];
+  if(K.dodge&&K.dodge(this,mesh,point,dir)) return;
   const mult=(K.zoneMult&&K.zoneMult(this,mesh))??ZC[z+"Mult"]??1, dmg=CFG.rev.damage*mult; this.hp-=dmg; if(run){ run.hits++; if(z==="head") run.head++; }
   spray(point,dir); SFX.flesh(point); this.flinch=1; this.lastZone=z;
   if(K.hit) K.hit(this,mesh,point,dir,dmg);

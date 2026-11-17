@@ -31,3 +31,5 @@ j = rep(j, '  ["Hit zones", "Damage × · knockback (m) · stagger (s)", [', '''
 
 # a preview body holds her while it plays its grab clip (its state stays "pv"): only let go when it dies or the clip ends
 j = rep(j, 'if(g.by.dead || g.by.state!=="grab"){ player.grabbed=null;', 'if(g.by.dead || (g.by.kind==="pv" ? !(g.by.pv&&g.by.pv.holding()) : g.by.state!=="grab")){ player.grabbed=null;')
+# the grab message names what really has her
+j = rep(j, 'o.how==="Louis\'s grip"||o.how==="collar pull"?"has her by the collar":"has her ankle"', 'o.how==="Louis\'s grip"||o.how==="collar pull"?"has her by the collar":({"neck coil":"has its neck coiled round her","snatch":"has her round the waist","leg wrap":"has her legs","engulf":"has her head in its mouth","one-hand grab":"has her in one hand","throne grab":"has her pinned on its chest"})[o.how]||"has her ankle"')

@@ -1,0 +1,1037 @@
+// ================================================================ PV_SH: splithead-preview.html wrapped for the playground (made by mkpv.py)
+const PV_SH=(function(){
+let scene=null, runner=null, norah=null, t=0, ctx={events:[]}, cur=null; const PVHOOK={};
+function blob(){ const c=document.createElement("canvas"); c.width=c.height=64; const g=c.getContext("2d"); const gr=g.createRadialGradient(32,32,2,32,32,30); gr.addColorStop(0,"rgba(0,0,0,0.55)"); gr.addColorStop(1,"rgba(0,0,0,0)"); g.fillStyle=gr; g.fillRect(0,0,64,64);
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false})); m.rotation.x=-Math.PI/2; m.position.y=0.005; scene.add(m); return m; }
+
+// ---------------------------------------------------------------- characters: a friendly rig (limbs hang at rest) retargeted onto the model's skeleton
+const AXD=new THREE.Vector3(0,-1,0);
+const _q1=new THREE.Quaternion(),_q2=new THREE.Quaternion(),_v1=new THREE.Vector3(),_v2=new THREE.Vector3(),_v3=new THREE.Vector3();
+function piv(p,pos){ const o=new THREE.Object3D(); o.position.copy(pos); p.add(o); return o; }
+function makeChar(gltf){
+  const group=new THREE.Group(); scene.add(group);
+  const model=THREE.SkeletonUtils.clone(gltf.scene); const B={}; model.traverse(o=>{ if(o.isBone) B[o.name]=o; if(o.isMesh){ o.frustumCulled=false; } });
+  model.traverse(o=>{ if(o.isMesh){ const map=o.material.map; if(map) map.encoding=THREE.LinearEncoding; o.material=new THREE.MeshLambertMaterial({map,side:THREE.DoubleSide,skinning:!!o.isSkinnedMesh}); } });
+  group.add(model); model.traverse(o=>{ if(o.isMesh) o.layers.enable(1); }); const top=B.hips.parent;
+  const R={}; R.root=piv(top,new THREE.Vector3()); R.hips=piv(R.root,B.hips.position); R.hip0=B.hips.position.y;
+  R.chest=piv(R.hips,B.chest.position); R.neck=piv(R.chest,B.neck.position); R.head=piv(R.neck,B.head.position);
+  const ax={};
+  for(const s of ["L","R"]){
+    R["arm"+s]=piv(R.chest,B["upperarm_"+s].position);
+    R["elbow"+s]=piv(R["arm"+s],new THREE.Vector3(0,-B["forearm_"+s].position.length(),0));
+    R["wrist"+s]=piv(R["elbow"+s],new THREE.Vector3(0,-B["hand_"+s].position.length(),0));
+    R["leg"+s]=piv(R.hips,B["thigh_"+s].position);
+    R["knee"+s]=piv(R["leg"+s],new THREE.Vector3(0,-B["shin_"+s].position.length(),0));
+    R["ankle"+s]=piv(R["knee"+s],new THREE.Vector3(0,-B["foot_"+s].position.length(),0));
+    ax["upperarm_"+s]=B["forearm_"+s].position.clone().normalize(); ax["forearm_"+s]=B["hand_"+s].position.clone().normalize(); ax["hand_"+s]=ax["forearm_"+s];
+    ax["thigh_"+s]=B["shin_"+s].position.clone().normalize(); ax["shin_"+s]=B["foot_"+s].position.clone().normalize(); }
+  const map=[["chest","ori",R.chest],["neck","ori",R.neck],["head","ori",R.head]];
+  for(const s of ["L","R"]) map.push(["upperarm_"+s,"pts",R["arm"+s],R["elbow"+s]],["forearm_"+s,"pts",R["elbow"+s],R["wrist"+s]],["hand_"+s,"axis",R["wrist"+s],AXD],
+    ["thigh_"+s,"pts",R["leg"+s],R["knee"+s]],["shin_"+s,"pts",R["knee"+s],R["ankle"+s]],["foot_"+s,"ori",R["ankle"+s]]);
+  const shadow=blob();
+  return {group,model,B,R,map,ax,shadow,gltf};
+}
+function retarget(C){
+  const B=C.B,R=C.R; C.group.updateMatrixWorld(true);
+  B.hips.position.copy(R.hips.position); B.hips.quaternion.copy(R.hips.quaternion); B.hips.updateMatrixWorld(true);
+  for(const [name,kind,src,b] of C.map){ const bone=B[name]; if(!bone) continue;
+    bone.parent.getWorldQuaternion(_q1); _q1.invert();
+    if(kind==="ori"){ src.getWorldQuaternion(_q2); bone.quaternion.copy(_q1).multiply(_q2); }
+    else { if(kind==="pts"){ src.getWorldPosition(_v2); b.getWorldPosition(_v3); _v3.sub(_v2); } else { src.getWorldQuaternion(_q2); _v3.copy(b).applyQuaternion(_q2); }
+      if(_v3.lengthSq()<1e-10) continue; _v3.normalize().applyQuaternion(_q1); bone.quaternion.setFromUnitVectors(C.ax[name],_v3); }
+    bone.updateMatrixWorld(true); }
+  const hp=new THREE.Vector3(); B.hips.getWorldPosition(hp); C.shadow.position.set(hp.x,0.005,hp.z); const s=Math.max(0.4,1.1-0.4*Math.max(0,hp.y-R.hip0)); C.shadow.scale.setScalar(s);
+}
+// a pose: angles in radians. Legs: lx (− = forward), lz (out), k (knee bend), f (foot). Arms: ax (− = forward), az (out; − crosses the body), e (elbow bend).
+// Spine: hp/hyaw/hroll (hips), sp/syaw/sroll (chest; + roll drops the right shoulder, + yaw brings it forward), nx/ny/nz (neck; + nx = head down), hd (hips drop, m), hz (hips forward, m).
+const P0=()=>({hd:0,hz:0,hx:0,hp:0,hyaw:0,hroll:0,sp:0,syaw:0,sroll:0,nx:0,ny:0,nz:0,hdx:0,hdy:0,
+  aLx:0,aLy:0,aLz:0.08,eL:0.15,aRx:0,aRy:0,aRz:0.08,eR:0.15,lLx:0,lLz:0.02,kL:0,fL:0,lRx:0,lRz:0.02,kR:0,fR:0});
+// ---------------------------------------------------------------- physics guard
+// Every character is a real mass: its centre of mass comes from the mesh's volume (voxelised once, carried by the
+// bones), the floor can only push, and anything unsupported falls at g. Each frame, after a clip has posed a body:
+//  · vertical: the body sits at the higher of "resting on what supports it" and "its centre of mass continuing on a
+//    ballistic arc". So it can't hover, can't sink, can't be pulled down faster than gravity, and leaves the floor by itself
+//    when it pushes off hard enough; in the air the centre of mass is a parabola whatever the limbs do.
+//  · horizontal: airborne the centre of mass keeps its velocity; on the floor the zero-moment point (where the floor's
+//    reaction must act) has to lie inside the support polygon, so a body that would tip is moved back over its support
+//    (the Brute shifts its body over its planted stumps; the jointed bodies use the ankle strategy and tip about the edge of their feet).
+const PHYS=(function(){
+  const V=THREE.Vector3, G=9.8; const GC=['getX','getY','getZ','getW']; const comp=(A,i,w)=>A[GC[w]](i);
+  // --- mass model: fill the closed mesh with points (vertical rays, inside = between hit pairs) and give each one to the bones of the nearest vertex
+  function massModel(mesh,cell){ const g=mesh.geometry, P=g.attributes.position, SI=g.attributes.skinIndex, SW=g.attributes.skinWeight, idx=g.index?g.index.array:null;
+    const nT=idx?idx.length/3:P.count/3, vi=k=>idx?idx[k]:k; const bb=new THREE.Box3().setFromBufferAttribute(P), size=bb.getSize(new V());
+    cell=cell||Math.max(size.x,size.y,size.z)/48; const nx=Math.ceil(size.x/cell)+1, nz=Math.ceil(size.z/cell)+1, cols=new Map();
+    const a=new V(),b=new V(),c=new V();
+    for(let t=0;t<nT;t++){ a.fromBufferAttribute(P,vi(3*t)); b.fromBufferAttribute(P,vi(3*t+1)); c.fromBufferAttribute(P,vi(3*t+2));
+      const x0=Math.max(0,Math.floor((Math.min(a.x,b.x,c.x)-bb.min.x)/cell)), x1=Math.min(nx-1,Math.ceil((Math.max(a.x,b.x,c.x)-bb.min.x)/cell));
+      const z0=Math.max(0,Math.floor((Math.min(a.z,b.z,c.z)-bb.min.z)/cell)), z1=Math.min(nz-1,Math.ceil((Math.max(a.z,b.z,c.z)-bb.min.z)/cell));
+      const d=(b.z-c.z)*(a.x-c.x)+(c.x-b.x)*(a.z-c.z); if(Math.abs(d)<1e-12) continue;
+      for(let i=x0;i<=x1;i++) for(let j=z0;j<=z1;j++){ const px=bb.min.x+(i+0.5)*cell, pz=bb.min.z+(j+0.5)*cell;
+        const l1=((b.z-c.z)*(px-c.x)+(c.x-b.x)*(pz-c.z))/d, l2=((c.z-a.z)*(px-c.x)+(a.x-c.x)*(pz-c.z))/d, l3=1-l1-l2; if(l1<0||l2<0||l3<0) continue;
+        const k=i*nz+j; let L=cols.get(k); if(!L) cols.set(k,L=[]); L.push(l1*a.y+l2*b.y+l3*c.y); } }
+    // nearest-vertex lookup on a hash grid
+    const hc=cell*2, H=new Map(), key=(x,y,z)=>`${Math.floor(x/hc)},${Math.floor(y/hc)},${Math.floor(z/hc)}`;
+    for(let i=0;i<P.count;i++){ const k=key(P.getX(i),P.getY(i),P.getZ(i)); let L=H.get(k); if(!L) H.set(k,L=[]); L.push(i); }
+    const nearest=(x,y,z)=>{ for(let r=1;r<6;r++){ let best=-1,bd=1e18; const cx=Math.floor(x/hc),cy=Math.floor(y/hc),cz=Math.floor(z/hc);
+        for(let i=-r;i<=r;i++) for(let j=-r;j<=r;j++) for(let k=-r;k<=r;k++){ const L=H.get(`${cx+i},${cy+j},${cz+k}`); if(!L) continue; for(const v of L){ const dx=P.getX(v)-x,dy=P.getY(v)-y,dz=P.getZ(v)-z, dd=dx*dx+dy*dy+dz*dz; if(dd<bd){ bd=dd; best=v; } } }
+        if(best>=0) return best; } return 0; };
+    const nb=mesh.skeleton.bones.length, M=new Float64Array(nb), C=new Float64Array(nb*3); let tot=0;
+    for(const [k,L] of cols){ L.sort((p,q)=>p-q); const u=[]; for(const y of L) if(!u.length||y-u[u.length-1]>1e-4) u.push(y);
+      const iv=[]; if(u.length>=2){ if(u.length%2===0) for(let s=0;s<u.length;s+=2) iv.push([u[s],u[s+1]]); else iv.push([u[0],u[u.length-1]]); }
+      const i=Math.floor(k/nz), j=k%nz, px=bb.min.x+(i+0.5)*cell, pz=bb.min.z+(j+0.5)*cell;
+      for(const [y0,y1] of iv) for(let y=y0+cell/2;y<y1;y+=cell){ const v=nearest(px,y,pz); const h=Math.min(cell,y1-y+cell/2);
+        for(let w=0;w<4;w++){ const wt=comp(SW,v,w); if(wt<=0) continue; const bi=comp(SI,v,w), m=wt*h; M[bi]+=m; C[3*bi]+=m*px; C[3*bi+1]+=m*y; C[3*bi+2]+=m*pz; tot+=m; } } }
+    const parts=[]; for(let i=0;i<nb;i++) if(M[i]>0) parts.push({bi:i,m:M[i]/tot,c:new V(C[3*i]/M[i],C[3*i+1]/M[i],C[3*i+2]/M[i])});
+    return {mesh,parts,vol:tot*cell*cell}; }
+  const _m=new THREE.Matrix4(), _p=new V();
+  function comOf(mm,out){ const mesh=mm.mesh, sk=mesh.skeleton; out=out||new V(); out.set(0,0,0); mesh.updateMatrixWorld(true);
+    let ws=0; for(const q of mm.parts){ const bn=sk.bones[q.bi]; if(bn.userData.detached||bn.userData.noContact) continue;   // a piece knocked off is no longer part of the body
+      _p.copy(q.c).applyMatrix4(mesh.bindMatrix).applyMatrix4(sk.boneInverses[q.bi]).applyMatrix4(bn.matrixWorld).applyMatrix4(mesh.bindMatrixInverse).applyMatrix4(mesh.matrixWorld); const mw=q.m*(bn.userData.massScale||1); out.addScaledVector(_p,mw); ws+=mw; }
+    return ws>0?out.divideScalar(ws):out; }
+  // --- contact points: the extreme vertices of every bone's part (corners are what touch the floor) plus a spread sample
+  function contactSet(mesh){ const g=mesh.geometry, P=g.attributes.position, SI=g.attributes.skinIndex, SW=g.attributes.skinWeight, by=new Map();
+    for(let i=0;i<P.count;i++){ let bi=0,bw=-1; for(let w=0;w<4;w++){ const x=comp(SW,i,w); if(x>bw){ bw=x; bi=comp(SI,i,w); } } let L=by.get(bi); if(!L) by.set(bi,L=[]); L.push(i); }
+    const dirs=[]; for(const x of [-1,0,1]) for(const y of [-1,0,1]) for(const z of [-1,0,1]) if(x||y||z) dirs.push(new V(x,y,z).normalize());
+    const S=new Set(); const v=new V(); for(const [,L] of by){ for(const d of dirs){ let best=-1,bd=-1e18; for(const i of L){ v.fromBufferAttribute(P,i); const s=v.dot(d); if(s>bd){ bd=s; best=i; } } S.add(best); } }
+    const step=Math.max(1,Math.floor(P.count/400)); for(let i=0;i<P.count;i+=step) S.add(i); return [...S]; }
+  function lowPts(mesh,set,out){ const P=mesh.geometry.attributes.position; mesh.updateMatrixWorld(true); out.length=0; for(const i of set){ const p=new V().fromBufferAttribute(P,i); mesh.boneTransform(i,p); p.applyMatrix4(mesh.matrixWorld); out.push(p); } return out; }
+  function hull(pts){ if(pts.length<3) return pts.map(p=>({x:p.x,z:p.z})); const Q=pts.map(p=>[p.x,p.z]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]); const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
+    const lo=[],up=[]; for(const p of Q){ while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0) lo.pop(); lo.push(p); } for(let i=Q.length-1;i>=0;i--){ const p=Q[i]; while(up.length>=2&&cr(up[up.length-2],up[up.length-1],p)<=0) up.pop(); up.push(p); } up.pop(); lo.pop(); return lo.concat(up).map(a=>({x:a[0],z:a[1]})); }
+  // nearest point of a convex polygon to (x,z); d=0 when inside
+  function project(h,x,z){ if(!h.length) return null; if(h.length===1) return {x:h[0].x,z:h[0].z,d:Math.hypot(x-h[0].x,z-h[0].z)}; let inside=h.length>2, best=1e18, bx=0, bz=0;
+    for(let i=0;i<h.length;i++){ const a=h[i], b=h[(i+1)%h.length], ex=b.x-a.x, ez=b.z-a.z, L2=ex*ex+ez*ez||1e-12; const u=Math.max(0,Math.min(1,((x-a.x)*ex+(z-a.z)*ez)/L2)); const qx=a.x+u*ex, qz=a.z+u*ez, d=Math.hypot(x-qx,z-qz); if(d<best){ best=d; bx=qx; bz=qz; } if(ex*(z-a.z)-ez*(x-a.x)<0) inside=false; }
+    return inside?{x,z,d:0}:{x:bx,z:bz,d:best}; }
+  // shrink toward the centroid so the zero-moment point keeps a margin from the edge
+  function shrink(h,m){ if(h.length<3) return h; let cx=0,cz=0; for(const p of h){ cx+=p.x; cz+=p.z; } cx/=h.length; cz/=h.length; return h.map(p=>{ const dx=p.x-cx, dz=p.z-cz, L=Math.hypot(dx,dz)||1; const k=Math.max(0,L-m)/L; return {x:cx+dx*k,z:cz+dz*k}; }); }
+
+  // A body: one or more skinned meshes treated as one mass
+  function domBone(mesh,set){ const g=mesh.geometry, SI=g.attributes.skinIndex, SW=g.attributes.skinWeight; return set.map(i=>{ let bi=0,bw=-1; for(let w=0;w<4;w++){ const x=comp(SW,i,w); if(x>bw){ bw=x; bi=comp(SI,i,w); } } return mesh.skeleton.bones[bi]; }); }
+  function body(meshes){ meshes=[].concat(meshes); const B={meshes, mm:meshes.map(m=>massModel(m)), cs:meshes.map(m=>contactSet(m)), pts:[], st:null}; B.cb=meshes.map((m,i)=>domBone(m,B.cs[i])); B.bone=[].concat(...B.cb);
+    B.vol=B.mm.reduce((s,q)=>s+q.vol,0);
+    B.refresh=()=>{ B.cb=meshes.map((m,i)=>domBone(m,B.cs[i])); B.bone=[].concat(...B.cb); };   // after the skinning changes (armour knocked loose)
+    B.measure=function(){ const c=new V(); let tot=0; for(let i=0;i<meshes.length;i++){ const w=B.mm[i].vol; c.addScaledVector(comOf(B.mm[i]),w); tot+=w; } c.divideScalar(tot||1);
+      const all=[]; for(let i=0;i<meshes.length;i++){ const o=[]; lowPts(meshes[i],B.cs[i],o); for(const p of o) all.push(p); }
+      for(let k=0;k<all.length;k++) if(B.bone[k]&&(B.bone[k].userData.detached||B.bone[k].userData.noContact)) all[k].y=99;   /* noContact: carried on its own (a neck lying on the floor), still weighed */
+      let low=1e9; for(const p of all) low=Math.min(low,p.y);
+      const con=all.filter(p=>p.y<Math.max(low+0.03,0.035)&&p.y<0.06); return {com:c,low,con,hull:hull(con),pts:all,bone:B.bone}; };
+    B.reset=()=>{ B.st=null; }; return B; }
+
+  // Vertical: given the measurement with the current offset e applied, return the next offset.
+  //  upper (optional): how much higher the body may sit and still be held up by limbs that reach the floor (IK stumps); none = rigid.
+  //  want: the offset the clip would like (0 = as authored), used when limbs hold it up.
+  function vstep(S,m,dt,o={}){ const low=m.low, cy=m.com.y; const lower=S.e-low;
+    const upper = o.upper!=null ? Math.max(lower,S.e+o.upper) : lower; const want=o.want!=null?o.want:lower; let tgt=Math.min(upper,Math.max(lower,want));
+    if(o.riseMax!=null && tgt>S.e && tgt>lower) tgt=Math.min(tgt,Math.max(lower,S.e+o.riseMax*dt));
+    let e=tgt, air=false;
+    if(S.init && !o.held){ const pred=S.cy+S.vy*dt-0.5*G*dt*dt, eb=S.e+(pred-cy); if(eb>tgt+1e-5){ e=eb; air=true; } }
+    if(o.held){ e=S.e; air=false; }
+    const cyPhys=cy+(e-S.e); if(air) S.vy-=G*dt; else { S.vy = S.init ? (cyPhys-S.cy)/dt : 0; if(S.air) S.landV=S.vy; }   // airborne: exactly v -= g dt
+    // on the floor the guard never launches a body: only a declared impulse (a jump, a hit) does. It only lets go
+    // downward: a body whose support falls away starts falling from its current downward speed.
+    if(!air) S.vy=Math.max(-6,Math.min(0,S.vy));
+    S.cy=cyPhys; S.air=air; S.e=e; S.init=true; return e; }
+  // Horizontal while airborne: the centre of mass keeps the velocity it left with
+  function hstep(S,m,dt){ const c=m.com; if(!S.hinit){ S.hx=S.hx||0; S.hz=S.hz||0; S.cx=c.x; S.cz=c.z; S.vx=0; S.vz=0; S.hinit=true; S.airT=0; return; }
+    const cx=c.x+0, cz=c.z+0;
+    if(S.air) S.airT+=dt; else S.airT=0;
+    if(S.air && S.airT>0.1){ const px=S.cx+S.vx*dt, pz=S.cz+S.vz*dt; S.hx+=px-cx; S.hz+=pz-cz; S.cx=px; S.cz=pz; }
+    else { const vx=(cx-S.cx)/dt, vz=(cz-S.cz)/dt; const k=Math.min(1,dt*30); S.vx+= (vx-S.vx)*k; S.vz+=(vz-S.vz)*k; S.cx=cx; S.cz=cz; } }
+  // Limbs on the floor: a body lying down rests on its trunk; an arm or leg that would go through the floor is bent up by
+  // it (rotated about its shoulder or hip), instead of the whole body being propped up on a foot or a hand.
+  const LIMBS=["upperarm_L","upperarm_R","thigh_L","thigh_R"];
+  function limbMap(B,names){ const key=names.join(); B.lm=B.lm||{}; if(B.lm[key]&&B.lm[key].bone===B.bone) return B.lm[key].map; if(!B.byName){ B.byName={}; for(const m of B.meshes) for(const bn of m.skeleton.bones) B.byName[bn.name]=bn; }
+    const map=B.bone.map(bn=>{ for(let q=bn;q;q=q.parent) if(names.includes(q.name)) return q.name; return null; }); B.lm[key]={bone:B.bone,map}; return map; }
+  function limbSetup(B){ B.limb=limbMap(B,LIMBS); }
+  function coreLow(B,m){ limbSetup(B); let lo=1e9; m.pts.forEach((p,k)=>{ if(!B.limb[k]) lo=Math.min(lo,p.y); }); return lo; }
+  function fold(B,names){ const lm=limbMap(B,names||LIMBS); const up=new V(0,1,0);
+    for(let it=0;it<3;it++){ const m=B.measure(), worst={}; m.pts.forEach((p,k)=>{ const L=lm[k]; if(L && p.y<0.005 && (!worst[L]||p.y<worst[L].y)) worst[L]=p; }); let any=false;
+      for(const L in worst){ const bone=B.byName[L]; if(!bone||!bone.parent) continue; const p=worst[L], r0=bone.getWorldPosition(new V()), v=p.clone().sub(r0), len=v.length(); if(len<0.05) continue;
+        let ax=v.clone().cross(up); if(ax.lengthSq()<1e-4*len*len){ ax=new V(1,0,0).applyQuaternion(bone.parent.getWorldQuaternion(new THREE.Quaternion())).setY(0); }   // hanging straight down: swing it about the hip's side axis
+        ax.normalize(); const phi=Math.asin(Math.min(1,Math.max(-1,-v.y/len))), phiT=Math.asin(Math.min(1,Math.max(-1,(r0.y-0.012)/len))), d=Math.max(0.002,phi-phiT);   // exact swing so the lowest point just clears the floor
+        ax.applyQuaternion(bone.parent.getWorldQuaternion(new THREE.Quaternion()).invert()); bone.quaternion.premultiply(new THREE.Quaternion().setFromAxisAngle(ax,d)); bone.updateMatrixWorld(true); any=true; }
+      if(!any) break; } }
+  // A jointed body placed by a group (Norah, the ACROSS, the Runner). Call right after the page has posed and placed it.
+  //  o.held: something else is holding it up (skip). o.balance: ankle strategy on: a body whose centre of mass leaves its
+  //  feet is tipped back about the edge of its support (as feet and ankles do). Off for authored falls and dynamic gaits.
+  //  o.kick: {id, v:{x,y,z}} an impulse (a jump, a hit) that sends it ballistic.
+  function rig(C,dt,o={}){ const g=C.group; if(!g||!g.visible) return null; const S=C.gs||(C.gs={e:0,hx:0,hz:0,rv:new V(),piv:new V()});
+    if(o.held){ S.e=0; S.hx=S.hz=0; S.init=false; S.hinit=false; S.rv.set(0,0,0); S.wasHeld=true; return null; }
+    if(!C.pb){ const ms=[]; g.traverse(q=>{ if(q.isSkinnedMesh) ms.push(q); }); C.pb=body(ms); }
+    g.position.x+=S.hx; g.position.y+=S.e; g.position.z+=S.hz;
+    const ang=S.rv.length(); if(ang>1e-5){ const ax=S.rv.clone().divideScalar(ang); g.position.sub(S.piv).applyAxisAngle(ax,ang).add(S.piv); g.rotateOnWorldAxis(ax,ang); }
+    g.updateMatrixWorld(true); const m=C.pb.measure(); const lying=!o.rigid && m.com.y<0.5; if(lying) m.low=coreLow(C.pb,m);   /* rigid: a plank on its heels is carried by them */
+    if(o.soft&&!lying){ const lm=limbMap(C.pb,o.soft); let lo=1e9; m.pts.forEach((p,k)=>{ if(!lm[k]) lo=Math.min(lo,p.y); }); m.low=lo; }   /* soft limbs (a swung club): the floor stops the limb, it can't lift the body */
+    if(S.wasHeld){ S.wasHeld=false; S.init=true; S.e=0; S.cy=m.com.y; S.vy=0; S.hinit=true; S.hx=0; S.hz=0; S.cx=m.com.x; S.cz=m.com.z; S.vx=0; S.vz=0; S.airT=0; }   /* let go: it falls from where it was held, under gravity, never snapped down */
+    if(o.kick && S.kickId!==o.kick.id){ S.kickId=o.kick.id; S.vy=o.kick.v.y; S.vx=o.kick.v.x; S.vz=o.kick.v.z; S.e+=0.003; S.forceAir=true; S.airT=0.2; }
+    const e0=S.e, hx0=S.hx, hz0=S.hz; vstep(S,m,dt,{}); if(S.forceAir){ S.air=true; S.forceAir=false; } hstep(S,m,dt);
+    g.position.x+=S.hx-hx0; g.position.y+=S.e-e0; g.position.z+=S.hz-hz0;
+    if(lying){ g.updateMatrixWorld(true); fold(C.pb); }
+    if(o.soft){ g.updateMatrixWorld(true); fold(C.pb,o.soft); }
+    const still=Math.hypot(S.vx||0,S.vz||0)<0.35;   // static balance only: a moving body balances by stepping (the gaits do that)
+    if(o.balance && still && !S.air && m.con.length){ const H=shrink(hull(m.con),0.015), c=m.com, pr=project(H,c.x,c.z), h=Math.max(0.4,c.y);
+      if(pr.d>0.005){ const d=new V(pr.x-c.x,0,pr.z-c.z), L=d.length(), ax=new V(d.z/L,0,-d.x/L); S.rv.addScaledVector(ax,Math.atan(L/h)*Math.min(1,dt*10)); S.piv.set(pr.x,0,pr.z); }
+      else S.rv.multiplyScalar(Math.max(0,1-dt*1.5)); if(S.rv.length()>0.2) S.rv.setLength(0.2); }
+    else S.rv.multiplyScalar(Math.max(0,1-dt*4));
+    return m; }
+  // A stiff body going over: a rod of height H pivoting on its feet under gravity, theta'' = (3g/2H) sin(theta).
+  // S={th,w}: start angle and the push it was given. Returns the fall fraction (0 upright .. 1 flat) and S.done on impact.
+  function topple(S,dt,H,thMax){ thMax=thMax??Math.PI/2; if(!S.done){ S.w+=1.5*G/H*Math.sin(S.th)*dt; S.th+=S.w*dt; if(S.th>=thMax){ S.th=thMax; S.done=true; S.impactW=S.w; } } return S.th/(Math.PI/2); }
+  return {G,massModel,comOf,contactSet,lowPts,hull,project,shrink,body,vstep,hstep,rig,topple,coreLow,fold};
+})();
+
+/* the heavy arm's side: the clips are written with the strong arm on the right; a model whose strong arm is its left gets them mirrored */
+let MIR=false; const SW=s=>MIR?(s==="L"?"R":"L"):s, HB=n=>MIR?n.replace(/_(L|R)$/,(m,q)=>"_"+(q==="L"?"R":"L")):n, MS=()=>MIR?-1:1;
+function mirrorJ(J){ const o=Object.assign({},J), sw=(a,b)=>{ o[a]=J[b]; o[b]=J[a]; };
+  for(const k of ["x","y","z"]){ sw("aL"+k,"aR"+k); } sw("eL","eR"); sw("lLx","lRx"); sw("lLz","lRz"); sw("kL","kR"); sw("fL","fR");
+  for(const k of ["hyaw","hroll","syaw","sroll","ny","nz","hx","hdy"]) o[k]=-(J[k]||0); return o; }
+function heavySide(C){ let mesh; C.model.traverse(o=>{ if(o.isSkinnedMesh) mesh=o; }); const bones=mesh.skeleton.bones, si=mesh.geometry.attributes.skinIndex, sw=mesh.geometry.attributes.skinWeight, n={L:0,R:0};
+  for(let i=0;i<sw.count;i++){ const b=bones[si.getX(i)].name; if(sw.getX(i)>0.5 && /^(hand|forearm|upperarm)_[LR]$/.test(b)) n[b.slice(-1)]++; } return n.L>n.R?"L":"R"; }
+function applyPose(C,J){ if(MIR && C===runner) J=mirrorJ(J); const R=C.R;
+  R.hips.position.set(J.hx,R.hip0-J.hd,J.hz); R.hips.rotation.set(J.hp,J.hyaw,J.hroll);
+  R.chest.rotation.set(J.sp,J.syaw,J.sroll); R.neck.rotation.set(J.nx,J.ny,J.nz); R.head.rotation.set(J.hdx,J.hdy,0);
+  R.armL.rotation.set(J.aLx,J.aLy,J.aLz); R.armR.rotation.set(J.aRx,-J.aRy,-J.aRz); R.elbowL.rotation.x=-J.eL; R.elbowR.rotation.x=-J.eR;
+  R.legL.rotation.set(J.lLx,0,J.lLz); R.legR.rotation.set(J.lRx,0,-J.lRz); R.kneeL.rotation.x=J.kL; R.kneeR.rotation.x=J.kR; R.ankleL.rotation.x=J.fL; R.ankleR.rotation.x=J.fR; 
+  if(C===runner && C.footPts && ctx && !ctx.rise && !ctx.noPlant){ if(!ctx.moving) plantFeet(C,ctx); else if(ctx.gait) plantWalk(C,ctx); }   /* both feet on the floor, before anything measures them */ }
+function mix(a,b,t){ const o={}; for(const k in a) o[k]=a[k]+(b[k]-a[k])*t; return o; }
+
+// ---------------------------------------------------------------- motion helpers
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)), sat=x=>clamp(x,0,1);
+const ss=t=>{ t=sat(t); return t*t*(3-2*t); }, easeIn=t=>{ t=sat(t); return t*t*t; }, easeOut=t=>{ t=sat(t); return 1-(1-t)**3; };
+const noise=(t,s)=>Math.sin(t*1.9+s)*0.5+Math.sin(t*3.7+s*1.7)*0.3+Math.sin(t*7.3+s*2.3)*0.2;
+function spring(s,target,dt,w){ const a=w*w*(target-s.x)-2*w*s.v; s.v+=a*dt; s.x+=s.v*dt; return s.x; }   // critically damped
+// one leg's stride: phase 0..1, stance first (foot planted, sweeping back), then the swing ending in the stomp
+function stride(ph, P){ const st=P.stance;
+  if(ph<st){ const u=ph/st; return {lx:P.front+(P.back-P.front)*u, k:P.kStance*Math.sin(u*Math.PI)+(u<0.12?P.kImpact*(1-u/0.12):0), f:-0.1*u, plant:true}; }
+  const u=(ph-st)/(1-st);
+  if(u<P.liftEnd){ const a=ss(u/P.liftEnd); return {lx:P.back+(P.high-P.back)*a, k:P.kLift*Math.sin(a*Math.PI*0.5)+0.3*(1-a), f:0.35*(1-a)+0.2, plant:false}; }
+  const a=easeIn((u-P.liftEnd)/(1-P.liftEnd));                                              // driven down, accelerating into the floor
+  return {lx:P.high+(P.front-P.high)*a, k:P.kLift*(1-a)+0.02, f:0.2*(1-a)-0.12*a, plant:false}; }
+
+// ---------------------------------------------------------------- the animations
+// each returns the pose plus what the root and the scene should do this frame
+const S={ head:{x:0,v:0}, headT:0, headTo:0, shufX:{x:0,v:0}, shufZ:{x:0,v:0}, shufT:0, shufTo:[0,0], stepPh:0, crouchT:2, crouch:0 };
+function restless(t,dt,ctx){
+  const J=P0();
+  // a ready crouch, up on the balls of the feet
+  J.hd=0.07+0.035*S.crouch; J.kL=J.kR=0.32+0.25*S.crouch; J.lLx=J.lRx=-0.12-0.1*S.crouch; J.fL=J.fR=-0.12;
+  J.sp=0.16+0.04*Math.sin(t*6.2)+0.12*S.crouch; J.nx=-0.12-0.1*S.crouch;
+  J.aLx=J.aRx=-0.3; J.aLz=J.aRz=0.22; J.eL=0.85+0.15*noise(t*2.4,1); J.eR=0.85+0.15*noise(t*2.6,4);
+  // sharp looks: the head jumps to a new bearing and the body half follows
+  S.headT-=dt; if(S.headT<=0){ S.headTo=Math.random()<0.25?0:(Math.random()*2-1)*1.05; S.headT=0.3+Math.random()*0.8; }
+  const h=spring(S.head,S.headTo,dt,22); J.ny=h*0.62; J.hdy=h*0.3; J.syaw=h*0.22; J.hyaw=h*0.08; J.nz=-h*0.08;
+  // shuffles: quick little moves back and forth and side to side
+  S.shufT-=dt; if(S.shufT<=0){ S.shufTo=[(Math.random()*2-1)*0.32,(Math.random()*2-1)*0.25]; S.shufT=0.45+Math.random()*0.9; }
+  const ox=S.shufX.x, oz=S.shufZ.x; spring(S.shufX,S.shufTo[0],dt,13); spring(S.shufZ,S.shufTo[1],dt,13);
+  const mv=Math.hypot(S.shufX.v,S.shufZ.v); S.stepPh+=dt*mv*9;
+  const lift=sat(mv*1.6);
+  J.lLx+=-0.25*lift*Math.max(0,Math.sin(S.stepPh)); J.kL+=0.7*lift*Math.max(0,Math.sin(S.stepPh));
+  J.lRx+=-0.25*lift*Math.max(0,-Math.sin(S.stepPh)); J.kR+=0.7*lift*Math.max(0,-Math.sin(S.stepPh));
+  J.hroll=0.06*Math.sin(S.stepPh)*lift - S.shufZ.v*0.05; J.hp=S.shufX.v*0.05; J.lLz+=0.06; J.lRz+=0.06;
+  // now and then it sinks lower for a moment, listening
+  S.crouchT-=dt; if(S.crouchT<=0){ S.crouchT=2+Math.random()*3; S.crouchK=0.55; } if(S.crouchK>0){ S.crouchK-=dt; S.crouch=Math.sin(sat(1-S.crouchK/0.55)*Math.PI); } else S.crouch=0;
+  ctx.local={x:S.shufX.x,z:-S.shufZ.x}; ctx.v=mv;
+  return J;
+}
+const WALK={stance:0.56,front:-0.42,back:0.42,high:-0.95,kStance:0.12,kImpact:0.22,kLift:1.45,liftEnd:0.62};
+function walkPose(ph, J0){
+  const J=J0||P0(); const a=stride(ph,WALK), b=stride((ph+0.5)%1,WALK);
+  J.lLx=a.lx; J.kL=a.k; J.fL=a.f; J.lRx=b.lx; J.kR=b.k; J.fR=b.f;
+  const imp=Math.max(Math.max(0,1-(ph%0.5)/0.09),0);                                    // the jolt right after each stomp
+  J.hd=0.035+0.05*imp+0.03*Math.abs(Math.sin(ph*Math.PI*2)); J.sp=0.22+0.06*imp; J.hp=0.04;
+  J.hyaw=0.16*Math.sin(ph*Math.PI*2); J.syaw=-0.28*Math.sin(ph*Math.PI*2); J.hroll=0.06*Math.cos(ph*Math.PI*2);
+  J.aLx=0.72*Math.sin(ph*Math.PI*2); J.aRx=-0.72*Math.sin(ph*Math.PI*2); J.eL=0.95+0.25*Math.max(0,-Math.sin(ph*Math.PI*2)); J.eR=0.95+0.25*Math.max(0,Math.sin(ph*Math.PI*2)); J.aLz=J.aRz=0.16;
+  J.nx=0.06-0.08*imp; return {J,imp}; }
+const RUN={stance:0.36,front:-0.8,back:0.8,high:-1.25,kStance:0.6,kImpact:0.3,kLift:1.9,liftEnd:0.55};
+function sprintPose(ph, J0, shoulder){
+  const J=J0||P0(); const a=stride(ph,RUN), b=stride((ph+0.5)%1,RUN);
+  J.lLx=a.lx+0.1; J.kL=a.k; J.fL=a.f; J.lRx=b.lx+0.1; J.kR=b.k; J.fR=b.f;
+  const imp=Math.max(0,1-(ph%0.5)/0.1);
+  J.hd=0.09+0.06*imp; J.hp=0.14; J.sp=0.42+0.05*imp; J.nx=-0.22;
+  J.hyaw=0.12*Math.sin(ph*Math.PI*2); J.syaw=-0.32*Math.sin(ph*Math.PI*2);
+  J.aLx=1.15*Math.sin(ph*Math.PI*2)-0.15; J.aRx=-1.15*Math.sin(ph*Math.PI*2)-0.15; J.eL=J.eR=1.55; J.aLz=J.aRz=0.1;
+  if(shoulder){ const s=shoulder;                                                            // right shoulder dropped and leading
+    J.syaw=J.syaw*(1-s)+0.72*s; J.sroll=0.38*s; J.hyaw=J.hyaw*(1-s)+0.3*s; J.ny=-0.55*s; J.nz=-0.2*s; J.nx=-0.1*s-0.22*(1-s);
+    J.aRx=J.aRx*(1-s)+(-0.15)*s; J.aRz=J.aRz*(1-s)+(-0.35)*s; J.eR=1.55*(1-s)+2.05*s;
+    J.aLx=J.aLx*(1-s)+(0.45+0.3*Math.sin(ph*Math.PI*2))*s; J.aLz=0.1*(1-s)+0.4*s; }
+  return {J,imp}; }
+function chargePose(c, t, shoulder){                                                           // shoulders curl in toward the core, trembling
+  const J=P0(), tr=c*c, sh=(k)=>noise(t*38,k)*0.05*tr;
+  J.hd=0.08+0.16*c; J.sp=0.18+0.5*c+sh(1); J.hp=0.08+0.1*c; J.nx=0.05+0.32*c+sh(2);
+  J.lLx=-0.35*c; J.kL=0.3+0.55*c; J.fL=-0.1*c; J.lRx=0.45*c; J.kR=0.3+0.75*c; J.fR=-0.35*c;
+  J.aLx=J.aRx=-0.2-0.45*c; J.aLz=J.aRz=0.15-0.7*c; J.eL=J.eR=0.8+1.35*c; J.aLx+=sh(3); J.aRx+=sh(4);
+  if(shoulder){ J.syaw=0.55*c; J.sroll=0.32*c; J.ny=-0.45*c; J.aRz=-0.45*c; J.aRx=-0.15; J.eR=2.0*c+0.4; J.aLz=0.15+0.2*c; J.aLx=0.25*c; J.eL=0.9; }
+  return J; }
+
+// ---------------------------------------------------------------- locomotion physics
+// The body is moved by its legs, not slid along: the stance foot is pinned to the floor (or partly, for a dragged
+// foot) and the root goes wherever that puts it; the lowest point of the feet rests on the ground, so the bob comes
+// from leg geometry. Landings compress the stance knee by how fast the body was dropping; the chest, head and arms
+// lag behind acceleration on springs.
+const GRAV_A=9.8;
+function solePts(C,s){ const R=C.R, a=R["ankle"+s]; if(C.a0==null){ const g=C.group, sv=[g.position.clone(),g.rotation.y]; applyPose(C,P0()); g.position.set(0,0,0); g.rotation.set(0,0,0); g.updateMatrixWorld(true); C.a0=a.getWorldPosition(new THREE.Vector3()).y; g.position.copy(sv[0]); g.rotation.y=sv[1]; }
+  return [a.localToWorld(new THREE.Vector3(0,-C.a0,-0.03)), a.localToWorld(new THREE.Vector3(0,-C.a0+0.015,0.13))]; }
+function lowSole(C,s){ const [h,t]=solePts(C,s); return h.y<t.y?h:t; }
+function physLoco(C,J,ctx,dt,cfg){ const P=C.pl||(C.pl={lean:{x:0,v:0},dip:{x:0,v:0},hl:{x:0,v:0},arm:{x:0,v:0},roll:{x:0,v:0},y:0,lx:ctx.x,ly:0,vx:0,vy:0,ax:0,stance:null,anchor:null});
+  if(ctx.plReset){ ctx.plReset=0; Object.assign(P,{y:0,lx:ctx.x,ly:0,vx:0,vy:0,ax:0,stance:null,anchor:null}); P.lean={x:0,v:0}; P.dip={x:0,v:0}; }
+  if(C.a0==null) solePts(C,"L");   // calibrate the ankle height before posing
+  const st=cfg.stance(ctx);
+  // springs from the motion so far: inertia
+  J.sp+=P.lean.x; J.hp+=P.lean.x*0.35; J.nx+=P.hl.x; J.aLx+=P.arm.x; J.aRx+=P.arm.x; J.hroll+=P.roll.x;
+  if(st){ J["k"+st]+=P.dip.x*1.3; J["l"+st+"x"]-=P.dip.x*0.45; J["f"+st]-=P.dip.x*0.4; J.sp+=P.dip.x*0.3; }
+  const g=C.group; applyPose(C,J); g.position.set(ctx.x,P.y,ctx.z||0); g.rotation.set(0,ctx.yaw,0); g.updateMatrixWorld(true);
+  const fwd=new THREE.Vector3(Math.sin(ctx.yaw),0,Math.cos(ctx.yaw));
+  if(st){ const f=P.stance===st&&P.anchor? solePts(C,SW(st))[P.kind] : lowSole(C,SW(st));   // track the same point (heel or toe) frame to frame
+    if(P.stance!==st||!P.anchor){ // touchdown: the body was falling; the stance leg takes it
+      const k=clamp(-P.vy*1.2+Math.abs(P.vx)*0.35,0,2.2)*(cfg.imp??1); P.dip.v-=k*2.2; P.lean.v+=k*0.8; P.roll.v+=(st==="L"?1:-1)*k*(cfg.rollK??0.6);
+      P.anchor=f.clone(); P.stance=st; cfg.onLand&&cfg.onLand(f,k,st); const carry=P.vx*dt*(1-0.25*Math.min(1,k)); ctx.x+=fwd.x*carry; ctx.z=(ctx.z||0)+fwd.z*carry; }   /* momentum carries through the contact frame, minus what the impact took */
+    else { const slip=(cfg.slip&&cfg.slip[st])||0, d=P.anchor.clone().sub(f); let along=d.dot(fwd)*(1-slip); if(along<0 && cfg.drag&&cfg.drag[st]) along*=0.08; if(cfg.traction&&dt>0){ const vLeg=along/dt, nv=P.vx+(vLeg-P.vx)*Math.min(1,dt*cfg.traction); along=nv*dt; }   /* the body has momentum: the foot grips, but can't snap its speed instantly */ /* a dragged foot can push it on, but slides rather than pull it back */ ctx.x+=fwd.x*along; ctx.z=(ctx.z||0)+fwd.z*along;
+      if(slip>0 && Math.abs(d.dot(fwd))*slip>0.004 && Math.random()<0.25) cfg.onDrag&&cfg.onDrag(f); }
+  } else { if(P.stance&&cfg.flight) P.vy*=cfg.bounce??1; P.stance=null; if(cfg.flight){ ctx.x+=fwd.x*P.vx*dt; ctx.z=(ctx.z||0)+fwd.z*P.vx*dt; P.y+=(P.vy-GRAV_A*dt)*dt; } }   // airborne: momentum and gravity only
+  g.position.set(ctx.x,P.y,ctx.z||0); g.updateMatrixWorld(true);
+  const low= C.footPts ? Math.min(footLow(C,"L"),footLow(C,"R")) : Math.min(lowSole(C,"L").y,lowSole(C,"R").y); if(st||!cfg.flight||low<0) P.y-=low;   /* the real soles where the model has them measured */ g.position.y=P.y; g.updateMatrixWorld(true);
+  if(st){ const pp=solePts(C,SW(st)); P.kind=pp[0].y<pp[1].y?0:1; P.anchor=pp[P.kind].clone(); }
+  // measure what that did
+  const dx=((ctx.x-P.lx)*fwd.x+((ctx.z||0)-(P.lz||0))*fwd.z), vx=dt>0?dx/dt:0, vy=dt>0?(P.y-P.ly)/dt:0; P.lx=ctx.x; P.lz=ctx.z||0; P.ly=P.y;
+  const ax=dt>0?(vx-P.vx)/dt:0; P.ax+=(clamp(ax,-25,25)-P.ax)*Math.min(1,dt*10); P.vx=vx; P.vy=vy; ctx.v=vx; ctx.y=P.y;
+  spring(P.lean,clamp(-P.ax*0.03,-0.22,0.22),dt,cfg.leanW??7); spring(P.hl,clamp(vy*0.12-P.ax*0.02,-0.25,0.25),dt,9); spring(P.arm,clamp(-P.ax*0.06,-0.35,0.35),dt,6); spring(P.dip,0,dt,cfg.dipW??9); spring(P.roll,0,dt,6); }
+
+// which foot is planted, from the stride clock: double support goes to the foot that landed last; none = airborne
+function strideStance(ph,P){ const a=ph%1, bb=(ph+0.5)%1, inL=a<P.stance, inR=bb<P.stance; if(inL&&inR) return a<bb?"L":"R"; return inL?"L":inR?"R":null; }
+// ---------------------------------------------------------------- choreography for each clip
+const A={};
+const NP={
+  stand(){ const J=P0(); J.aLx=-0.25; J.aRx=-0.5; J.eL=0.5; J.eR=0.9; J.aLz=0.12; J.aRz=0.1; J.kL=J.kR=0.08; J.lLx=-0.08; J.lRx=0.08; return J; },
+  held(t){ const J=P0(), n=s=>noise(t*14,s)*0.14; J.aLx=0.05+n(1); J.aRx=0.05+n(2); J.aLz=-0.02; J.aRz=-0.02; J.eL=0.6+n(3); J.eR=0.7+n(4); J.sp=-0.15+n(5)*0.5; J.syaw=n(6); J.nx=-0.25+n(7); J.kL=0.25; J.kR=0.15; J.lLx=-0.12; J.lRx=0.18; J.fL=J.fR=0.2; return J; },
+  crushed(t,k){ const J=P0(), n=s=>noise(t*30,s)*0.06*(0.5+k); J.aLx=0.1+n(1); J.aRx=0.1+n(2); J.aLz=0; J.aRz=0; J.eL=0.9+n(3); J.eR=0.9+n(4); J.sp=-0.25-0.35*k+n(5); J.hp=0.1+0.15*k; J.nx=-0.45-0.4*k+n(6); J.ny=n(7); J.lLx=-0.25+n(8); J.lRx=0.05+n(9); J.kL=0.45; J.kR=0.35; J.fL=J.fR=0.55; return J; },
+  kneel(t){ const J=P0(); J.hd=0.42; J.hp=0.05; J.lLx=-1.25; J.kL=1.55; J.fL=-0.25; J.lRx=0.25; J.kR=1.8; J.fR=0.7; J.sp=0.5+0.04*Math.sin(t*5); J.nx=0.45; J.aLx=-0.75; J.aLz=-0.45; J.eL=1.9; J.aRx=-0.35; J.aRz=0.15; J.eR=0.4; return J; },
+  stumble(){ const J=P0(); J.sp=-0.25; J.aLx=-0.9; J.aRx=-0.6; J.aLz=0.6; J.aRz=0.5; J.eL=J.eR=0.5; J.lLx=0.35; J.kL=0.3; J.lRx=-0.3; J.kR=0.2; J.nx=-0.2; return J; } };
+// ---------------------------------------------------------------- the club-fist: a man dragged lopsided by one monstrous arm
+// The club arm is a real pendulum hung from the shoulder (gravity, damping, and the body's own acceleration swing it);
+// he leans away from it by a balance controller that reads his real centre of mass (the voxelised mesh) against his feet.
+const GRAVC=9.8, CS={club:{x:0,v:0},side:{x:0,v:0},lastV:0,lastYaw:0,lean:0,err:0,leanF:0,errF:0};
+function clubSwing(J,ctx,dt,o={}){ const Lc=0.62*((runner&&runner.sz)||1), c=CS.club, a=((ctx.v||0)-CS.lastV)/Math.max(dt,1e-4); CS.lastV=ctx.v||0;
+  // body accelerating forward swings it back; a turn of the chest flings it out sideways
+  const drive=(o.drive||0), turn=((J.syaw||0)-CS.lastYaw)/Math.max(dt,1e-4); CS.lastYaw=J.syaw||0;
+  c.v+=(-(GRAVC/Lc)*Math.sin(c.x)-1.6*c.v+clamp(a,-12,12)/Lc*Math.cos(c.x)+drive)*dt; c.x+=c.v*dt;
+  const s=CS.side; s.v+=(-(GRAVC/Lc)*Math.sin(s.x)-1.8*s.v+clamp(turn,-20,20)*0.9+(o.sideDrive||0))*dt; s.x+=s.v*dt;
+  J.aRx=c.x+(o.base||0); J.aRz=0.3+s.x; J.eR=0.18; return J; }
+// balance: lean the hips and chest away from the heavy side until the centre of mass is over the feet
+function balance(C,m,ctx,dt){ if(!m||!m.con.length) return; let cx=0,cz=0; for(const p of m.con){ cx+=p.x; cz+=p.z; } cx/=m.con.length; cz/=m.con.length;
+  const rx=Math.cos(ctx.yaw), rz=-Math.sin(ctx.yaw), fx=Math.sin(ctx.yaw), fz=Math.cos(ctx.yaw); CS.err=MS()*((m.com.x-cx)*rx+(m.com.z-cz)*rz); CS.lean=clamp(CS.lean+CS.err*dt*6,-0.45,0.45);
+  if(!ctx.moving){ CS.errF=(m.com.x-cx)*fx+(m.com.z-cz)*fz; CS.leanF=clamp(CS.leanF-CS.errF*dt*6,-0.5,0.5); } else CS.leanF*=Math.max(0,1-dt*3); }   /* front-back too, when he's not walking */
+// he slouches into the heavy side: shoulders dipped toward the club. His hips shift the other way (and the right foot
+// plants wider, out under the arm) so the centre of mass still ends up over his feet: the balance controller drives the hip shift.
+const SLOUCH={roll:0.16, s:1, h:1};
+function applyLean(J){ J.sroll=(J.sroll||0)+SLOUCH.s*SLOUCH.roll; J.hroll=(J.hroll||0)+SLOUCH.s*SLOUCH.roll*0.3; J.nz=(J.nz||0)-SLOUCH.s*SLOUCH.roll*0.7;
+  const ab=clamp(CS.lean,-0.45,0.45)*0.5; J.lLz=(J.lLz||0)+SLOUCH.h*ab; J.lRz=(J.lRz||0)-SLOUCH.h*ab;   /* both legs lean the same way, parallel: the pelvis shifts over and both soles stay level */ J.hp=(J.hp||0)+CS.leanF*0.45; J.sp=(J.sp||0)+CS.leanF*0.55; J.nz=(J.nz||0)-CS.lean*0.6; J.aLz=(J.aLz||0)+Math.max(0,-CS.lean)*0; return J; }
+function stance(t){ const J=P0(); J.hd=0.05; J.kL=0.14; J.kR=0.2; J.lLx=-0.05; J.lRx=0.06; J.lLz=0.08; J.lRz=0.1; J.sp=0.12+0.015*Math.sin(t*1.6); J.nx=0.05;
+  J.aLx=0.05+0.05*Math.sin(t*1.1); J.aLz=0.35; J.eL=0.45; return J; }   /* the left arm held out from the body: it helps balance him */
+const CWALK={stance:0.6,front:-0.36,back:0.36,high:-0.6,kStance:0.16,kImpact:0.25,kLift:0.95,liftEnd:0.55};
+// the right foot is dragged: under the arm's weight it barely leaves the floor, the toe scraping as it's hauled forward
+const CWALK_R={stance:0.62,front:-0.24,back:0.34,high:-0.14,kStance:0.12,kImpact:0.14,kLift:0.16,liftEnd:0.6};
+function dragWalk(ph){ const J=P0(); const a=stride(ph,CWALK), b=stride((ph+0.5)%1,CWALK_R);
+  J.lLx=a.lx; J.kL=a.k; J.fL=a.f; J.lRx=b.lx; J.kR=b.k+0.1; J.fR= b.plant? b.f : 0.42;    /* toe turned down, scraping */
+  dragWalk.scrape=!b.plant;
+  const imp=Math.max(0,1-(ph%0.5)/0.12); J.hd=0.06+0.06*imp*(ph>=0.5?1.4:0.7); J.sp=0.2+0.05*imp; J.hp=0.05; J.nx=-0.02;
+  J.hyaw=0.1*Math.sin(ph*Math.PI*2); J.syaw=-0.14*Math.sin(ph*Math.PI*2); J.aLx=0.5*Math.sin(ph*Math.PI*2); J.aLz=0.4; J.eL=0.5; return J; }
+// the Tactician's head is a core shell with ~26 bulbs stuck on it; a few only touch the surface and leave cracks.
+// At load, each loosely attached bulb is pulled in toward the head's centre until it sinks well into its neighbours,
+// and swollen slightly so the seam closes. (The model file is left alone.)
+function tacBulbFix(mesh){
+  const g=mesh.geometry, pos=g.attributes.position, idx=g.index, si=g.attributes.skinIndex, sw=g.attributes.skinWeight;
+  const hb=mesh.skeleton.bones.findIndex(b=>b.name==="head"); if(hb<0||!idx||g.userData.bulbsFixed) return 0; g.userData.bulbsFixed=1;   /* the geometry is shared by every clone */
+  const n=pos.count, par=new Int32Array(n); for(let i=0;i<n;i++) par[i]=i;
+  const f=x=>{ while(par[x]!==x){ par[x]=par[par[x]]; x=par[x]; } return x; }, un=(a,b)=>{ a=f(a); b=f(b); if(a!==b) par[a]=b; };
+  for(let t=0;t<idx.count;t+=3){ un(idx.getX(t),idx.getX(t+1)); un(idx.getX(t+1),idx.getX(t+2)); }
+  const key=new Map(); for(let i=0;i<n;i++){ const k=pos.getX(i).toFixed(4)+","+pos.getY(i).toFixed(4)+","+pos.getZ(i).toFixed(4); if(key.has(k)) un(i,key.get(k)); else key.set(k,i); }
+  const comps=new Map(); for(let i=0;i<n;i++){ if(si.getX(i)!==hb||sw.getX(i)<0.5) continue; const r=f(i); if(!comps.has(r)) comps.set(r,[]); }
+  for(let i=0;i<n;i++){ const r=f(i); if(comps.has(r)) comps.get(r).push(i); }
+  const V=THREE.Vector3, list=[...comps.values()], small=[], core=[]; const H=new V(); let hn=0;
+  for(const L of list){ for(const i of L){ H.x+=pos.getX(i); H.y+=pos.getY(i); H.z+=pos.getZ(i); hn++; } (L.length>200?core:L.length>8&&L.length<=80?small:null)?.push(L); }
+  H.divideScalar(Math.max(1,hn));
+  const coreP=[]; for(const L of core) for(const i of L) coreP.push(new V(pos.getX(i),pos.getY(i),pos.getZ(i)));
+  const B=small.map(L=>{ const c=new V(); for(const i of L) c.add(new V(pos.getX(i),pos.getY(i),pos.getZ(i))); c.divideScalar(L.length); let r=0; for(const i of L) r+=c.distanceTo(new V(pos.getX(i),pos.getY(i),pos.getZ(i))); return {L,c,r:r/L.length,moved:false}; });
+  const reach=b=>{ let dc=1e9; for(const p of coreP) dc=Math.min(dc,p.distanceTo(b.c)); let a=b.r-dc; for(const o of B) if(o!==b) a=Math.max(a,b.r+o.r-b.c.distanceTo(o.c)); return a; };
+  for(let it=0;it<4;it++) for(const b of B){ const a=reach(b); if(a>=1.1*b.r) continue; const d=H.clone().sub(b.c); const s=Math.min(0.6*b.r,(1.1*b.r-a)*1.1, d.length()*0.5); if(s<=1e-4) continue;
+    d.setLength(s); for(const i of b.L) pos.setXYZ(i,pos.getX(i)+d.x,pos.getY(i)+d.y,pos.getZ(i)+d.z); b.c.add(d); b.moved=true; }
+  let moved=0; for(const b of B){ if(!b.moved) continue; moved++; for(const i of b.L){ const p=new V(pos.getX(i),pos.getY(i),pos.getZ(i)).sub(b.c).multiplyScalar(1.08).add(b.c); pos.setXYZ(i,p.x,p.y,p.z); } }
+  pos.needsUpdate=true; g.computeBoundingSphere(); g.computeBoundingBox(); return moved; }
+
+// ---- both feet on the floor: when it stands, the balance lean angles the legs and would leave one foot hovering.
+// Two-bone leg solve: the lower foot's knee bends until the soles are level; the guard then sets both down.
+function legIK(C,s,T,poleW){ const V=THREE.Vector3, R=C.R, hip=R["leg"+s], knee=R["knee"+s], ank=R["ankle"+s]; C.group.updateMatrixWorld(true);
+  const S=hip.getWorldPosition(new V()), K0=knee.getWorldPosition(new V()), A0=ank.getWorldPosition(new V()), L1=S.distanceTo(K0), L2=K0.distanceTo(A0);
+  const d=clamp(T.distanceTo(S),Math.abs(L1-L2)+0.01,L1+L2-0.001), interior=Math.acos(clamp((L1*L1+L2*L2-d*d)/(2*L1*L2),-1,1));
+  knee.rotation.x=Math.PI-interior; knee.updateMatrixWorld(true);
+  const A=ank.getWorldPosition(new V()); rotWorld(hip,new THREE.Quaternion().setFromUnitVectors(A.sub(S).normalize(),T.clone().sub(S).normalize()));
+  const ax=T.clone().sub(S).normalize(), ve=knee.getWorldPosition(new V()).sub(S), vp=poleW.clone().sub(S); ve.addScaledVector(ax,-ve.dot(ax)); vp.addScaledVector(ax,-vp.dot(ax));
+  if(ve.lengthSq()>1e-8&&vp.lengthSq()>1e-8){ let a=ve.angleTo(vp); if(ve.clone().cross(vp).dot(ax)<0) a=-a; rotWorld(hip,new THREE.Quaternion().setFromAxisAngle(ax,a)); } }
+/* the foot's own vertices, carried on the rig's ankle: its real lowest point, edge or heel or toe, as it leans */
+function footAnchor(C){ let mesh; C.model.traverse(o=>{ if(o.isSkinnedMesh) mesh=o; }); const g=mesh.geometry, si=g.attributes.skinIndex, sw=g.attributes.skinWeight, pos=g.attributes.position, bones=mesh.skeleton.bones;
+  C.group.updateMatrixWorld(true); C.footPts={L:[],R:[]}; const v=new THREE.Vector3();
+  for(let i=0;i<pos.count;i++){ const n=bones[si.getX(i)].name; if(sw.getX(i)>0.5&&(n==="foot_L"||n==="foot_R")){ v.fromBufferAttribute(pos,i).applyMatrix4(mesh.matrixWorld); C.footPts[n.slice(-1)].push(C.R["ankle"+n.slice(-1)].worldToLocal(v.clone())); } } }
+function footLow(C,s){ C.group.updateMatrixWorld(true); const a=C.R["ankle"+s], v=new THREE.Vector3(); let lo=1e9; for(const p of C.footPts[s]){ v.copy(p); a.localToWorld(v); lo=Math.min(lo,v.y); } return lo; }
+/* lift: a foot deliberately raised (a step), in metres; the other one stays down */
+function plantFeet(C,ctx){ if(!C.footPts) return; const fwd=new THREE.Vector3(Math.sin(ctx.yaw),0,Math.cos(ctx.yaw)), lift=ctx.lift||{}, want=(lift.R||0)-(lift.L||0);
+  for(let it=0;it<6;it++){ const lL=footLow(C,"L"), lR=footLow(C,"R"), d=(lR-lL)-want; if(Math.abs(d)<0.002) break;
+    const s=d>0?"L":"R", R=C.R, A=R["ankle"+s].getWorldPosition(new THREE.Vector3()), pole=R["knee"+s].getWorldPosition(new THREE.Vector3()).addScaledVector(fwd,0.4);
+    legIK(C,s,A.add(new THREE.Vector3(0,Math.abs(d),0)),pole); } }
+
+/* walking: in double support both soles level; in single support the swinging foot is kept clear of the floor by its arc,
+   so the planted one is the one that carries it (no stance foot hovering, no swing foot scraping) */
+function plantWalk(C,ctx){ if(!C.footPts) return; const G=ctx.gait, a=G.ph%1, b=(G.ph+0.5)%1, st=G.P.stance, inL=a<st, inR=b<st;
+  if(inL&&inR){ const land=(a<b)?"L":"R", old=land==="L"?"R":"L";
+    if(C.lastLand!==land){ C.lastLand=land; const gap=footLow(C,land)-footLow(C,old); kBias[old]=clamp(kBias[old]+3.0*gap,0,0.8); }   /* touchdown: learn from the gap */
+    ctx.lift=null; plantFeet(C,ctx); return; } if(!inL&&!inR) return;
+  const s=inL?"L":"R", o=inL?"R":"L", u=((inL?b:a)-st)/(1-st), clear=0.07*Math.sin(Math.PI*clamp(u,0,1));
+  const fwd=new THREE.Vector3(Math.sin(ctx.yaw),0,Math.cos(ctx.yaw));
+  for(let it=0;it<5;it++){ const d=footLow(C,o)-footLow(C,s); if(d>=clear-0.002) break; const R=C.R, A=R["ankle"+o].getWorldPosition(new THREE.Vector3()), pole=R["knee"+o].getWorldPosition(new THREE.Vector3()).addScaledVector(fwd,0.4);
+    legIK(C,o,A.add(new THREE.Vector3(0,clear-d,0)),pole); }
+}
+/* a planted leg at angle lx (− forward) with knee k reaches down cos(k/2)·cos(lx+k/2) of its length; keep that at the
+   landing height so the hips ride level and the foot that lands meets the floor at the same height as the one planted */
+function levelKnee(lx,kLand,front){ const h=Math.cos(kLand/2)*Math.cos(front+kLand/2); let lo=0, hi=1.4; for(let i=0;i<22;i++){ const k=(lo+hi)/2; if(Math.cos(k/2)*Math.cos(lx+k/2)>h) lo=k; else hi=k; } return (lo+hi)/2; }
+/* its own careful stride: the foot comes down smoothly through the end of the swing (no stamp), lands heel first and
+   rolls flat over the first part of the stance */
+function tStride(ph){ const P=TWALK, st=P.stance;
+  if(ph<st){ const u=ph/st; return {lx:P.front+(P.back-P.front)*u, k:0, f:-0.12*(1-sm5(u/0.18))-0.08*sm5((u-0.6)/0.4), plant:true}; }
+  const u=(ph-st)/(1-st), up=sm5(u/0.5), dn=sm5((u-0.35)/0.65);
+  return {lx:P.back+(P.high-P.back)*up+(P.front-P.high)*dn, k:P.kLift*Math.sin(Math.PI*clamp(u,0,1))+0.1, f:-0.08+0.3*Math.sin(Math.PI*clamp(u/0.7,0,1))-0.04*dn, plant:false}; }
+/* plus a learned extra bend of the planted knee (kBias): at each touchdown the gap between the landing foot and the planted
+   one is measured and the bias corrected, so the landing foot comes down level with the planted one */
+const kBias={L:0.42,R:0.46};   /* what it settles to; still corrected step by step */ const stanceBias=(ph,s)=>{ const u=ph/TWALK.stance; return ph<TWALK.stance ? kBias[s]*sm5(u/0.25) : 0; };
+function tLegs(J,ph){ const pa=ph%1, pb=(ph+0.5)%1, a=tStride(pa), b=tStride(pb);
+  J.lLx=a.lx; J.fL=a.f; J.kL= a.plant? levelKnee(a.lx,0.1,TWALK.front)+stanceBias(pa,"L") : a.k; J.lRx=b.lx; J.fR=b.f; J.kR= b.plant? levelKnee(b.lx,0.1,TWALK.front)+stanceBias(pb,"R") : b.k; return J; }
+// ================================================================ the REACHER (BCROSS)
+// Three with necks two or three times a person's, two with arms near four metres long. At load the long parts are given
+// a chain of extra joints (the model files are left alone), and each frame the chain is laid along a curve in the world:
+// a neck that whips, arcs over and coils; arms that drag on the floor, sweep, snatch and trip. Segment lengths never
+// change, so nothing stretches; the physics guard weighs the long parts by their volume like everything else.
+const sm5=x=>{ x=sat(x); return x*x*x*(x*(x*6-15)+10); };
+const Z=()=>1, V3=THREE.Vector3; SLOUCH.s=0; SLOUCH.h=0;
+let NX=3.2; const UP=new V3(0,1,0);
+const TP=()=>({fwd:new V3(Math.sin(ctx.yaw),0,Math.cos(ctx.yaw)), right:new V3(-Math.cos(ctx.yaw),0,Math.sin(ctx.yaw))});
+const TWALK={stance:0.64,front:-0.3,back:0.3,high:-0.5,kStance:0.1,kImpact:0.1,kLift:0.8,liftEnd:0.55};
+const TPHYS={ active:ctx=>!!ctx.gait, stance:ctx=>strideStance(ctx.ph,TWALK), traction:8, imp:0.6, rollK:0 };
+const GC4=["getX","getY","getZ","getW"], cmp=(A,i,k)=>A[GC4[k]](i);
+let RC=null;   /* the current model's chains: {kind:"neck"|"arm", ...} */
+const KIND=()=>RC&&RC.kind;
+
+// ---- load time: lay a chain of joints along the neck (or each arm) and re-skin the vertices onto it
+function buildChains(gltf){ if(gltf.userData.rc) return gltf.userData.rc;
+  let mesh; gltf.scene.traverse(o=>{ if(o.isSkinnedMesh) mesh=o; }); gltf.scene.updateMatrixWorld(true);
+  const g=mesh.geometry, sk=mesh.skeleton, bones=sk.bones.slice(), inv=sk.boneInverses.map(m=>m.clone()), P=g.attributes.position, SI=g.attributes.skinIndex, SWt=g.attributes.skinWeight, U2=g.attributes.uv2;
+  const bi=n=>bones.findIndex(b=>b.name===n), bp=n=>new V3().setFromMatrixPosition(inv[bi(n)].clone().invert());
+  const dom=i=>{ let b=0,w=-1; for(let k=0;k<4;k++){ const x=cmp(SWt,i,k); if(x>w){ w=x; b=cmp(SI,i,k); } } return b; };
+  const addBone=(name,parent,J,Jp)=>{ const b=new THREE.Bone(); b.name=name; b.position.copy(J).sub(Jp); parent.add(b); bones.push(b); inv.push(new THREE.Matrix4().makeTranslation(-J.x,-J.y,-J.z)); return bones.length-1; };
+  const skin=(i,a,b,w)=>{ SI.setXYZW(i,a,b,0,0); SWt.setXYZW(i,1-w,w,0,0); };
+  const blend=(i,u,cur,prev,next)=>{ if(u>0.6&&next!=null) skin(i,cur,next,0.5*(u-0.6)/0.4); else if(u<0.4&&prev!=null) skin(i,cur,prev,0.5*(0.4-u)/0.4); else skin(i,cur,cur,0); };
+  const v=new V3(), info={};
+  if(!U2){ // a neck: its centre line is found from its own vertices (it can droop, curl and wiggle in the bind pose)
+    const nb=bi("neck"), cb=bi("chest"), hb=bi("head"), S=bp("neck"), E=bp("head"), pts=[], ids=[];
+    for(let i=0;i<P.count;i++){ const d=dom(i); v.fromBufferAttribute(P,i).applyMatrix4(mesh.bindMatrix); if(d===nb||(d===cb&&v.z>0.17)){ pts.push(v.clone()); ids.push(i); } }
+    let poly=[S.clone(),E.clone()];
+    const plen=()=>{ let s=0; for(let k=0;k<poly.length-1;k++) s+=poly[k].distanceTo(poly[k+1]); return s; };
+    const proj=p=>{ let best=1e9,bs=0,acc=0; for(let k=0;k<poly.length-1;k++){ const a=poly[k], ab=poly[k+1].clone().sub(a), L=ab.length()||1e-9, u=clamp(p.clone().sub(a).dot(ab)/(L*L),0,1), d=a.clone().addScaledVector(ab,u).distanceTo(p); if(d<best){ best=d; bs=acc+u*L; } acc+=L; } return bs; };
+    const at=s=>{ let acc=0; for(let k=0;k<poly.length-1;k++){ const L=poly[k].distanceTo(poly[k+1]); if(s<=acc+L||k===poly.length-2) return poly[k].clone().lerp(poly[k+1],clamp((s-acc)/(L||1e-9),0,1)); acc+=L; } return poly[poly.length-1].clone(); };
+    for(let it=0;it<4;it++){ const L=plen(), M=14, sum=[...Array(M)].map(()=>new V3()), cnt=new Array(M).fill(0);
+      for(const p of pts){ const k=Math.min(M-1,Math.floor(proj(p)/L*M)); sum[k].add(p); cnt[k]++; }
+      const np=[S.clone()]; for(let k=0;k<M;k++) if(cnt[k]>3) np.push(sum[k].divideScalar(cnt[k])); np.push(E.clone()); poly=np;
+      for(let q=0;q<2;q++) poly=poly.map((p,k)=>k===0||k===poly.length-1?p:p.clone().multiplyScalar(0.5).addScaledVector(poly[k-1],0.25).addScaledVector(poly[k+1],0.25)); }
+    const L=plen(), N=clamp(Math.round(L/0.17),6,30), J=[]; for(let k=0;k<=N;k++) J.push(at(k*L/N));
+    const ch=[nb]; let par=bones[nb]; for(let k=1;k<N;k++){ const id=addBone("nk"+k,par,J[k],J[k-1]); ch.push(id); par=bones[id]; }
+    par.add(bones[hb]); bones[hb].position.copy(E).sub(J[N-1]);
+    poly=J; const segL=L/N;
+    for(let q=0;q<ids.length;q++){ const s=proj(pts[q]), k=Math.min(N-1,Math.floor(s/segL)), u=s/segL-k; blend(ids[q],u,ch[k],k>0?ch[k-1]:cb,k<N-1?ch[k+1]:hb); }
+    Object.assign(info,{kind:"neck",N,L}); }
+  else { // two arms: each arm vertex carries its side and how far along the arm it is (TEXCOORD_1)
+    info.kind="arm"; let mj=null; gltf.scene.traverse(o=>{ if(o.userData&&o.userData.arm_main_joints) mj=o.userData.arm_main_joints; }); mj=mj||[0.26,0.5,0.74];
+    const F=[0,mj[0]/2,mj[0],(mj[0]+mj[1])/2,mj[1],(mj[1]+mj[2])/2,mj[2],(mj[2]+1)/2]; Object.assign(info,{F,main:[2,4,6],tip:{},len:{},cum:{}});
+    for(const [s,sg] of [["L",1],["R",-1]]){ const ids=[], fr=[], ps=[];
+      for(let i=0;i<P.count;i++){ if(Math.round(U2.getX(i))!==sg) continue; ids.push(i); fr.push(U2.getY(i)); ps.push(new V3().fromBufferAttribute(P,i).applyMatrix4(mesh.bindMatrix)); }
+      const n=ids.length; let mf=0; const mp=new V3(); for(let q=0;q<n;q++){ mf+=fr[q]; mp.add(ps[q]); } mf/=n; mp.divideScalar(n);
+      let sff=0; const sfp=new V3(); for(let q=0;q<n;q++){ const df=fr[q]-mf; sff+=df*df; sfp.addScaledVector(ps[q].clone().sub(mp),df); }
+      const b=sfp.divideScalar(sff), a=mp.clone().addScaledVector(b,-mf), pos=f=>a.clone().addScaledVector(b,f);   /* straight in the bind pose: position = a + b·fraction */
+      const ub=bi("upperarm_"+s), J=[bp("upperarm_"+s)]; for(let k=1;k<F.length;k++) J.push(pos(F[k])); const tip=pos(1);
+      const ch=[ub]; let par=bones[ub]; for(let k=1;k<F.length;k++){ const id=addBone("ar"+s+k,par,J[k],J[k-1]); ch.push(id); par=bones[id]; }
+      for(let q=0;q<n;q++){ const f=fr[q]; let k=0; while(k<F.length-1&&f>=F[k+1]) k++; const hi=k<F.length-1?F[k+1]:1, u=clamp((f-F[k])/(hi-F[k]),0,1); if(k===0&&u<0.1) skin(ids[q],ch[0],bi("chest"),0.5*(0.1-u)/0.1); else blend(ids[q],u,ch[k],k>0?ch[k-1]:null,k<F.length-1?ch[k+1]:null); }   /* only a narrow seam onto the chest at the shoulder */
+      info.tip[s]=tip.clone().sub(J[F.length-1]); const cum=[0]; for(let k=1;k<F.length;k++) cum.push(cum[k-1]+J[k].distanceTo(J[k-1])); cum.push(cum[F.length-1]+tip.distanceTo(J[F.length-1])); info.cum[s]=cum; info.len[s]=cum[cum.length-1]; } }
+  mesh.bind(new THREE.Skeleton(bones,inv),mesh.bindMatrix); SI.needsUpdate=true; SWt.needsUpdate=true;
+  gltf.userData.rc=info; return info; }
+// the rig side: a pivot per new joint, retargeted like the rest
+function chainRig(C,info){ const R=C.R, B=C.B;
+  if(info.kind==="neck"){ C.nk=[R.neck]; let p=R.neck; const add=[]; for(let k=1;k<info.N;k++){ const q=piv(p,B["nk"+k].position); C.nk.push(q); add.push(["nk"+k,"ori",q]); p=q; }
+    p.add(R.head); R.head.position.copy(B.head.position); C.nkEnd=B.head.position.clone();
+    const i=C.map.findIndex(m=>m[0]==="neck"); C.map.splice(i+1,0,...add); }
+  else { C.map=C.map.filter(m=>!/^(upperarm|forearm|hand)_/.test(m[0])); C.ar={};
+    for(const s of ["L","R"]){ const ch=[R["arm"+s]]; C.map.push(["upperarm_"+s,"ori",R["arm"+s]]); let p=R["arm"+s]; for(let k=1;k<info.F.length;k++){ const q=piv(p,B["ar"+s+k].position); ch.push(q); C.map.push(["ar"+s+k,"ori",q]); p=q; } C.ar[s]={piv:ch,end:info.tip[s].clone()}; } } }
+
+// ---- curves: a path is a function of arc length s (metres from its start) to a world point; past its end it carries straight on
+function polyPath(S){ const acc=[0]; for(let i=1;i<S.length;i++) acc.push(acc[i-1]+S[i].distanceTo(S[i-1])); const n=S.length-1;
+  const f=s=>{ if(s<=0) return S[0].clone(); if(s>=acc[n]){ const d=S[n].clone().sub(S[n-1]).normalize(); return S[n].clone().addScaledVector(d,s-acc[n]); }
+    let lo=0,hi=n; while(hi-lo>1){ const m=(lo+hi)>>1; if(acc[m]<=s) lo=m; else hi=m; } return S[lo].clone().lerp(S[hi],(s-acc[lo])/((acc[hi]-acc[lo])||1e-9)); };
+  f.len=acc[n]; f.pts=S; return f; }
+function mkPath(W){ const S=[], cr=(a,b,c,d,u)=>{ const u2=u*u,u3=u2*u; return new V3().addScaledVector(a,-0.5*u3+u2-0.5*u).addScaledVector(b,1.5*u3-2.5*u2+1).addScaledVector(c,-1.5*u3+2*u2+0.5*u).addScaledVector(d,0.5*u3-0.5*u2); };
+  for(let i=0;i<W.length-1;i++){ const a=W[Math.max(0,i-1)], b=W[i], c=W[i+1], d=W[Math.min(W.length-1,i+2)]; for(let k=0;k<10;k++) S.push(cr(a,b,c,d,k/10)); } S.push(W[W.length-1].clone()); return polyPath(S); }
+const lerpPath=(a,b,w)=>s=>{ const k=typeof w==="function"?w(s):w; return k<=0?a(s):k>=1?b(s):a(s).lerp(b(s),k); };
+// a path cut at arc length 'at' and carried straight on from there (a neck or arm still reaching round)
+const cutPath=(p,at)=>{ const e=p(at), d=p(at).sub(p(Math.max(0,at-0.05))).normalize(); return s=>s<=at?p(s):e.clone().addScaledVector(d,s-at); };
+// lay a chain of pivots along a path: each joint lands on the curve, one segment length from the last
+function chainTo(ch,endOff,path,yMin){ for(let i=1;i<ch.length;i++) ch[i].quaternion.identity(); runner.group.updateMatrixWorld(true); let sl=0;
+  for(let i=0;i<ch.length;i++){ const p=ch[i], off= i<ch.length-1? ch[i+1].position : endOff, len=off.length(), P=p.getWorldPosition(new V3());
+    if(path(sl).distanceTo(P)>=len) sl+=len*0.999;   /* knocked off the curve (the floor): still move on along it */
+    let s1=sl; const far=sl+len*3+4; while(path(s1).distanceTo(P)<len&&s1<far) s1+=0.04; let lo=Math.max(sl,s1-0.04), hi=s1; for(let k=0;k<12;k++){ const m=(lo+hi)/2; if(path(m).distanceTo(P)<len) lo=m; else hi=m; } sl=hi;
+    const ym=yMin==null?null:typeof yMin==="function"?yMin(i+1):yMin; const Q=path(hi); if(ym!=null) Q.y=Math.max(Q.y,ym); Q.sub(P); const C=p.localToWorld(off.clone()).sub(P);
+    if(ym!=null&&Q.lengthSq()>1e-10){ const Ln=C.length(); Q.normalize(); if(P.y+Q.y*Ln<ym){ const h=Math.hypot(Q.x,Q.z)||1e-6, dy=clamp((ym-P.y)/Ln,-1,1), hs=Math.sqrt(Math.max(0,1-dy*dy)); Q.set(Q.x/h*hs,dy,Q.z/h*hs); } }   /* the joint itself never lands below its floor */
+    if(C.lengthSq()<1e-10||Q.lengthSq()<1e-10) continue; rotWorld(p,new THREE.Quaternion().setFromUnitVectors(C.normalize(),Q.normalize())); } }
+// fit: find k in [lo,hi] so the path made by mk(k) is 'len' long (the length grows with k)
+function fitLen(mk,len,lo,hi){ for(let i=0;i<18;i++){ const m=(lo+hi)/2; if(mk(m).len<len) lo=m; else hi=m; } return mk((lo+hi)/2); }
+
+// ---- the neck
+function nRoot(){ runner.group.updateMatrixWorld(true); return runner.R.neck.getWorldPosition(new V3()); }
+// a neck shape from its root: lean (from vertical, toward its facing), bend (a forward curl that grows toward the tip),
+// side (a sideways curl), wave (an S along its length), sway (a sideways S). Integrated along its length, so it is always L long.
+function neckShape(o){ const L=RC.L, n=28, ds=L/n, yaw=o.yaw??ctx.yaw, f=new V3(Math.sin(yaw),0,Math.cos(yaw)), r=new V3(-f.z,0,f.x), p=nRoot(), pts=[p.clone()];
+  for(let i=0;i<n;i++){ const u=(i+0.5)/n, th=(o.lean||0)+(o.bend||0)*Math.pow(u,o.pw||1.6)+(o.wave||0)*Math.sin(Math.PI*2*u*(o.wk||1)-(o.wph||0)), ps=(o.side||0)*u+(o.sway||0)*Math.sin(Math.PI*u*(o.wk||1)-(o.sph||0));
+    const d=UP.clone().multiplyScalar(Math.cos(th)*Math.cos(ps)).addScaledVector(f,Math.sin(th)*Math.cos(ps)).addScaledVector(r,Math.sin(ps)); p.addScaledVector(d,ds); pts.push(p.clone()); }
+  return polyPath(pts); }
+const mixP=(a,b,w)=>{ const o={}; for(const k of new Set([...Object.keys(a),...Object.keys(b)])) o[k]=(a[k]||0)+((b[k]||0)-(a[k]||0))*w; return o; };
+// it looms: tall, curled forward over her, swaying like a reed. Long necks fold into an S to carry the head lower
+function loomP(t){ const long=RC.L>2; return {lean:long?0.32:0.1, bend:long?1.9:1.25, pw:long?1.4:2.2, wave:long?0.55:0.1, wk:long?1.3:1, wph:0.4,
+  sway:0.22*Math.sin(t*0.55)+0.06*Math.sin(t*1.7), side:0.08*Math.sin(t*0.37), sph:0}; }
+function headCentre(C){ let mesh; C.model.traverse(o=>{ if(o.isSkinnedMesh) mesh=o; }); const g=mesh.geometry, si=g.attributes.skinIndex, sw=g.attributes.skinWeight, pos=g.attributes.position, hb=mesh.skeleton.bones.findIndex(b=>b.name==="head"), c=new V3(), v=new V3(); let n=0;
+  for(let i=0;i<pos.count;i++) if(si.getX(i)===hb&&sw.getX(i)>0.5){ c.add(v.fromBufferAttribute(pos,i)); n++; } c.divideScalar(Math.max(1,n)); C.headC=c.sub(new V3().setFromMatrixPosition(mesh.skeleton.boneInverses[hb].clone().invert())); }
+/* the offset from the end of the neck to the middle of the head, as it is carried upright and facing ahead */
+const hOff=()=>runner.headC? runner.headC.clone().applyAxisAngle(UP,ctx.yaw) : new V3();
+function headAt(){ runner.group.updateMatrixWorld(true); return runner.B.head.getWorldPosition(new V3()); }
+// the head turned to look at a point (and pitched/rolled on top of that)
+function headFace(T,pitch=0,roll=0){ const R=runner.R; runner.group.updateMatrixWorld(true); const H=R.head.getWorldPosition(new V3()), d=T.clone().sub(H);
+  const yaw=Math.atan2(d.x,d.z), pt=0.5*Math.atan2(-d.y,Math.hypot(d.x,d.z))+pitch, qp=R.head.parent.getWorldQuaternion(new THREE.Quaternion()).invert();
+  R.head.quaternion.copy(qp.multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(clamp(pt,-1.3,1.45),yaw,roll,"YXZ")))); R.head.updateMatrixWorld(true); }
+function neckTo(path,look,pitch,roll){ chainTo(runner.nk,runner.nkEnd,path,0.2); headFace(look||nHead(),pitch||0,roll||0); }
+const nHead=()=>norah?norah.c.B.head.getWorldPosition(new V3()):new V3(NX,1.55,0), nBone=n=>norah.c.B[n].getWorldPosition(new V3());
+
+// ---- the arms
+const shoulder=s=>runner.R["arm"+s].getWorldPosition(new V3()), lat=s=>{ const r=TP().right; return s==="L"?r.negate():r; };
+const ALEN=s=>RC.len[s];
+// at rest they hang down from the shoulders and lie forward along the floor toward her, knuckles dragging
+function drape(s,t,o={}){ const P=TP(), S=shoulder(s), l=lat(s), g=runner.group.position.clone().setY(0.07), sw=0.1*Math.sin(t*0.6+(s==="L"?0:2.1)), fw=o.fw??1, sp=o.spread??0;
+  return mkPath([S, S.clone().addScaledVector(l,0.22).add(new V3(0,-0.45,0)).addScaledVector(P.fwd,0.16), g.clone().addScaledVector(l,0.5+sw+sp*0.5).addScaledVector(P.fwd,0.5),
+    g.clone().addScaledVector(l,0.66+sw+sp).addScaledVector(P.fwd,1.5*fw), g.clone().addScaledVector(l,0.7+1.6*sw+sp*1.5).addScaledVector(P.fwd,2.7*fw)]); }
+// an arm held out at bearing a (0 = straight ahead, + = out to its own side), the tip dropping to 'elev', bowed by 'bend'
+function armLine(s,a,elev,bend,len,low){ const P=TP(), S=shoulder(s), L=len||ALEN(s), l=lat(s), d=P.fwd.clone().multiplyScalar(Math.cos(a)).addScaledVector(l,Math.sin(a)), q=P.fwd.clone().multiplyScalar(-Math.sin(a)).addScaledVector(l,Math.cos(a)), pts=[];
+  for(let k=0;k<=10;k++){ const u=k/10, p=S.clone().addScaledVector(d,L*u); p.y=S.y+(elev-S.y)*(low? sm5(u/0.32) : u*u); p.addScaledVector(q,bend*L*0.3*Math.sin(Math.PI*u)); pts.push(p); } return polyPath(pts); }
+function armTo(s,path,n){ const A=runner.ar[s]; if(n!=null&&n<A.piv.length) chainTo(A.piv.slice(0,n),A.piv[n].position,path,0.07); else chainTo(A.piv,A.end,path,0.07); }
+const armTip=s=>{ const A=runner.ar[s], k=A.cut??A.piv.length; return k<A.piv.length? A.piv[k].getWorldPosition(new V3()) : A.piv[A.piv.length-1].localToWorld(A.end.clone()); };
+// the bearing (in its own frame) of a world point from a shoulder
+const bearing=(s,p)=>{ const P=TP(), d=p.clone().sub(shoulder(s)); return Math.atan2(d.dot(lat(s)),d.dot(P.fwd)); };
+
+// ---- its body: tall, a forward loom; it sways from the hips as it walks
+function rStand(t){ const J=P0(); J.hd=0.03; J.kL=J.kR=0.12; J.sp=0.12+0.02*Math.sin(t*0.8); J.hp=0.04; J.aLz=J.aRz=0.1; J.eL=J.eR=0.25; J.aLx=0.05+0.05*Math.sin(t*0.9); J.aRx=0.05+0.05*Math.sin(t*0.9+1);
+  J.hroll=0.035*Math.sin(t*0.55); J.sroll=-0.05*Math.sin(t*0.55);
+  if(KIND()==="arm"){ J.sp=0.26; J.hp=0.08; J.nx=-0.25; } return J; }
+function rWalk(t,ph){ const J=tLegs(rStand(t),ph), s=Math.sin(ph*Math.PI*2); J.hroll+=0.09*s; J.sroll-=0.15*s; J.hyaw=0.06*s; J.nz=(J.nz||0)+0.1*s; J.aLx+=0.2*s; J.aRx-=0.2*s; return J; }
+const fin=J=>applyLean(J);
+// the stride clock: dir +1 forward, −1 backward. A stop waits for the feet to come together.
+function gaitOn(ctx,dt,dir,T){ const prev=ctx.ph; ctx.ph=((ctx.ph+dir*dt/T)%1+1)%1; if(Math.floor(prev*2)!==Math.floor(ctx.ph*2)) ctx.events.push({kind:"stomp",side:Math.floor(ctx.ph*2)?"R":"L",strength:0.35}); ctx.moving=true; ctx.gait={ph:ctx.ph,P:TWALK}; }
+function gaitStop(ctx,dt,dir,T){ if(ctx.ph%0.5<0.02||ctx.ph%0.5>0.48){ ctx.ph=Math.round(ctx.ph*2)/2%1; return true; } gaitOn(ctx,dt,dir,T); return false; }
+const gapN=()=>NX-ctx.x;
+// the edge of its reach, from her (how far it stands off)
+const REACH=()=>KIND()==="neck"? 0.92*RC.L+0.45 : 0.78*Math.min(ALEN("L"),ALEN("R"));
+
+// ---- Norah
+const NQ={ aim(){ const J=NP.stand(); J.aRx=-1.5; J.eR=0.12; J.aLx=-1.3; J.eL=0.7; J.aLz=-0.1; return J; },
+  aimUp(){ const J=NQ.aim(); J.aRx=-2.0; J.aLx=-1.8; J.nx=-0.35; J.sp=-0.1; return J; },
+  walk(ph){ const J=NQ.aim(); const s=Math.sin(ph*Math.PI*2); J.lLx=-0.35*s; J.lRx=0.35*s; J.kL=0.35*Math.max(0,s); J.kR=0.35*Math.max(0,-s); return J; },
+  flat(k){ const J=NP.stumble(); J.aLx=J.aRx=-1.8-0.5*sat(k/0.6); J.aLz=J.aRz=0.7; J.lLx=0.3*(1-sat(k/0.8)); J.kL=0.1+0.3*(1-sat(k/0.8)); J.lRx=-0.25*(1-sat(k/0.8)); J.kR=0.2; return J; },
+  // wrapped in its neck: both hands pushing at the coil, head back away from its face
+  coiled(t,k){ const J=NP.stand(), n=s=>noise(t*13,s)*0.14*k; J.aLx=-1.25+n(1); J.aRx=-1.15+n(2); J.aLz=-0.3; J.aRz=-0.25; J.eL=1.75+n(3); J.eR=1.6+n(4); J.sp=-0.12+n(5)*0.4; J.nx=-0.35+n(6); J.ny=0.3; J.kL=0.2+Math.abs(n(7)); J.kR=0.15; J.lLx=-0.1; J.lRx=0.1; return J; },
+  // hauled toward it by the waist: heels dug in, leaning back, one hand tearing at the arm
+  dragged(t){ const J=NP.stand(), n=s=>noise(t*12,s)*0.1; J.sp=-0.32+n(1); J.hp=-0.12; J.lLx=-0.55; J.kL=0.25; J.fL=0.25; J.lRx=0.15; J.kR=0.35; J.aLx=-0.55+n(2); J.eL=1.3; J.aLz=-0.25; J.aRx=-0.3+n(3); J.aRz=0.5; J.eR=0.6; J.nx=-0.2; return J; },
+  knees(t){ const J=NP.kneel(t); J.nx=0.6; J.aLx=-0.2; J.aRx=-0.1; J.eL=J.eR=0.3; return J; } };
+const NG={ lie(t,k){ const J=P0(), n=s=>noise(t*9,s)*0.08*k; J.hd=norah.c.R.hip0-0.13; J.hp=-1.5; J.sp=-0.05+n(1); J.nx=0.25+n(2); J.lLx=0.05+n(3); J.lRx=-0.05+n(4); J.kL=0.15+Math.abs(n(5)); J.kR=0.1+Math.abs(n(6));
+    J.aLx=-2.6+n(7); J.aRx=-2.5+n(8); J.aLz=J.aRz=0.35; J.eL=0.5+n(9); J.eR=0.6+n(10); return J; },
+  sit(){ const J=P0(); J.hd=norah.c.R.hip0-0.14; J.hp=-0.25; J.sp=0.25; J.nx=0.1; J.lLx=-2.25; J.lRx=-1.95; J.kL=2.25; J.kR=1.85; J.fL=0.3; J.fR=0.2; J.aLx=0.7; J.aRx=0.7; J.aLz=J.aRz=0.25; J.eL=J.eR=0.2; return J; },
+  knee(){ const J=NP.kneel(0); J.aLx=-0.4; J.aRx=-0.2; return J; },
+  crouch(){ const J=P0(); J.hd=0.42; J.hp=0.55; J.sp=0.35; J.nx=-0.2; J.lLx=-1.0; J.lRx=-0.85; J.kL=1.55; J.kR=1.45; J.fL=0.55; J.fR=0.5; J.aLx=-0.6; J.aRx=-0.4; J.aLz=J.aRz=0.3; J.eL=J.eR=0.8; return J; },
+  tuck(){ const J=P0(); J.hd=norah.c.R.hip0-0.16; J.hp=0.1; J.sp=0.5; J.nx=-0.1; J.lLx=-1.5; J.lRx=-1.4; J.kL=2.3; J.kR=2.2; J.fL=0.6; J.fR=0.55; J.aLx=-0.3; J.aRx=0.4; J.aLz=J.aRz=0.35; J.eL=J.eR=0.3; return J; },
+  up(t,u){ return u<0.2? mix(NG.lie(t,0),NG.sit(),sm5(u/0.2)) : u<0.35? mix(NG.sit(),NG.tuck(),sm5((u-0.2)/0.15)) : u<0.5? mix(NG.tuck(),NG.knee(),sm5((u-0.35)/0.15)) : u<0.72? mix(NG.knee(),NG.crouch(),sm5((u-0.5)/0.22)) : mix(NG.crouch(),NQ.aim(),sm5((u-0.72)/0.28)); } };
+const HIPLEN=()=>norah.c.R.hip0*0.97;
+let altK={}; const outcome=(id,a,b)=>{ const v=((ctx.outSel&&ctx.outSel[id])||"alt"); if(v==="alt"){ altK[id]=!altK[id]; return altK[id]?a:b; } return v; };
+
+// ---- the cut arm and blood: the piece shot off is baked from the skin as it was and falls as one rigid body; blood
+// drips from the stump and pools
+const PIECES=[], BLOOD=[];
+function goreClear(){ for(const p of PIECES) scene.remove(p.m); for(const b of BLOOD) scene.remove(b.m); PIECES.length=0; BLOOD.length=0;
+  if(runner&&runner.cap){ runner.cap.parent&&runner.cap.parent.remove(runner.cap); runner.cap=null; }
+  if(runner&&runner.ar){ for(const s of ["L","R"]){ const A=runner.ar[s]; A.cut=null; for(let k=1;k<RC.F.length;k++){ const b=runner.B["ar"+s+k]; b.scale.setScalar(1); b.userData.detached=false; } } runner.pb=null; } }
+function cutArm(s,c){ let mesh; runner.model.traverse(o=>{ if(o.isSkinnedMesh) mesh=o; }); runner.group.updateMatrixWorld(true);
+  const g=mesh.geometry, U2=g.attributes.uv2, P=g.attributes.position, uv=g.attributes.uv, idx=g.index, sg=s==="L"?1:-1, f0=RC.F[c], keep=new Map(), pos=[], uvs=[], v=new V3(), cen=new V3();
+  for(let i=0;i<P.count;i++){ if(Math.round(U2.getX(i))!==sg||U2.getY(i)<f0-0.004) continue; v.fromBufferAttribute(P,i); mesh.boneTransform(i,v); v.applyMatrix4(mesh.matrixWorld); keep.set(i,pos.length/3); pos.push(v.x,v.y,v.z); uvs.push(uv.getX(i),uv.getY(i)); cen.add(v); }
+  cen.divideScalar(Math.max(1,keep.size)); for(let q=0;q<pos.length;q+=3){ pos[q]-=cen.x; pos[q+1]-=cen.y; pos[q+2]-=cen.z; }
+  const ind=[]; for(let q=0;q<idx.count;q+=3){ const a=keep.get(idx.getX(q)), b=keep.get(idx.getX(q+1)), d=keep.get(idx.getX(q+2)); if(a!=null&&b!=null&&d!=null) ind.push(a,b,d); }
+  const ng=new THREE.BufferGeometry(); ng.setAttribute("position",new THREE.Float32BufferAttribute(pos,3)); ng.setAttribute("uv",new THREE.Float32BufferAttribute(uvs,2)); ng.setIndex(ind); ng.computeVertexNormals();
+  const mat=new THREE.MeshLambertMaterial({map:mesh.material.map,side:THREE.DoubleSide}), m=new THREE.Mesh(ng,mat); m.position.copy(cen); scene.add(m);
+  const sample=[]; for(let q=0;q<pos.length;q+=3*Math.max(1,Math.floor(pos.length/3/80))) sample.push(new V3(pos[q],pos[q+1],pos[q+2]));
+  PIECES.push({m,v:new V3(0,0.4,0).addScaledVector(TP().fwd,0.3),w:new V3(0,0,0),sample});
+  // the arm beyond the joint is gone from the body: hidden, and no longer part of its mass or its contact with the floor
+  const A=runner.ar[s]; A.cut=c; for(let k=c;k<RC.F.length;k++){ const b=runner.B["ar"+s+k]; b.userData.detached=true; } runner.B["ar"+s+c].scale.setScalar(0.001); runner.pb&&runner.pb.refresh();
+  const cap=new THREE.Mesh(new THREE.SphereGeometry(0.055,8,6),new THREE.MeshLambertMaterial({color:0x5a0a0a})); cap.scale.set(1,0.6,1); const pb=runner.B["ar"+s+(c-1)]||runner.B["upperarm_"+s]; pb.add(cap); cap.position.copy(runner.B["ar"+s+c].position); runner.cap=cap; }
+function pieceStep(dt){ for(const p of PIECES){ if(p.rest) continue; p.v.y-=9.8*dt; p.m.position.addScaledVector(p.v,dt); const wl=p.w.length(); if(wl>1e-4) p.m.rotateOnWorldAxis(p.w.clone().divideScalar(wl),wl*dt);
+    p.m.updateMatrixWorld(true); let lo=1e9, lp=null; const q=new V3(); for(const s of p.sample){ q.copy(s).applyMatrix4(p.m.matrixWorld); if(q.y<lo){ lo=q.y; lp=q.clone(); } }
+    if(lo<0.012){ p.m.position.y+=0.012-lo; if(p.v.y<-0.6){ puff(lp,1.2); BLOODsplat(lp,6); } p.v.y=Math.max(0,-0.15*p.v.y); p.v.x*=0.7; p.v.z*=0.7;
+      // gravity on a long piece touching at one end: it tips over about that point until it lies flat
+      let hi=-1e9; for(const s of p.sample){ q.copy(s).applyMatrix4(p.m.matrixWorld); hi=Math.max(hi,q.y); }
+      const arm=p.m.position.clone().sub(lp), tq=new V3(arm.z,0,-arm.x);
+      if(hi-lo>0.16&&tq.lengthSq()>1e-6){ p.w.copy(tq.normalize().multiplyScalar(Math.min(3.5,p.w.length()+6*dt))); } else { p.w.multiplyScalar(0.3); if(p.v.length()<0.05) p.rest=true; } } } }
+function BLOODsplat(p,n){ for(let i=0;i<n;i++){ const m=new THREE.Mesh(new THREE.BoxGeometry(0.025,0.025,0.025),new THREE.MeshLambertMaterial({color:0x5a0606})); m.position.copy(p); scene.add(m); BLOOD.push({m,v:new V3((Math.random()-0.5)*2.4,0.6+Math.random()*1.8,(Math.random()-0.5)*2.4)}); } }
+function goreStep(dt){ pieceStep(dt);
+  for(const b of BLOOD){ if(b.rest) continue; b.v.y-=9.8*dt; b.m.position.addScaledVector(b.v,dt); if(b.m.position.y<=0.006){ b.m.position.y=0.006; b.rest=true; b.m.scale.set(1.6+Math.random()*2,0.12,1.6+Math.random()*2); } } }
+
+// ================================================================ the SPLIT-HEAD REACHER (unique · f01)
+// Her head is split across: the skull with the upper fangs on top, a deep mouth, and a lower flap fanged along its top
+// edge with her own face hanging upside-down beneath it. Her body sits in the next room; the neck (stretched at load
+// from 2.7 m to 5 m: the model file is untouched) runs out along the floor and through the doorway, and the head hunts
+// on it. The neck lies on the floor wherever it isn't lifting the head, so its weight is carried by the floor; the face
+// and the hair hang under gravity on their own joints.
+const SH={ BX:-0.95, DZ:0.55, NXs:3.0, L:5.0 };
+const QI=()=>new THREE.Quaternion();
+let SPL=null;
+/* the body settles onto the floor after the neck is laid (the physics guard's offset, steady while it sits): the neck is laid against the floor as it will be after that */
+const GE=()=>(runner&&runner.gs&&runner.gs.e)||0, FLR=()=>RC.r-GE();   /* the head's split rig, in head-local metres */
+
+// ---- load time 1: stretch the neck along its own centre line (thickness kept), and carry the head out to the new end
+function stretchNeck(gltf,Lwant){ if(gltf.userData.stretched) return; gltf.userData.stretched=1;
+  let mesh; gltf.scene.traverse(o=>{ if(o.isSkinnedMesh) mesh=o; }); gltf.scene.updateMatrixWorld(true);
+  const g=mesh.geometry, sk=mesh.skeleton, bones=sk.bones, inv=sk.boneInverses, P=g.attributes.position, SI=g.attributes.skinIndex, SWt=g.attributes.skinWeight;
+  const bi=n=>bones.findIndex(b=>b.name===n), bp=n=>new V3().setFromMatrixPosition(inv[bi(n)].clone().invert());
+  const dom=i=>{ let b=0,w=-1; for(let k=0;k<4;k++){ const x=cmp(SWt,i,k); if(x>w){ w=x; b=cmp(SI,i,k); } } return b; };
+  const nb=bi("neck"), cb=bi("chest"), hb=bi("head"), S=bp("neck"), E=bp("head"), v=new V3(), pts=[], ids=[], heads=[];
+  for(let i=0;i<P.count;i++){ const d=dom(i); v.fromBufferAttribute(P,i).applyMatrix4(mesh.bindMatrix); if(d===nb||(d===cb&&v.z>0.17)){ pts.push(v.clone()); ids.push(i); } else if(d===hb) heads.push(i); }
+  let poly=[S.clone(),E.clone()];
+  const plen=()=>{ let s=0; for(let k=0;k<poly.length-1;k++) s+=poly[k].distanceTo(poly[k+1]); return s; };
+  const proj=p=>{ let best=1e9,bs=0,acc=0; for(let k=0;k<poly.length-1;k++){ const a=poly[k], ab=poly[k+1].clone().sub(a), L=ab.length()||1e-9, u=clamp(p.clone().sub(a).dot(ab)/(L*L),0,1), d=a.clone().addScaledVector(ab,u).distanceTo(p); if(d<best){ best=d; bs=acc+u*L; } acc+=L; } return bs; };
+  const at=s=>{ let acc=0; for(let k=0;k<poly.length-1;k++){ const L=poly[k].distanceTo(poly[k+1]); if(s<=acc+L||k===poly.length-2) return poly[k].clone().lerp(poly[k+1],clamp((s-acc)/(L||1e-9),0,1)); acc+=L; } return poly[poly.length-1].clone(); };
+  for(let it=0;it<7;it++){ const L=plen(), M=it<3?14:34, sum=[...Array(M)].map(()=>new V3()), cnt=new Array(M).fill(0);
+    for(const p of pts){ const k=Math.min(M-1,Math.floor(proj(p)/L*M)); sum[k].add(p); cnt[k]++; }
+    const np=[S.clone()]; for(let k=0;k<M;k++) if(cnt[k]>3) np.push(sum[k].divideScalar(cnt[k])); np.push(E.clone()); poly=np;
+    for(let q=0;q<(it<3?2:1);q++) poly=poly.map((p,k)=>k===0||k===poly.length-1?p:p.clone().multiplyScalar(0.5).addScaledVector(poly[k-1],0.25).addScaledVector(poly[k+1],0.25)); }
+  // laid out straight from the chest along its first direction, each ring turned with the curve so the tube keeps its thickness
+  const L0=plen(), K=Lwant/L0, tan=s=>at(Math.min(L0,s+0.03)).sub(at(Math.max(0,s-0.03))).normalize(), dir=tan(0.04), Bi=mesh.bindMatrixInverse, d=S.clone().addScaledVector(dir,Lwant).sub(E);
+  for(let q=0;q<ids.length;q++){ const p=pts[q], s=proj(p), c=at(s), off=p.clone().sub(c).applyQuaternion(new THREE.Quaternion().setFromUnitVectors(tan(s),dir)), n=S.clone().addScaledVector(dir,s*K).add(off); n.applyMatrix4(Bi); P.setXYZ(ids[q],n.x,n.y,n.z); }
+  for(const i of heads){ v.fromBufferAttribute(P,i).applyMatrix4(mesh.bindMatrix).add(d).applyMatrix4(Bi); P.setXYZ(i,v.x,v.y,v.z); }
+  inv[hb].multiply(new THREE.Matrix4().makeTranslation(-d.x,-d.y,-d.z)); P.needsUpdate=true; g.computeBoundingSphere(); g.computeBoundingBox();
+  gltf.userData.L0=L0; }
+
+// ---- load time 2: the split. Hinged upper and lower halves, the face on its own joint under the flap, the hair in two hanks
+function splitRig(gltf){ if(gltf.userData.split) return gltf.userData.split;
+  let mesh; gltf.scene.traverse(o=>{ if(o.isSkinnedMesh) mesh=o; }); gltf.scene.updateMatrixWorld(true);
+  const g=mesh.geometry, sk=mesh.skeleton, bones=sk.bones.slice(), inv=sk.boneInverses.map(m=>m.clone()), P=g.attributes.position, SI=g.attributes.skinIndex, SWt=g.attributes.skinWeight, UV=g.attributes.uv, ix=g.index;
+  const hb=bones.findIndex(b=>b.name==="head"), E=new V3().setFromMatrixPosition(inv[hb].clone().invert());
+  const dom=i=>{ let b=0,w=-1; for(let k=0;k<4;k++){ const x=cmp(SWt,i,k); if(x>w){ w=x; b=cmp(SI,i,k); } } return b; };
+  const R=[], H=[]; for(let i=0;i<P.count;i++){ R.push(new V3().fromBufferAttribute(P,i).applyMatrix4(mesh.bindMatrix).sub(E)); if(dom(i)===hb) H.push(i); }
+  const isHair=i=>{ const u=UV.getX(i), w=UV.getY(i); return u>=0.37&&u<=0.505&&w>=0.18&&w<=0.255; };
+  // pieces of the head: joined by shared triangles and by shared positions (seams)
+  const par=new Int32Array(P.count).map((_,i)=>i), f=x=>{ while(par[x]!==x){ par[x]=par[par[x]]; x=par[x]; } return x; }, un=(a,b)=>{ a=f(a); b=f(b); if(a!==b) par[b]=a; };
+  const key=new Map(); for(const i of H){ const k=R[i].toArray().map(x=>Math.round(x*1e4)).join(","); if(key.has(k)) un(key.get(k),i); else key.set(k,i); }
+  for(let q=0;q<ix.count;q+=3){ const a=ix.getX(q), b=ix.getX(q+1), c=ix.getX(q+2); un(a,b); un(a,c); }
+  const comp=new Map(); for(const i of H){ const r=f(i); (comp.get(r)||comp.set(r,[]).get(r)).push(i); }
+  const face=new Set(); let fTop=-1e9; const fC=new V3(); let fn=0;
+  for(const vs of comp.values()){ if(vs.some(isHair)) continue; let mx=-1e9; for(const i of vs) mx=Math.max(mx,R[i].y); if(mx<-0.27){ for(const i of vs){ face.add(i); fC.add(R[i]); fn++; fTop=Math.max(fTop,R[i].y); } } }
+  fC.divideScalar(Math.max(1,fn)); const fAt=new V3(fC.x,fTop,fC.z);
+  const addBone=(name,parent,J,Jp)=>{ const b=new THREE.Bone(); b.name=name; b.position.copy(J).sub(Jp); parent.add(b); bones.push(b); inv.push(new THREE.Matrix4().makeTranslation(-J.x,-J.y,-J.z)); return bones.length-1; };
+  const hinge=new V3(0,0,0.03), hairAt=new V3(0,0.25,0.15), w=p=>E.clone().add(p);
+  const jU=addBone("jawU",bones[hb],w(hinge),E), jL=addBone("jawL",bones[hb],w(hinge),E), fc=addBone("face",bones[jL],w(fAt),w(hinge)),
+        hL=addBone("hairL",bones[jU],w(hairAt),w(hinge)), hR=addBone("hairR",bones[jU],w(hairAt),w(hinge));
+  const skin=(i,a,b,x)=>{ SI.setXYZW(i,a,b,0,0); SWt.setXYZW(i,1-x,x,0,0); };
+  for(const i of H){ const r=R[i];
+    if(isHair(i)) skin(i,jU,r.x>=0?hL:hR,sat((0.22-r.y)/0.3));
+    else if(face.has(i)) skin(i,fc,fc,0);
+    else if(r.y>0.012) skin(i,jU,jU,0);
+    else if(r.y<-0.012) skin(i,jL,fc,r.y<-0.25?0.6*sat((-0.25-r.y)/0.05):0);   /* the bottom of the flap: a strand of flesh the face hangs on */
+    else skin(i,jU,jL,(0.012-r.y)/0.024); }
+  mesh.bind(new THREE.Skeleton(bones,inv),mesh.bindMatrix); SI.needsUpdate=true; SWt.needsUpdate=true;
+  return gltf.userData.split={ mouth:new V3(0,-0.01,0.19), hinge, fAt, fDown:fC.clone().sub(fAt).normalize(), fLen:fC.distanceTo(fAt), hairAt, hairLen:0.6 }; }
+// the neck's thickness, for laying it on the floor
+function neckR(C){ let mesh; C.model.traverse(o=>{ if(o.isSkinnedMesh) mesh=o; }); const g=mesh.geometry, P=g.attributes.position, SI=g.attributes.skinIndex, SW=g.attributes.skinWeight, sk=mesh.skeleton, nb=new Set(sk.bones.map((b,i)=>/^nk\d+$/.test(b.name)?i:-1).filter(i=>i>=0));
+  let s=0,n=0; C.group.updateMatrixWorld(true); const v=new V3(), c=new V3();
+  for(let i=0;i<P.count;i+=3){ const b=SI.getX(i); if(!nb.has(b)||SW.getX(i)<0.99) continue; v.fromBufferAttribute(P,i).applyMatrix4(mesh.bindMatrix); c.setFromMatrixPosition(sk.boneInverses[b].clone().invert()); const off=v.sub(c), ax=sk.bones[b].children[0]? sk.bones[b].children[0].position.clone().normalize() : null; if(ax) off.addScaledVector(ax,-off.dot(ax)); s+=off.length(); n++; }
+  return n? s/n : 0.05; }
+
+// each neck joint's own thickness (the neck has lumps): how high that joint rests when it lies on the floor
+function neckRk(C){ let mesh; C.model.traverse(o=>{ if(o.isSkinnedMesh) mesh=o; }); const g=mesh.geometry, P=g.attributes.position, SI=g.attributes.skinIndex, sk=mesh.skeleton, N=RC.N;
+  const ch=[sk.bones.findIndex(b=>b.name==="neck")]; for(let k=1;k<N;k++) ch.push(sk.bones.findIndex(b=>b.name==="nk"+k)); const mx=new Array(N).fill(0), v=new V3(), c=new V3();
+  for(let j=0;j<N;j++){ const b=ch[j]; c.setFromMatrixPosition(sk.boneInverses[b].clone().invert()); const nx=sk.bones[b].children.find(x=>/^nk|^head$/.test(x.name)), ax=nx.position.clone().normalize();
+    for(let i=0;i<P.count;i++){ if(SI.getX(i)!==b) continue; v.fromBufferAttribute(P,i).applyMatrix4(mesh.bindMatrix).sub(c); v.addScaledVector(ax,-v.dot(ax)); mx[j]=Math.max(mx[j],v.length()); } }
+  const rk=[]; for(let j=0;j<=N;j++) rk.push(Math.max(RC.r, mx[Math.max(0,j-1)], mx[Math.min(N-1,j)])*0.92); return rk; }
+const FLk=j=>(RC.rk?RC.rk[Math.min(j,RC.rk.length-1)]:RC.r)-GE();
+// ---- the rooms: her room (x>0) and the room it sits in (x<0), one doorway between
+let ROOM=null;
+function ensureRoom(){ return; ROOM=new THREE.Group(); const m=new THREE.MeshLambertMaterial({color:0x2b2621}), mk=(w,h,d,x,y,z)=>{ const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m); b.position.set(x,y,z); ROOM.add(b); };
+  mk(0.16,2.7,4.4,0,1.35,-SH.DZ-2.2); mk(0.16,0.6,2*SH.DZ,0,2.4,0);
+  const fl=new THREE.Mesh(new THREE.PlaneGeometry(4.6,7),new THREE.MeshLambertMaterial({color:0x1d1916})); fl.rotation.x=-Math.PI/2; fl.position.set(-2.38,0.002,-1.0); ROOM.add(fl);
+  scene.add(ROOM); }
+
+// ---- the neck as a snake: from the chest down to the floor beside its thigh, any slack coiled on the floor of its room,
+// through the doorway, along her floor, and up into the head from behind. The route is always exactly the neck's length:
+// slack goes into the coil, then into waves along her floor, then into a hump; a target it can't reach, it stops short of.
+function snake(E,F,t,o={}){ const L=RC.L, r=FLR(), R0=nRoot(), fw=TP().fwd, zD=clamp(o.zD??0.12*Math.sin(t*0.4),-0.3,0.3), zs=o.coilSide??-1;
+  const R1=R0.clone().addScaledVector(fw,0.28).add(new V3(0,0,0.18*zs)); R1.y=Math.max(r+0.05,R0.y*0.5);
+  const F0=new V3(SH.BX+0.5,r,0.36*zs), D=new V3(0,r,zD), D2=new V3(0.3,r,zD);
+  const build=(Et,a)=>{ const Ft=Et.clone(), Eb=Et.clone().addScaledVector(F,-(o.back??0.42)); if(Eb.x<0.12) Eb.x=0.12;
+    const lift=clamp(-a,0,1); a=Math.max(0,a); const cw=Math.min(a,2.4), A=clamp(a-2.4,0,0.75), Hh=Math.max(0,a-3.15)*0.7;
+    const cu=sm5(cw/0.6), P1=F0.clone().lerp(D,0.3), P2=F0.clone().lerp(D,0.62); P1.x+=(-0.95-P1.x)*cu; P2.x+=(-0.12-P2.x)*cu; P1.z+=zs*cw; P2.z+=zs*cw*0.92;   /* the coil: a wide loop, never a hairpin tighter than the neck is thick */
+    const W=[R0,R1,F0,P1,P2,D,D2];
+    const bx=Math.max(D2.x+0.05, Eb.x-Math.max(0.25,1.05*Eb.y)), zb=zD+(Eb.z-zD)*sat((bx-D2.x)/Math.max(0.05,Eb.x-D2.x)), n=Math.max(0,Math.floor((bx-D2.x)/0.38));
+    for(let k=1;k<=n;k++){ const u=k/(n+1), x=D2.x+(bx-D2.x)*u, env=Math.sin(Math.PI*u); W.push(new V3(x, r+Hh*env, zD+(zb-zD)*u+A*Math.sin(Math.PI*2*x/1.3-(o.slither??2.2)*t)*env)); }
+    if(Eb.y>0.3&&bx>D2.x+0.1) W.push(new V3(bx,r,zb));
+    if(lift>0) for(let k=1;k<W.length;k++){ const u=sat((W[k].x-R0.x)/Math.max(0.1,Eb.x-R0.x)); W[k]=W[k].clone().lerp(R0.clone().lerp(Eb,u),lift*lift*(3-2*lift)); }   /* pulled taut: it lifts off the floor toward a straight line */
+    W.push(Eb,Ft); return mkPath(W); };
+  let Et=E.clone(), p=build(Et,-1), short=false;
+  if(p.len>L){ short=true; const E0=new V3(0.4,Math.min(E.y,1.1),E.z*0.5); p=fitLen(f=>build(E0.clone().lerp(E,f),-1),L,0,1); Et=p.pts[p.pts.length-1].clone(); }
+  else p=fitLen(a=>build(Et,a),L,-1,8);
+  return {path:p, E:Et, short}; }
+
+// ---- the head: where its mouth goes and what it looks at; the head bone is put where that puts it
+function headQ(M,look,o={}){ const d=look.clone().sub(M), yaw=Math.atan2(d.x,d.z)+(o.yaw||0), pit=clamp(Math.atan2(-d.y,Math.hypot(d.x,d.z))+(o.pitch||0),-1.4,1.5);
+  return new THREE.Quaternion().setFromEuler(new THREE.Euler(pit,yaw,o.roll||0,"YXZ")); }
+// lay the neck and set the head. Returns the mouth as it really ended up (it may have stopped short)
+function placeHead(M,look,t,o={}){ M=M.clone(); M.y+=(ctx.dyn&&ctx.dyn.hl)||0; const Q=o.Q||headQ(M,look,o), E=M.clone().sub(SPL.mouth.clone().applyQuaternion(Q)), F=new V3(0,0,1).applyQuaternion(Q);
+  const s=snake(E,F,t,o); let path=s.path; if(s.short) ctx.shortN=(ctx.shortN||0)+1;
+  if(o.wob){ const p0=path, w=o.wob; path=s2=>{ const q=p0(s2), u=sat(s2/RC.L); q.z+=w*Math.sin(s2*2.2-t*9)*u*u; q.y+=0.4*w*Math.cos(s2*2.6-t*8)*u*u; return q; }; }
+  chainTo(runner.nk,runner.nkEnd,path,FLk); const R=runner.R; runner.group.updateMatrixWorld(true);
+  R.head.quaternion.copy(R.head.parent.getWorldQuaternion(QI()).invert().multiply(Q)); R.head.updateMatrixWorld(true);
+  ropeRecord(ctx); return (ctx.mouthAt=R.head.localToWorld(SPL.mouth.clone())); }
+
+// ---- after the rig is set: the jaws, the hanging face and the hair (gravity, on their own joints)
+function jawSet(u,l){ const B=runner.B; B.jawU.quaternion.setFromAxisAngle(new V3(1,0,0),u); B.jawL.quaternion.setFromAxisAngle(new V3(1,0,0),l); }
+const JAW={ shut:[0.17,-0.17], rest:[0,0], ajar:[-0.12,0.18], open:[-0.55,0.78], wide:[-0.95,1.25] };
+const jawMix=(a,b,w)=>[a[0]+(b[0]-a[0])*w, a[1]+(b[1]-a[1])*w];
+// a weight on a joint: verlet point at 'len' along the joint's rest 'down', under gravity, kept off the floor and inside a cone
+function dangle(S,k,bone,down,len,dt,o={}){ const Qp=bone.parent.getWorldQuaternion(QI()); bone.parent.updateMatrixWorld(true); bone.updateMatrixWorld(true);
+  const A=bone.getWorldPosition(new V3()), dW=down.clone().applyQuaternion(Qp); let st=S[k];
+  if(!st){ st=S[k]={p:A.clone().addScaledVector(dW,len)}; st.q=st.p.clone(); }
+  const h=Math.max(dt,1e-4), vel=st.p.clone().sub(st.q).multiplyScalar(Math.exp(-(o.damp??1.4)*h)); st.q.copy(st.p);
+  st.p.add(vel).add(new V3(0,-9.8*h*h,0)); if(o.push) st.p.addScaledVector(o.push,h*h);
+  let d=st.p.clone().sub(A); if(d.lengthSq()<1e-10) d.copy(dW); d.normalize();
+  const mx=o.cone??1.4, an=d.angleTo(dW); if(an>mx){ const ax=new V3().crossVectors(dW,d); if(ax.lengthSq()>1e-10){ ax.normalize(); d=dW.clone().applyAxisAngle(ax,mx); } }
+  st.p.copy(A).addScaledVector(d,len); if(o.floor!=null&&st.p.y<o.floor){ st.p.y=o.floor; st.q.y=Math.min(st.q.y,st.p.y); d=st.p.clone().sub(A).normalize(); st.p.copy(A).addScaledVector(d,len); if(st.p.y<o.floor) st.p.y=o.floor; }
+  const U=new THREE.Quaternion().setFromUnitVectors(dW,d); bone.quaternion.copy(Qp.clone().invert().multiply(U).multiply(Qp)); bone.updateMatrixWorld(true); return st.p; }
+// the head's own floor: its lowest point (skull, jaws) this frame; next frame it is carried up by what it sank
+let HLS=null; function floorHead(S){ let mesh; runner.model.traverse(o=>{ if(o.isSkinnedMesh) mesh=o; }); const g=mesh.geometry, P=g.attributes.position, SI=g.attributes.skinIndex, SW=g.attributes.skinWeight, sk=mesh.skeleton;
+  if(!HLS||HLS.m!==mesh){ const hb=new Set(["head","jawU","jawL"].map(n=>sk.bones.findIndex(b=>b.name===n))); const ids=[]; for(let i=0;i<P.count;i++){ let b=0,w=-1; for(let k=0;k<4;k++){ const x=cmp(SW,i,k); if(x>w){ w=x; b=cmp(SI,i,k); } } if(hb.has(b)) ids.push(i); } HLS={m:mesh,ids:ids.filter((_,k)=>k%3===0)}; }
+  mesh.updateMatrixWorld(true); const v=new V3(); let lo=9; for(const i of HLS.ids){ v.fromBufferAttribute(P,i); mesh.boneTransform(i,v); v.applyMatrix4(mesh.matrixWorld); lo=Math.min(lo,v.y); } lo+=GE();
+  S.hl=clamp((S.hl||0)+(0.01-lo)*(lo<0.01?1:0.25),0,1.2); S.hlo=lo; return lo; }
+// jaw: [upper, lower]; drop: how far the face lets down on its strand; part: the hair pushed apart; bait: a sideways nudge to the face
+function headDyn(ctx,dt,jaw,o={}){ const B=runner.B, S=ctx.dyn||(ctx.dyn={}); floorHead(S); jawSet(jaw[0],jaw[1]); B.jawU.updateMatrixWorld(true); B.jawL.updateMatrixWorld(true);
+  const drop=o.drop||0; B.face.position.copy(S.fRest||(S.fRest=B.face.position.clone())).addScaledVector(SPL.fDown,drop);
+  dangle(S,"face",B.face,SPL.fDown,SPL.fLen+drop*0.5,dt,{damp:o.fDamp??0.9,cone:1.7,floor:0.14-GE(),push:o.bait});
+  const side=new V3(1,0,0).applyQuaternion(B.jawU.getWorldQuaternion(QI())), part=o.part||0;
+  dangle(S,"hL",B.hairL,new V3(0,-1,0),SPL.hairLen,dt,{damp:2.2,cone:1.25,floor:0.03-GE()+(S.hfL||0),push:side.clone().multiplyScalar(30*part)});
+  dangle(S,"hR",B.hairR,new V3(0,-1,0),SPL.hairLen,dt,{damp:2.2,cone:1.25,floor:0.03-GE()+(S.hfR||0),push:side.clone().multiplyScalar(-30*part)});
+  // a hank is a wide curtain: if any of it went under the floor, its end is held that much higher next frame
+  for(const [k,n] of [["hfL","hairL"],["hfR","hairR"]]){ const lo=lowOf(n)+GE(); S[k]=clamp((S[k]||0)+(0.01-lo)*(lo<0.01?1:0.25),0,0.6); } }
+const LOWS={}; function lowOf(name){ let mesh; runner.model.traverse(o=>{ if(o.isSkinnedMesh) mesh=o; }); const g=mesh.geometry, P=g.attributes.position, SI=g.attributes.skinIndex, SW=g.attributes.skinWeight, sk=mesh.skeleton;
+  let L=LOWS[name]; if(!L||L.m!==mesh){ const bi=sk.bones.findIndex(b=>b.name===name), ids=[]; for(let i=0;i<P.count;i++){ let b=0,w=-1; for(let k=0;k<4;k++){ const x=cmp(SW,i,k); if(x>w){ w=x; b=cmp(SI,i,k); } } if(b===bi) ids.push(i); } L=LOWS[name]={m:mesh,ids:ids.filter((_,k)=>k%2===0)}; }
+  mesh.updateMatrixWorld(true); const v=new V3(); let lo=9; for(const i of L.ids){ v.fromBufferAttribute(P,i); mesh.boneTransform(i,v); v.applyMatrix4(mesh.matrixWorld); lo=Math.min(lo,v.y); } return lo; }
+
+// ---- its body: sat on the floor, legs out and apart, slumped; it barely moves
+function sSit(t,o={}){ const J=P0(), j=o.jolt||0, dd=o.dead||0; J.hd=runner.hip0-0.11; J.hp=0.3; J.sp=0.32+0.025*Math.sin(t*1.3)+0.4*j+0.55*dd; J.sroll=0.18*dd; J.nx=0.2;
+  J.lLx=-1.5-J.hp; J.lRx=-1.42-J.hp; J.lLz=0.32; J.lRz=0.3; J.kL=0.32; J.kR=0.45; J.fL=J.fR=0.35;
+  J.aLx=-0.75-0.4*j+0.5*dd; J.aRx=-0.7-0.3*j+0.5*dd; J.aLz=0.18; J.aRz=0.16; J.eL=0.75+0.6*j; J.eR=0.7+0.5*j; return J; }
+const SDN=()=>new V3(SH.NXs,0,0);
+
+// ---- Norah, extra
+NQ.pry=(t,k)=>{ const J=NP.stand(), n=s=>noise(t*14,s)*0.12*k; J.aLx=-2.75+n(1); J.aRx=-2.7+n(2); J.aLz=-0.25; J.aRz=-0.2; J.eL=0.85+n(3); J.eR=0.8+n(4); J.sp=0.15+n(5)*0.4; J.nx=0.45; J.kL=0.45+n(6); J.kR=0.4; J.lLx=-0.35; J.lRx=0.05; J.hd=0.08; return J; };
+NQ.lower=()=>{ const J=NP.stand(); J.aRx=-0.6; J.eR=0.3; J.aLx=-0.35; J.eL=0.4; J.nx=0.1; return J; };
+NQ.walkL=ph=>{ const J=NQ.lower(), s=Math.sin(ph*Math.PI*2); J.lLx=-0.35*s; J.lRx=0.35*s; J.kL=0.35*Math.max(0,s); J.kR=0.35*Math.max(0,-s); return J; };
+
+// a smooth track through timed keys [t, x,y,z]: Catmull-Rom between keys, still at the ends
+function track(K,t){ if(t<=K[0][0]) return new V3(K[0][1],K[0][2],K[0][3]); const n=K.length-1; if(t>=K[n][0]) return new V3(K[n][1],K[n][2],K[n][3]);
+  let i=0; while(K[i+1][0]<t) i++; const u=(t-K[i][0])/(K[i+1][0]-K[i][0]), g=j=>{ const k=K[clamp(j,0,n)]; return new V3(k[1],k[2],k[3]); };
+  const a=g(i-1), b=g(i), c=g(i+1), d=g(i+2), u2=u*u, u3=u2*u;
+  return new V3().addScaledVector(a,-0.5*u3+u2-0.5*u).addScaledVector(b,1.5*u3-2.5*u2+1).addScaledVector(c,-1.5*u3+2*u2+0.5*u).addScaledVector(d,0.5*u3-0.5*u2); }
+const nFace=()=>nHead().add(new V3(-0.1,0.02,0));
+function shStart(ctx){ ensureRoom(); ctx.x=SH.BX; ctx.yaw=Math.PI/2; ctx.ph=0; ctx.norah=true; ctx.v=0; ctx.T={}; ctx.dyn=ctx.dyn||{}; ctx.camX=null; }
+
+// ================================================================ the clips
+// ---- it hunts: the head comes through the doorway low along the floor, the face dragging, rises into her room, sways and
+// searches, finds her and holds on her. The coil in its room pays out as it comes.
+A.hunt={ start(ctx){ shStart(ctx); ctx.nx=3.25; },
+  step(t,dt,ctx){ const T=ctx.T, J=sSit(t);
+    const K=[[0,0.15,0.42,0.05],[2.2,1.05,0.44,-0.1],[3.6,1.45,1.45,0.1],[4.8,1.7,1.55,-0.55],[6.0,1.75,1.5,0.6],[7.2,1.85,1.52,0.0],[9.5,2.0,1.5,0.05]];
+    const M=track(K,t), sway=new V3(0,0.04*Math.sin(t*1.9),0.12*Math.sin(t*0.9)*sat((t-3.6)/0.8)); M.add(sway);
+    const scan=t<3.6? new V3(M.x+2,0.3,M.z) : t<7.2? new V3(M.x+2,1.4,M.z+2.2*Math.sin((t-3.6)*1.2)) : nFace(), look=t<6.4? scan : scan.clone().lerp(nFace(),sm5((t-6.4)/0.6));
+    ctx.post=()=>{ placeHead(M,look,t,{pitch:t<2.6?-0.05:0}); };
+    const jaw=t<7.2? JAW.rest : jawMix(JAW.rest,JAW.ajar,sm5((t-7.2)/0.4));
+    ctx.post2=d=>headDyn(ctx,d,jaw,{part:t>7.2?0.25:0,drop:0.08*sat((t-7.6)/0.6)});
+    if(t>7.6&&t<8.6){ ctx.nph=(ctx.nph||0)+dt/0.9; ctx.nx=3.25+0.3*sm5((t-7.6)/1.0); ctx.nOver={J:NQ.walk(ctx.nph),x:ctx.nx}; } else ctx.nOver={J:NQ.aim(),x:ctx.nx};
+    ctx.phase= t<2.2?"slides through the doorway low, the face dragging": t<3.6?"rises into her room": t<6.4?"sways and searches · the coil in its room pays out": t<7.6?"finds her · the split eases open":"she backs off a step · it holds on her";
+    return fin(J); } };
+
+// ---- the face as bait: it holds off at her eye level and lets the face down on its strand, swinging it slowly side to
+// side. She lowers the gun and steps closer; the face is snatched up and the split snaps at her.
+A.bait={ start(ctx){ shStart(ctx); ctx.nx=3.25; },
+  step(t,dt,ctx){ const T=ctx.T, J=sSit(t), t1=4.9, t2=5.12;
+    const base=ctx.M0?ctx.M0.clone():new V3(1.55,1.58,0.12), sw=Math.sin(t*2.6)*sat((t-0.8)/1.0)*(1-sat((t-t1)/0.15)), M=base.clone().add(new V3(0,0.04*Math.sin(t*1.3),0.1*sw));
+    let look=nFace(), jaw=jawMix(JAW.rest,JAW.ajar,sat(t/0.6)), drop=0.3*sm5((t-0.6)/1.4);
+    const bait=new V3(0,0,-9*Math.cos(t*2.6)).multiplyScalar(sat((t-0.8)/1.0)*(1-sat((t-t1)/0.1)));
+    if(t>t1){ drop*=1-sm5((t-t1)/0.12); jaw= t<t2? jawMix(JAW.ajar,JAW.open,sm5((t-t1)/0.16)) : jawMix(JAW.open,JAW.shut,sm5((t-t2)/0.07)); }
+    let Mt=M; if(t>t1){ const hit=nFace(), u=sm5((t-t1-0.05)/0.17), back=sm5((t-t2-0.35)/0.9); Mt=M.clone().lerp(hit,u*(1-back)); }
+    if(t>t2&&!T.bit){ T.bit=t; ctx.events.push({kind:"baitSnap"}); }
+    ctx.post=()=>{ placeHead(Mt,look,t,{pitch:t<t1?0.08:0}); };
+    ctx.post2=d=>headDyn(ctx,d,jaw,{drop,bait,part:0.35*(1-sat((t-t1)/0.2)),fDamp:0.5});
+    const k=T.bit?t-T.bit:-1;
+    if(k>=0){ ctx.nOver={J:k<0.7?NP.stumble():NQ.aim(),x:2.72+0.6*sm5(k/0.6)}; }
+    else if(t>3.2&&t<4.6){ ctx.nph=(ctx.nph||0)+dt/0.95; ctx.nx=3.25-0.53*sm5((t-3.2)/1.4); ctx.nOver={J:NQ.walkL(ctx.nph),x:ctx.nx}; }
+    else ctx.nOver={J:t>2.2?mix(NQ.aim(),NQ.lower(),sm5((t-2.2)/0.8)):NQ.aim(),x:ctx.nx};
+    ctx.phase= t<0.8?"holds off at her eye level": t<3.2?"lets its face down on a strand · swings it slowly": t<t1?"she lowers the gun and steps in": k<0.6?"the face is snatched up · the split snaps at her":"she reels back";
+    return fin(J); } };
+
+// ---- the split opens to bite: it draws back and up, the split opening (the tell), lunges, clamps on her shoulder and
+// worries at it; she wrenches free
+A.bite2={ start(ctx){ shStart(ctx); },
+  step(t,dt,ctx){ const T=ctx.T, J=sSit(t), t0=0.7, t1=1.25, t2=1.45, rel=2.75; const sh=nBone("upperarm_L").add(new V3(-0.05,0.07,0));
+    const hold=ctx.M0?ctx.M0.clone():new V3(1.6,1.45,0.1), bk=hold.clone().sub(sh).setY(0); if(bk.lengthSq()<1e-4) bk.set(-1,0,0); bk.normalize(); const rear=sh.clone().addScaledVector(bk,1.05).add(new V3(0,0.45,0));
+    let M=t<t0? hold.clone().lerp(hold,0) : t<t1? hold.clone().lerp(rear,sm5((t-t0)/(t1-t0))) : rear.clone().lerp(sh,Math.pow(sat((t-t1)/(t2-t1)),1.7));
+    let jaw=t<t0? JAW.rest : t<t1? jawMix(JAW.rest,JAW.open,sm5((t-t0)/0.35)) : t<t2? JAW.open : jawMix(JAW.open,[0.06,-0.05],sm5((t-t2)/0.06));
+    let roll=0, yawJ=0; if(t>t2&&t<rel){ const k=t-t2; roll=0.32*Math.sin(k*19)*(1-sat((k-1.1)/0.3)); yawJ=0.18*Math.sin(k*13); M.add(new V3(0.03*Math.sin(k*17),0.03*Math.sin(k*23),0)); }
+    if(t>=rel){ const k=t-rel; jaw=jawMix([0.06,-0.05],JAW.ajar,sm5(k/0.15)); M=sh.clone().lerp(hold.clone().add(new V3(0,-0.25,0.2)),sm5((k-0.08)/0.7)); }
+    if(t>t2&&!T.bit){ T.bit=t; ctx.events.push({kind:"bite2"}); }
+    const look=t<t2? sh.clone() : sh.clone().add(new V3(1,0,0));
+    ctx.post=()=>{ placeHead(M,look,t,{roll,yaw:yawJ,pitch:t>t2&&t<rel?0.25:0}); };
+    ctx.post2=d=>headDyn(ctx,d,jaw,{part:t>t0&&t<rel+0.3?0.6:0.1});
+    const k=T.bit?t-T.bit:-1;
+    if(k<0) ctx.nOver={J:NQ.aim(),x:SH.NXs};
+    else if(t<rel) ctx.nOver={J:NP.crushed(t,0.5+0.3*Math.sin(k*9)),x:SH.NXs};
+    else { const q=t-rel; ctx.nOver={J:q<0.7?NP.stumble():NQ.aim(),x:SH.NXs+0.55*sm5(q/0.55)}; }
+    ctx.phase= t<t0?"holds on her": t<t1?"draws back · the split opens (the tell)": t<t2?"lunges": t<rel?"clamps on her shoulder · worries at it":"she wrenches free";
+    return fin(J); } };
+
+// ---- it engulfs her head: the head rises over her, turns face-down and opens the split as wide as it goes, then drops
+// over her head and shoulders and closes. Mash: she forces the jaws apart and ducks out, or it bites down.
+A.engulf={ start(ctx){ shStart(ctx); ctx.out=outcome("oEngulf","free","fail"); ctx.mash=0; },
+  step(t,dt,ctx){ const T=ctx.T, J=sSit(t), t0=0.6, t1=1.5, t2=2.25, t3=2.5, hd=nHead();
+    const hold=ctx.M0?ctx.M0.clone():new V3(1.6,1.45,0.1), over=hd.clone().add(new V3(-0.2,0.95,0)), on=hd.clone().add(new V3(0.0,0.06,0));
+    let M= t<t0? hold.clone() : t<t1? hold.clone().lerp(over,sm5((t-t0)/(t1-t0))) : t<t2? over.clone().add(new V3(0,0.04*Math.sin(t*3),0)) : over.clone().lerp(on,Math.pow(sat((t-t2)/(t3-t2)),1.5));
+    const look= t<t0? nFace() : hd.clone().add(new V3(0.05,-1.5,0)), lk=t<t0? look : nFace().lerp(look,sm5((t-t0)/0.8));
+    let jaw= t<t1? jawMix(JAW.rest,JAW.ajar,sat((t-t0)/0.6)) : t<t3? jawMix(JAW.ajar,JAW.wide,sm5((t-t1)/0.5)) : jawMix(JAW.wide,[-0.38,0.5],sm5((t-t3)/0.1));
+    const held=t>t3&&!T.free&&!T.out;
+    if(held){ ctx.mash=Math.min(1,ctx.mash+dt*(ctx.out==="free"?0.5:0.28)); ctx.qte=ctx.out==="free"?ctx.mash:Math.min(0.55,ctx.mash); }
+    if(t>t3&&!T.on){ T.on=t; ctx.events.push({kind:"engulf"}); }
+    if(ctx.out==="free"&&ctx.mash>=1&&!T.free){ T.free=t; ctx.events.push({kind:"engulfFree"}); }
+    if(ctx.out==="fail"&&t>t3+2.1&&!T.out){ T.out=t; ctx.events.push({kind:"engulfBite"}); }
+    if(T.free){ const k=t-T.free; jaw=jawMix([-0.38,0.5],JAW.wide,sm5(k/0.25)); if(k>0.25) jaw=jawMix(JAW.wide,JAW.rest,sm5((k-0.5)/0.6)); M=on.clone().lerp(hold.clone().add(new V3(-0.2,0.3,0)),sm5((k-0.3)/0.9)); ctx.qte=null; }
+    if(T.out){ const k=t-T.out; jaw= k<0.12? jawMix([-0.38,0.5],[0.02,-0.02],sm5(k/0.08)) : jawMix([0.02,-0.02],JAW.ajar,sm5((k-0.9)/0.3)); M=on.clone().lerp(hold,sm5((k-1.0)/1.0)); if(k>0.9) ctx.qte=null; }
+    if(held&&T.on){ const k=t-T.on; M.add(new V3(0.02*Math.sin(k*15),0.015*Math.sin(k*21),0.02*Math.sin(k*11))); if(ctx.out==="free") jaw=jawMix(jaw,JAW.open,0.35*sat(ctx.mash*1.3)*(0.6+0.4*Math.sin(k*12))); }
+    ctx.post=()=>{ placeHead(M,lk,t,{back:t>t1?0.5:0.42}); };
+    ctx.post2=d=>headDyn(ctx,d,jaw,{part:t>t1?0.8:0.1});
+    if(T.free){ const k=t-T.free; ctx.nOver={J:k<0.35?NQ.pry(t,1):k<0.9?NP.stumble():NQ.aim(),x:SH.NXs+0.5*sm5((k-0.2)/0.5)}; }
+    else if(T.out){ const k=t-T.out; ctx.nOver={J:k<0.9?NQ.pry(t,1.8):mix(NQ.pry(t,0.4),NQ.knees(t),sm5((k-0.9)/0.7)),x:SH.NXs}; }
+    else if(T.on) ctx.nOver={J:NQ.pry(t,1),x:SH.NXs};
+    else ctx.nOver={J:t>t0?NQ.aimUp():NQ.aim(),x:SH.NXs};
+    ctx.phase= t<t0?"holds on her": t<t1?"rises over her": t<t2?"turns face-down · the split opens as wide as it goes": t<t3?"drops over her head":
+      T.free? (t-T.free<0.4?"she forces the jaws apart · ducks out":"it pulls back") : T.out? (t-T.out<0.9?"it bites down":"lets her drop") : "closed over her head and shoulders · mash to force it open";
+    return fin(J); } };
+
+// ---- shooting the head: it is quick and won't hold still. Shots go past it into the wall; one glances off the skull.
+// Only a shot into the open split counts: it snaps shut, the neck recoils and sways, and its strike is spoiled.
+A.headshot={ start(ctx){ shStart(ctx); ctx.dart=[]; },
+  step(t,dt,ctx){ const T=ctx.T, J=sSit(t), shots=[0.95,1.6,2.25], tS=3.55, tO=3.05;
+    const dz=k=>[0.5,-0.55,0.35,-0.45,0.6,-0.3,0.15][k%7], ph=t/0.42, k0=Math.floor(ph), u=sm5((ph-k0)/0.45), dart=t<tO? dz(k0)+(dz(k0+1)-dz(k0))*u : 0;
+    const hov=new V3(1.75,1.42+0.12*Math.sin(t*4.1),dart), rear=new V3(1.45,1.62,0.05);
+    let M= t<tO? hov : hov.clone().lerp(rear,sm5((t-tO)/0.4)), jaw= t<tO? JAW.rest : jawMix(JAW.rest,JAW.open,sm5((t-tO)/0.35)), wob=0;
+    for(let i=0;i<shots.length;i++) if(t>shots[i]&&!T["s"+i]){ T["s"+i]=t; ctx.events.push({kind:i<2?"shMiss":"shGlance"}); }
+    if(t>tS&&!T.in){ T.in=t; ctx.events.push({kind:"shSplit"}); }
+    if(T.in){ const k=t-T.in; jaw=jawMix(JAW.open,JAW.shut,sm5(k/0.06)); if(k>1.4) jaw=jawMix(JAW.shut,JAW.rest,sm5((k-1.4)/0.6));
+      M=rear.clone().lerp(new V3(0.95,0.95,-0.2),sm5(k/0.35)).lerp(new V3(1.5,1.4,0.05),sm5((k-1.6)/1.2)); wob=0.5*Math.exp(-1.5*k)*Math.sin(k*10); }
+    const look=nFace(), roll=T.in? 0.5*Math.exp(-2*(t-T.in))*Math.sin((t-T.in)*14) : 0;
+    ctx.post=()=>{ const m=placeHead(M,look,t,{wob,roll}); ctx.mouthAt=m; };
+    ctx.post2=d=>headDyn(ctx,d,jaw,{part:t>tO&&!T.in?0.7:0.05,fDamp:0.7});
+    ctx.nOver={J:NQ.aim(),x:SH.NXs+0.25};
+    const hit=T.in?t-T.in:-1;
+    ctx.phase= t<shots[2]+0.3?"darts side to side · the shots go past it": t<tO?"one glances off the skull": !T.in?"draws back · the split opens to strike": hit<1.4?"shot inside the split · it snaps shut and recoils · the strike is spoiled":"comes back, wary";
+    return fin(J); } };
+
+// ---- find the body: she has come round into its room. The body takes the shots easily; the head, out in the other room,
+// shrieks and races back along its neck, but the third shot kills it and the whole neck drops where it is.
+A.body={ start(ctx){ shStart(ctx); ctx.camX=-1.7; ctx.rope=null; },
+  step(t,dt,ctx){ const T=ctx.T, shots=[1.0,1.85,2.6];
+    for(let i=0;i<3;i++) if(t>shots[i]&&!T["s"+i]){ T["s"+i]=t; ctx.events.push({kind:i<2?"bodyShot":"bodyDead"}); if(i===2) T.dead=t; }
+    const jolt=Math.max(...shots.map((s,i)=>T["s"+i]?Math.exp(-7*(t-s))*Math.sin(Math.min(Math.PI,(t-s)*14)):0)), dead=T.dead?sm5((t-T.dead)/0.6):0;
+    const J=sSit(t,{jolt:jolt*(1-dead),dead});
+    const K=[[0,2.0,1.45,0.1],[1.0,2.0,1.45,0.0],[1.25,2.05,1.85,0.2],[2.0,1.1,1.0,-0.2],[2.6,0.55,0.62,0.0],[4,0.2,0.5,0.0]];
+    const M=track(K,t), look= t<1.0? new V3(4,1.4,0) : M.clone().add(new V3(-2,-0.4,0));
+    if(!T.dead){ ctx.post=()=>{ placeHead(M,look,t,{slither:5,roll:t>1.0?0.35*Math.sin(t*9)*Math.exp(-(t-1)):0}); ropeRecord(ctx); }; }
+    else ctx.post=()=>ropeFall(ctx,dt);
+    const jaw= t<1.0? JAW.rest : !T.dead? jawMix(JAW.rest,JAW.wide,sm5((t-1.0)/0.12)*(1-0.5*sm5((t-1.6)/0.3))) : jawMix(JAW.open,[-0.2,0.35],sm5((t-T.dead)/0.5));
+    ctx.post2=d=>headDyn(ctx,d,jaw,{part:t>1&&!T.dead?0.6:0,fDamp:T.dead?2.5:0.9});
+    ctx.nOver={J:NQ.aim(),x:SH.BX-2.3,yaw:Math.PI/2};
+    ctx.phase= t<1.0?"she has found the body, sat in the next room": !T.dead? (t<1.85?"shot · out in the other room the head shrieks and races back":"shot again · the neck pays back through the doorway") : t-T.dead<1.2?"the third shot kills it · the neck drops where it is":"dead";
+    return fin(J); } };
+// lay a chain of pivots exactly through a list of points (one per joint, then the end)
+function chainPts(ch,endOff,pts){ for(let i=1;i<ch.length;i++) ch[i].quaternion.identity(); runner.group.updateMatrixWorld(true);
+  for(let i=0;i<ch.length;i++){ const p=ch[i], off= i<ch.length-1? ch[i+1].position : endOff, P=p.getWorldPosition(new V3()), Q=pts[i+1].clone().sub(P), C=p.localToWorld(off.clone()).sub(P);
+    if(C.lengthSq()<1e-10||Q.lengthSq()<1e-10) continue; rotWorld(p,new THREE.Quaternion().setFromUnitVectors(C.normalize(),Q.normalize())); } }
+// the neck as a dead rope: each joint a point under gravity, joined at their lengths, the chest end carried by the body
+function ropeRecord(ctx){ runner.group.updateMatrixWorld(true); const P=runner.nk.map(p=>p.getWorldPosition(new V3())); P.push(runner.R.head.getWorldPosition(new V3())); ctx.rope={p:P.map(v=>v.clone()),q:ctx.rope?ctx.rope.p:P.map(v=>v.clone())}; }
+function ropeFall(ctx,dt){ const R=ctx.rope, n=R.p.length, r=FLR(), h=Math.max(dt,1e-4); if(!R.len){ R.len=[]; for(let i=1;i<n;i++) R.len.push(R.p[i].distanceTo(R.p[i-1])); R.hq=runner.R.head.getWorldQuaternion(QI()); }
+  for(let i=1;i<n;i++){ const p=R.p[i], v=p.clone().sub(R.q[i]).multiplyScalar(0.985); R.q[i]=p.clone(); p.add(v).add(new V3(0,-9.8*h*h,0)); }
+  for(let it=0;it<12;it++){ R.p[0]=nRoot();
+    for(let i=1;i<n;i++){ const a=R.p[i-1], b=R.p[i], d=b.clone().sub(a), l=d.length()||1e-6, e=(l-R.len[i-1])/l; if(i===1) b.addScaledVector(d,-e); else { a.addScaledVector(d,0.5*e); b.addScaledVector(d,-0.5*e); } }
+    for(let i=1;i<n;i++){ const fl=i===n-1?0.12-GE()+((ctx.dyn&&ctx.dyn.hl)||0):FLk(i); if(R.p[i].y<fl){ R.p[i].y=fl; const q=R.q[i]; q.x=R.p[i].x+(q.x-R.p[i].x)*0.4; q.z=R.p[i].z+(q.z-R.p[i].z)*0.4; q.y=Math.min(q.y,fl); } } }
+  chainPts(runner.nk,runner.nkEnd,R.p);
+  // the head goes over onto its side as it lands
+  const H=runner.R.head, land=sat((0.55-R.p[n-1].y)/0.35); R.roll=Math.max(R.roll||0,land); const fwd=new V3(0,0,1).applyQuaternion(R.hq); fwd.y=0; if(fwd.lengthSq()<1e-4) fwd.set(-1,0,0); fwd.normalize();
+  const Qf=new THREE.Quaternion().setFromEuler(new THREE.Euler(0.15,Math.atan2(fwd.x,fwd.z),1.35,"YXZ")), Q=R.hq.clone().slerp(Qf,sm5(R.roll));
+  runner.group.updateMatrixWorld(true); H.quaternion.copy(H.parent.getWorldQuaternion(QI()).invert().multiply(Q)); H.updateMatrixWorld(true); }
+
+const ORDERS={neck:["hunt","bait","bite2","engulf","headshot","body"]};
+const LEN={hunt:9.5, bait:7.2, bite2:5.2, engulf:6.6, headshot:7.6, body:7.5};
+const NAMES={hunt:"The neck hunts",bait:"Face swings like bait",bite2:"The split opens to bite",engulf:"Engulfs her head",headshot:"Shooting the head",body:"Find the body"};
+const DMG={baitSnap:["NORAH −15","lured in · snapped at"],bite2:["NORAH −25","clamped on her shoulder"],engulf:["ENGULFED","its mouth closes over her head"],engulfFree:["FORCED OPEN","she ducks out"],engulfBite:["NORAH −40","it bites down"],
+  shMiss:["MISS","it's too quick"],shGlance:["HEAD −3","glances off the skull"],shSplit:["HEAD −30","shot inside the split · it snaps shut"],bodyShot:["BODY −40","the head shrieks in the other room"],bodyDead:["DEAD","the body was the weak point"]};
+const RCEV={ baitSnap(){ shake=Math.max(shake,0.16); BLOODsplat(nHead().add(new V3(-0.1,-0.05,0)),5); }, bite2(){ shake=Math.max(shake,0.2); BLOODsplat(nBone("upperarm_L"),10); },
+  engulf(){ shake=Math.max(shake,0.18); }, engulfFree(){ shake=Math.max(shake,0.08); }, engulfBite(){ shake=Math.max(shake,0.3); BLOODsplat(nBone("neck"),16); },
+  shMiss(){ muzzleFlash(); const h=headAt(); const p=new V3(0.1,clamp(h.y+(Math.random()-0.5)*0.4,0.4,2.0),clamp(h.z+(Math.random()<0.5?-0.5:0.5),-SH.DZ-0.6,SH.DZ+0.6)); puffAt(p,0.6); shake=Math.max(shake,0.04); },
+  shGlance(){ muzzleFlash(); const h=runner.B.jawU.localToWorld(new V3(0,0.12,0.05)); puffAt(h,0.5); shake=Math.max(shake,0.05); },
+  shSplit(){ muzzleFlash(); const m=ctx.mouthAt||headAt(); puffAt(m,0.5); BLOODsplat(m,14); shake=Math.max(shake,0.14); },
+  bodyShot(){ muzzleFlash(); const c=runner.B.chest.getWorldPosition(new V3()); puffAt(c,0.5); BLOODsplat(c,12); shake=Math.max(shake,0.1); },
+  bodyDead(){ muzzleFlash(); const c=runner.B.chest.getWorldPosition(new V3()); puffAt(c,0.6); BLOODsplat(c,18); shake=Math.max(shake,0.14); } };
+// a puff where something is hit, at its own height (puff() is for the floor)
+function puffAt(p,s){ for(let i=0;i<4;i++){ const m=new THREE.Sprite(new THREE.SpriteMaterial({map:puffTex,transparent:true,depthWrite:false})); m.position.set(p.x+(Math.random()-.5)*0.1,p.y+(Math.random()-.5)*0.1,p.z+(Math.random()-.5)*0.1); m.scale.setScalar(0.18*s); scene.add(m); puffs.push({m,t:0,v:new V3((Math.random()-.5)*0.6,0.2+Math.random()*0.3,(Math.random()-.5)*0.6),s}); } }
+
+
+// ---- his one elbow, solved: shoulder (ball) + elbow (hinge) so the club fist reaches a target; the swivel puts the elbow toward a pole
+function rotWorld(obj,qw){ obj.updateMatrixWorld(true); const pq=obj.parent.getWorldQuaternion(new THREE.Quaternion()).invert(), wq=obj.getWorldQuaternion(new THREE.Quaternion()); obj.quaternion.copy(pq.multiply(qw.clone().multiply(wq))); obj.updateMatrixWorld(true); }
+function armIK(C,o){ const V=THREE.Vector3, R=C.R, sd=(C===runner?SW(o.side||"R"):(o.side||"R")), sh=R["arm"+sd], el=R["elbow"+sd]; C.group.updateMatrixWorld(true); const q0=sh.quaternion.clone(), e0=el.rotation.x;
+  const S=sh.getWorldPosition(new V()), L1=S.distanceTo(el.getWorldPosition(new V())), tipL=new V(0,-(R["wrist"+sd].position.length()+(o.tip??0.17)),0), L2=tipL.length();
+  const T=o.target, d=clamp(T.distanceTo(S),Math.abs(L1-L2)+0.02,L1+L2-0.002);
+  const interior=Math.acos(clamp((L1*L1+L2*L2-d*d)/(2*L1*L2),-1,1)); el.rotation.x=-(Math.PI-interior); el.updateMatrixWorld(true);
+  const tip=el.localToWorld(tipL.clone()); rotWorld(sh,new THREE.Quaternion().setFromUnitVectors(tip.sub(S).normalize(),T.clone().sub(S).normalize()));
+  const ax=T.clone().sub(S).normalize(), ve=el.getWorldPosition(new V()).sub(S), vp=o.pole.clone().sub(S); ve.addScaledVector(ax,-ve.dot(ax)); vp.addScaledVector(ax,-vp.dot(ax));
+  if(ve.lengthSq()>1e-6&&vp.lengthSq()>1e-6){ let a=ve.angleTo(vp); if(ve.clone().cross(vp).dot(ax)<0) a=-a; rotWorld(sh,new THREE.Quaternion().setFromAxisAngle(ax,a)); }
+  if(o.w<1){ sh.quaternion.copy(q0.slerp(sh.quaternion.clone(),o.w)); el.rotation.x=e0+(el.rotation.x-e0)*o.w; sh.updateMatrixWorld(true); }
+  return el.localToWorld(tipL.clone()); }
+// a Crossed standing behind him, to show what the falling arm does
+let by=null, by2=null;
+function byPlace(L){ [by,by2].forEach((b,i)=>{ if(b&&L[i]){ b.x=L[i][0]; b.z=L[i][1]; b.hit=null; b.fs=null; b.kick=null; b.c.gs=null; } }); }
+function stepBystander(dt){ [by,by2].forEach((b,i)=>{ if(!b) return; const on=!!ctx.by && i<(ctx.byN||1); b.c.group.visible=b.c.shadow.visible=on; if(!on) return;
+  const J=P0(); J.aLz=J.aRz=0.14; J.eL=J.eR=0.35; J.nx=0.12+0.04*Math.sin(t*1.3+i*2); J.kL=J.kR=0.08; J.sp=0.1+0.03*Math.sin(t*0.9+i);
+  if(b.hit!=null){ J.aLx=J.aRx=-1.5; J.aLz=J.aRz=0.7; J.sp=-0.3; J.nx=-0.3; PHYS.topple(b.fs,dt,1.7,Math.PI/2-0.05); }
+  applyPose(b.c,J); b.c.group.position.set(b.x,0,b.z); b.c.group.rotation.set(0,Math.PI/2,0); if(b.fs) b.c.group.rotateX(-b.fs.th); retarget(b.c);
+  PHYS.rig(b.c,dt,{kick:b.kick,balance:b.hit==null}); }); }
+function muzzleFlash(){ if(!norah||!norah.c.B.hand_R) return; const p=new THREE.Vector3(); norah.c.B.hand_R.getWorldPosition(p); const m=new THREE.Sprite(new THREE.SpriteMaterial({map:puffTex,color:0xffd27a,transparent:true,depthWrite:false})); m.position.copy(p); m.scale.setScalar(0.25); scene.add(m); puffs.push({m,t:0.45,v:new THREE.Vector3(),s:0.5}); }
+let dmgT=0; function showDmg(k){ if(PVHOOK.dmg) PVHOOK.dmg(k); }
+
+// ---------------------------------------------------------------- Norah: stands in the way, gets knocked back
+function norahStep(N,dt,ctx){
+  if(ctx.nOver){ const o=ctx.nOver; if(MIR){ if(o.roll) o.roll=-o.roll; if(o.z) o.z=-o.z; if(o.kickV) o.kickV=Object.assign({},o.kickV,{z:-(o.kickV.z||0)}); } if(o.x!=null) N.x=o.x; const J=o.J; if(o.jolt){ J.sp+=0.25*o.jolt; J.nx+=0.3*o.jolt; } applyPose(N.c,J); N.c.group.position.set(N.x,o.y||0,o.z||0); N.c.group.rotation.set(0,o.yaw??-Math.PI/2,0); if(o.fall) N.c.group.rotateX(-o.fall); if(o.roll) N.c.group.rotateZ(o.roll);
+    ctx.nKick=o.kick?{id:o.kick,v:o.kickV}:null; ctx.nDown=!!(o.fall||o.roll||o.down); ctx.nUp=!!o.up; ctx.nOver=null; return; }
+  const J=P0(); J.aLx=-0.25; J.aRx=-0.5; J.eL=0.5; J.eR=0.9; J.aLz=0.12; J.aRz=0.1; J.kL=J.kR=0.08; J.lLx=-0.08; J.lRx=0.08;
+  if(N.kb>0){ N.kt+=dt; const u=N.kt;                                                         // thrown back off her feet, then down
+    if(N.kb===2){ N.vy-=9.8*dt; N.y=Math.max(0,N.y+N.vy*dt); N.x+=N.kv*dt; N.kv=Math.max(0,N.kv-(N.y>0?0.8:11)*dt); N.fall=Math.min(1.5,N.fall+dt*(N.y>0?3.4:6)); if(N.y<=0&&!N.landed&&u>0.15){ N.landed=1; const p=N.c.group.position.clone(); puff(p,1.8); shake=Math.max(shake,0.08); } }
+    else { N.x+=N.kv*dt; N.kv=Math.max(0,N.kv-6.5*dt); N.fall=Math.min(1.45,N.fall+dt*(u<0.25?2.2:4.6)); }
+    J.aLx=-1.6; J.aRx=-1.4; J.aLz=0.9; J.aRz=0.8; J.eL=J.eR=0.4; J.nx=-0.5*Math.min(1,u*5); J.sp=-0.35; J.lLx=-0.6*Math.min(1,u*3); J.kL=0.5; J.lRx=-0.2; J.kR=0.3;
+    if(u>0.9){ J.aLx=-2.4; J.aRx=-2.2; J.aLz=0.5; J.aRz=0.6; } }
+  applyPose(N.c,J); N.c.group.position.set(N.x,N.y||0,0); N.c.group.rotation.set(0,-Math.PI/2,0);
+  N.c.model.rotation.x=0; N.c.group.rotateX(-N.fall); }
+
+// ---------------------------------------------------------------- the wrong body: things a person's body won't do
+// rise: the whole body pivots on its heels as one rigid plank. footBack: a foot turned round on its ankle. claw: hands bent hard
+// at the wrist, fingers driven in. levelHead: the head held dead level and still in the world, whatever the body under it does.
+function unnatural(C,ctx){ const R=C.R;
+  if(ctx.rise) C.group.rotateX(ctx.rise);
+  for(const s of ["L","R"]){ const p=C===runner?SW(s):s; R["ankle"+p].rotation.y=(ctx.footBack&&ctx.footBack[s])||0; R["wrist"+p].rotation.x=(ctx.claw&&ctx.claw[s])||0; }
+  if(ctx.levelHead){ C.group.updateMatrixWorld(true); const qp=R.head.parent.getWorldQuaternion(new THREE.Quaternion()).invert();
+    const qd=new THREE.Quaternion().setFromEuler(new THREE.Euler(ctx.levelHead.pitch||0,ctx.yaw+(ctx.levelHead.yaw||0),ctx.levelHead.roll||0,"YXZ")); R.head.quaternion.copy(qp.multiply(qd)); } }
+// ---------------------------------------------------------------- afterimages
+const ghosts=[]; let ghostT=0;
+function makeGhosts(C){ for(const g of ghosts) scene.remove(g.obj); ghosts.length=0;
+  for(let i=0;i<10;i++){ const obj=THREE.SkeletonUtils.clone(C.model); const B={}; obj.traverse(o=>{ if(o.isBone) B[o.name]=o; if(o.isMesh){ o.frustumCulled=false; o.material=new THREE.MeshBasicMaterial({map:o.material.map,color:0xff8a66,transparent:true,opacity:0,depthWrite:false,skinning:!!o.isSkinnedMesh}); o.renderOrder=-1; } });
+    const holder=new THREE.Group(); holder.add(obj); holder.visible=false; scene.add(holder); ghosts.push({obj:holder,model:obj,B,life:0}); } }
+const ghostHist=[]; function ghostRecord(C){ const b={}; for(const k in C.B) b[k]=[C.B[k].position.clone(),C.B[k].quaternion.clone()]; ghostHist.push({p:C.group.position.clone(),q:C.group.quaternion.clone(),b}); if(ghostHist.length>14) ghostHist.shift(); }
+const TWIST=[["head",new THREE.Vector3(0,1,0),2.6],["chest",new THREE.Vector3(0,1,0),1.4],["forearm_L",new THREE.Vector3(1,0,0),-2.2],["forearm_R",new THREE.Vector3(1,0,0),-2.2],["shin_R",new THREE.Vector3(1,0,0),-1.8],["neck",new THREE.Vector3(0,0,1),1.7]];
+function dropGhost(C){ const g=ghosts.find(x=>x.life<=0)||ghosts[0]; const h=ghostHist[Math.max(0,ghostHist.length-1-6)]||ghostHist[ghostHist.length-1]; if(!h) return;   /* a tenth of a second behind it */
+  g.life=0.32; g.obj.visible=true; g.obj.position.copy(h.p); g.obj.quaternion.copy(h.q); g.vel=new THREE.Vector3(Math.sin(ctx.yaw),0,Math.cos(ctx.yaw)).multiplyScalar((ctx.v||0)*0.35);
+  for(const k in h.b){ const d=g.B[k]; if(d){ d.position.copy(h.b[k][0]); d.quaternion.copy(h.b[k][1]); } }
+  g.tw=null; if(Math.random()<0.4){ const w=TWIST[Math.floor(Math.random()*TWIST.length)]; if(g.B[w[0]]) g.tw={bone:g.B[w[0]],axis:w[1],rate:w[2]*(Math.random()<0.5?-1:1)}; } }
+function updateGhosts(dt){ for(const g of ghosts){ if(g.life<=0) continue; g.life-=dt; const o=Math.max(0,g.life/0.32)*0.42;
+    if(g.vel) g.obj.position.addScaledVector(g.vel,dt); if(g.tw) g.tw.bone.rotateOnAxis(g.tw.axis,g.tw.rate*dt);   /* lags on behind it; some keep twisting the wrong way */ g.model.traverse(m=>{ if(m.isMesh) m.material.opacity=o; }); if(g.life<=0) g.obj.visible=false; } }
+
+// ---------------------------------------------------------------- dust and shake
+const puffs=[]; const puffTex=(()=>{ const c=document.createElement("canvas"); c.width=c.height=64; const g=c.getContext("2d"); const gr=g.createRadialGradient(32,32,2,32,32,30); gr.addColorStop(0,"rgba(190,170,150,0.55)"); gr.addColorStop(1,"rgba(190,170,150,0)"); g.fillStyle=gr; g.fillRect(0,0,64,64); return new THREE.CanvasTexture(c); })();
+function puff(p,s){ for(let i=0;i<5;i++){ const m=new THREE.Sprite(new THREE.SpriteMaterial({map:puffTex,transparent:true,depthWrite:false})); m.position.set(p.x+(Math.random()-.5)*0.2,0.06,p.z+(Math.random()-.5)*0.2); m.scale.setScalar(0.2*s); scene.add(m);
+  puffs.push({m,t:0,v:new THREE.Vector3((Math.random()-.5)*0.8,0.3+Math.random()*0.3,(Math.random()-.5)*0.8),s}); } }
+let shake=0;
+
+// ---------------------------------------------------------------- run it
+
+// ---------------------------------------------------------------- the live host side of a preview module (inside its closure)
+// Everything above is the preview's own engine and creature code, unchanged. A playground enemy hands in a body record h:
+// {C (this module's character), ctx, t, stage, norah (a stand-in for the live player, in stage coordinates), clip}.
+// pvStep runs one frame of it exactly as the preview page's frame() did, minus the page's camera, Norah and UI.
+function pvBind(h){ runner=h.C; ctx=h.ctx; scene=h.stage; t=h.t; norah=h.norah; MIR=!!h.mir; if(h.nx!=null) NX=h.nx; }
+function pvSetup(C){ runner=C; C.group.updateMatrixWorld(true); const bb=new THREE.Box3().setFromObject(C.model); C.sz=1; C.hgt=bb.max.y-bb.min.y; C.group.scale.setScalar(1); C.pb=null; C.a0=null;
+  solePts(C,"L"); footAnchor(C); if(typeof limbAnchor==="function") limbAnchor(C); C.hip0=C.R.hip0; return C; }
+function pvStep(h,dt){ pvBind(h); h.t+=dt; t=h.t;
+  ctx.moving=false; ctx.armScale=1; ctx.rise=null; ctx.ik=null; ctx.ik2=null; ctx.post=null; ctx.post2=null; ctx.onLimbs=false; ctx.held=false; ctx.wall=false; ctx.kick=null; ctx.noPlant=false; ctx.lift=null; ctx.gait=null; ctx.grip=0; ctx.events=[]; ctx.ghost=false; ctx.local=null; ctx.footBack=null; ctx.claw=null; ctx.levelHead=null; ctx.nOver=null;
+  const clip=h.clip, x0=ctx.x, z0=ctx.z||0; const J=clip.step(t,dt,ctx); const PH=clip.phys;
+  if(PH&&PH.active(ctx)){ ctx.x=x0; ctx.z=z0; if(!ctx.plOn){ ctx.plOn=1; ctx.plReset=1; if(runner.pl){ runner.pl.vx=ctx.v||0; } } physLoco(runner,J,ctx,dt,PH); } else { ctx.plOn=0; ctx.y=0; applyPose(runner,J); }
+  const lx=ctx.local?MS()*ctx.local.x:0, lz=ctx.local?ctx.local.z:0, fx_=Math.sin(ctx.yaw), fz_=Math.cos(ctx.yaw);
+  runner.group.position.set(ctx.x+fx_*lz+fz_*lx, ctx.plOn?ctx.y:(ctx.elev||0), (ctx.z||0)+fz_*lz-fx_*lx);
+  runner.group.rotation.set(0,ctx.yaw,0); if(typeof unnatural==="function") unnatural(runner,ctx); if(ctx.post){ ctx.post(); }
+  for(const k of ["ik","ik2"]){ const o=ctx[k]; if(!o) continue; if(o.at){ const r=o.at(); o.target=r.target; o.pole=r.pole; } ctx[k+"Tip"]=armIK(runner,o); }
+  retarget(runner); if(ctx.post2){ runner.group.updateMatrixWorld(true); ctx.post2(dt); }
+  runner.group.position.y=ctx.plOn?(ctx.y||0):(ctx.elev||0); const mB=PHYS.rig(runner,dt,{balance:false,kick:ctx.kick,held:!!ctx.held,rigid:!!ctx.rise||!!ctx.onLimbs}); if(!ctx.rise&&typeof balance==="function") balance(runner,mB,ctx,dt);
+  runner.group.updateMatrixWorld(true); return ctx.events; }
+// puffs and gore belong to the module, not to one body: run once a frame
+function pvFx(dt){ if(typeof goreStep==="function") goreStep(dt);
+  for(let i=puffs.length-1;i>=0;i--){ const q=puffs[i]; q.t+=dt; q.m.position.addScaledVector(q.v,dt); q.v.multiplyScalar(1-dt*2.5); q.m.scale.setScalar((0.25+q.t*1.6)*q.s); q.m.material.opacity=Math.max(0,0.8-q.t*1.6); if(q.t>0.6){ q.m.parent&&q.m.parent.remove(q.m); puffs.splice(i,1); } }
+  const s=shake; shake=0; return s; }
+
+// ================================================================ the split-head Reacher, live (playground)
+// Its body sits where it was put, in its own room; the stage's doorway (x=0) is set on the real doorway out of that room.
+// The head roams on 5 m of neck: low along the floor searching, up at her eye level holding off when it has her, darting
+// side to side when she aims at it, racing back when the body is shot.
+function pvPrep(g,h){ stretchNeck(g,SH.L); h.rc=buildChains(g); RC=h.rc; h.spl=splitRig(g); SPL=h.spl; }
+function pvPost(C,h){ C.rc=h.rc; C.spl=h.spl; C.bx=SH.BX; chainRig(C,h.rc); RC.r=neckR(C); RC.rk=neckRk(C);
+  for(const [n,b] of Object.entries(C.B)) if(/^(nk\d+|head|jawU|jawL|face|hairL|hairR)$/.test(n)) b.userData.noContact=true; }
+{ const bind0=pvBind; pvBind=function(h){ bind0(h); const C=h.C; if(C&&C.rc){ RC=C.rc; SPL=C.spl; SH.BX=C.bx; } else if(h.rc){ RC=h.rc; SPL=h.spl; } }; }
+const LIVE={};
+const dz7=k=>[0.5,-0.55,0.35,-0.45,0.6,-0.3,0.15][((k%7)+7)%7];
+// prowl: what the AI wants (ctx.mode: idle | search | hold | back; ctx.target; ctx.aimed), the head goes there
+LIVE.prowl={ start(ctx){ shStart(ctx); ctx.M=(ctx.mouthAt||ctx.M||new V3(0.9,0.45,0)).clone(); ctx.dodgeW=ctx.dodgeW||0; },
+  step(t,dt,ctx){ const J=sSit(t,{jolt:ctx.jolt||0}); ctx.jolt=Math.max(0,(ctx.jolt||0)-dt*2.5);
+    const H=nHead(), mode=ctx.mode||"idle"; let goal, look, jaw=JAW.rest, part=0, sp=2.4;
+    if(mode==="hold"){ const bk=new V3(0.3,0,0).sub(H).setY(0); if(bk.lengthSq()<1e-4) bk.set(-1,0,0); bk.normalize();
+      goal=H.clone().addScaledVector(bk,ctx.holdD||1.3); goal.y=1.45+0.05*Math.sin(t*1.7); look=nFace(); jaw=JAW.ajar; part=0.25; sp=3.6; }
+    else if(mode==="search"&&ctx.target){ goal=ctx.target.clone(); goal.y=0.5; look=goal.clone().add(new V3(2*Math.sin(t*0.9),0.5,2*Math.cos(t*0.7))); }
+    else if(mode==="back"){ goal=new V3(0.6,0.8,0); look=new V3(SH.BX,0.7,0); jaw=JAW.open; part=0.6; sp=6.5; }
+    else { goal=new V3(1.4+0.7*Math.sin(t*0.3),0.45,0.9*Math.sin(t*0.37)); look=goal.clone().add(new V3(2,0.1,1.5*Math.sin(t*0.5))); }
+    // she has it in her sights: it darts from side to side
+    ctx.dodgeW+=((ctx.aimed?1:0)-ctx.dodgeW)*Math.min(1,dt*3);
+    const ph=t/0.42, k0=Math.floor(ph), u=sm5((ph-k0)/0.45), dart=(dz7(k0)+(dz7(k0+1)-dz7(k0))*u)*ctx.dodgeW;
+    const fw=look.clone().sub(goal).setY(0); if(fw.lengthSq()<1e-4) fw.set(1,0,0); fw.normalize(); goal.addScaledVector(new V3(-fw.z,0,fw.x),dart*0.9);
+    if(ctx.kick){ goal.add(ctx.kick); ctx.kick.multiplyScalar(Math.max(0,1-dt*5)); }
+    const mv=goal.clone().sub(ctx.M).multiplyScalar(Math.min(1,dt*5)), cap=(sp+4*ctx.dodgeW)*dt; if(mv.length()>cap) mv.setLength(cap); ctx.M.add(mv);
+    const M=ctx.M.clone().add(new V3(0,0.04*Math.sin(t*1.9),0));
+    ctx.jawOpen=jaw[1]; ctx.post=()=>{ placeHead(M,look,t,{}); }; ctx.post2=d=>headDyn(ctx,d,jaw,{part});
+    ctx.phase= mode==="hold"?(ctx.dodgeW>0.4?"darts side to side · hard to hit":"holds off at her eye level · the split eases open"): mode==="search"?"slides along the floor low, searching": mode==="back"?"the body is hurt · the head races back":"lies low by the doorway · the face dragging";
+    return fin(J); } };
+// shot inside the open split: it snaps shut, the neck recoils and sways, then it comes back, wary
+LIVE.recoil={ start(ctx){ shStart(ctx); ctx.R0=(ctx.mouthAt||ctx.M).clone(); },
+  step(t,dt,ctx){ const J=sSit(t), R0=ctx.R0, bk=new V3(0,0,0).sub(R0).setY(0); if(bk.lengthSq()<1e-4) bk.set(-1,0,0); bk.normalize();
+    const low=R0.clone().addScaledVector(bk,0.7).add(new V3(0,-0.5,0.2)); low.y=Math.max(0.5,low.y);
+    const M=R0.clone().lerp(low,sm5(t/0.35)).lerp(R0,sm5((t-1.3)/1.0)), wob=0.5*Math.exp(-1.5*t)*Math.sin(t*10), roll=0.5*Math.exp(-2*t)*Math.sin(t*14);
+    let jaw=jawMix(JAW.open,JAW.shut,sm5(t/0.06)); if(t>1.4) jaw=jawMix(JAW.shut,JAW.rest,sm5((t-1.4)/0.6));
+    ctx.jawOpen=0; ctx.M=M.clone(); ctx.post=()=>{ placeHead(M,nFace(),t,{wob,roll}); }; ctx.post2=d=>headDyn(ctx,d,jaw,{part:0.05,fDamp:0.7});
+    ctx.phase= t<1.3?"shot inside the split · it snaps shut and recoils":"comes back, wary"; return fin(J); } };
+// dead: the body slumps, the neck drops where it is like a rope, the head goes over onto its side
+LIVE.die={ start(ctx){ shStart(ctx); },
+  step(t,dt,ctx){ const J=sSit(t,{dead:sm5(t/0.6)}); if(ctx.rope) ctx.post=()=>ropeFall(ctx,dt);
+    const jaw=jawMix(JAW.open,[-0.2,0.35],sm5(t/0.5)); ctx.post2=d=>headDyn(ctx,d,jaw,{fDamp:2.5}); ctx.phase="dead"; return fin(J); } };
+LIVE.mouth=h=>h.ctx.mouthAt||h.ctx.M;
+
+return { A, LIVE, makeChar, pvPrep:(typeof pvPrep==="function"?pvPrep:null), pvPost:(typeof pvPost==="function"?pvPost:null), pvSetup, pvBind, pvStep, pvFx, PHYS, P0, mix, PVHOOK, get NX(){ return NX; } };
+})();
