@@ -2137,7 +2137,7 @@ function fire(){
   if(!CFG.rev.infinite) player.rounds--;
   if(run) run.shots++;
   makeNoise(player.pos.x,player.pos.z,CFG.stealth.gunNoise,"gunshot",true);
-  player.hammer = CFG.rev.hammer; player.cockPending=true; plvShot(); player.recoil = 1; shake = Math.max(shake, CFG.rev.shake);
+  player.hammer = CFG.rev.hammer; player.cockPending=true; plvShot(); WS.bloom=(WS.bloom||0)+CFG.weapons.revolver.bloom; player.recoil = 1; shake = Math.max(shake, CFG.rev.shake);
   SFX.shot();
   if(CFG.phys.on){ const fw=new THREE.Vector3(Math.sin(player.yaw),0,Math.cos(player.yaw)); player.vel.addScaledVector(fw,-CFG.phys.recoilPush); }
   const hp = new THREE.Vector3(); if(PLV.ready) hp.copy(plvMuzzle()); else player.P.gun.getWorldPosition(hp); muzzle.position.copy(hp); muzzle.intensity = 4;
@@ -2595,7 +2595,7 @@ function updateHud(){
   $("cool").textContent = bits.join(" · ");
   renderQte();
   const fixed=isFixed();
-  $("reticle").style.display = player.aiming && !fixed ?"block":"none"; $("reticle").className = "hud "+(player.hammer>0||player.reloading>0?"wait ":"")+(aimOverCheck(fixed)?"on":"");
+  $("reticle").style.display = player.aiming && !fixed && !(RET&&RET.style.display==="block") ?"block":"none"; $("reticle").className = "hud "+(player.hammer>0||player.reloading>0?"wait ":"")+(aimOverCheck(fixed)?"on":"");
   $("aimline").textContent = player.aiming && fixed ? (player.aimTarget?`Aiming at ${player.aimTarget.name} · ${player.aimHeight>0?"HIGH (head)":player.aimHeight<0?"LOW (legs)":"body"}`:"Aiming: no target in front") : "";
   { const vis=playerVis(), nr=Math.max(0,hudNoise.r*(1-(gameTime-hudNoise.t)/0.8));
     $("stealthline").textContent = `SEEN ${"▮".repeat(Math.round(vis*6))}${"▯".repeat(6-Math.round(vis*6))} ${Math.round(vis*100)}% · NOISE ${nr>0.05?nr.toFixed(1)+" m":"–"}${player.crouch?" · CROUCHED":""}`; }
@@ -9937,6 +9937,8 @@ CFG.weapons={
   crowbar:{dmg:2, reach:1.8, time:1.4, hitAt:0.55, arc:80},
   knife:{dmg:1.2, reach:1.15, time:1.0, hitAt:0.3, arc:50},
   flare:{burn:45, light:1.5} };
+CFG.weapons.revolver={spread:0.4, bloom:2.2};
+for(const [k,b] of [["shotgun",2.5],["rifle",3.5],["pistol",1.2],["flaregun",2]]) CFG.weapons[k].bloom=b;
 const WNAME={revolver:"REVOLVER",shotgun:"SHOTGUN",rifle:"RIFLE",pistol:"9MM PISTOL",flaregun:"FLARE GUN",hatchet:"HATCHET",crowbar:"CROWBAR",knife:"KNIFE",flare:"ROAD FLARE"};
 const WGUN=k=>["shotgun","rifle","pistol","flaregun"].includes(k), WMELEE=k=>["hatchet","crowbar","knife"].includes(k), WLONG=k=>k==="shotgun"||k==="rifle";
 Object.assign(ITEMS,{
@@ -9977,7 +9979,8 @@ function wpnShoot(k){ const C=CFG.weapons[k], s=wpnState(k);
     base= tg? new THREE.Vector3(tg.pos.x,1.2+0.4*(player.aimHeight||0),tg.pos.z).sub(origin).normalize() : new THREE.Vector3(Math.sin(player.yaw),player.aimHeight*0.15,Math.cos(player.yaw)).normalize(); }
   else { ray.setFromCamera({x:0,y:0},camera); origin=ray.ray.origin.clone(); base=ray.ray.direction.clone(); skip=camera.position.distanceTo(new THREE.Vector3(player.pos.x,1.5,player.pos.z))*0.6; }
   const targets=world.blockers.concat(enemyMeshes()), d0=CFG.rev.damage; let anyHit=false;
-  for(let i=0;i<C.pellets;i++){ const a=C.spread*Math.PI/180, dir=base.clone(); if(a>0){ const r=Math.sqrt(Math.random())*a, th=Math.random()*Math.PI*2, u=new THREE.Vector3().crossVectors(dir,new THREE.Vector3(0,1,0)).normalize(), v=new THREE.Vector3().crossVectors(u,dir).normalize(); dir.addScaledVector(u,Math.tan(r)*Math.cos(th)).addScaledVector(v,Math.tan(r)*Math.sin(th)).normalize(); }
+  const spreadNow=wpnSpread(k); WS.bloom=(WS.bloom||0)+C.bloom;
+  for(let i=0;i<C.pellets;i++){ const a=spreadNow*Math.PI/180, dir=base.clone(); if(a>0){ const r=Math.sqrt(Math.random())*a, th=Math.random()*Math.PI*2, u=new THREE.Vector3().crossVectors(dir,new THREE.Vector3(0,1,0)).normalize(), v=new THREE.Vector3().crossVectors(u,dir).normalize(); dir.addScaledVector(u,Math.tan(r)*Math.cos(th)).addScaledVector(v,Math.tan(r)*Math.sin(th)).normalize(); }
     ray.set(origin,dir); ray.far=C.range; const h=ray.intersectObjects(targets,false).find(x=>x.distance>skip);
     if(k==="flaregun"){ const p=h?h.point:origin.clone().addScaledVector(dir,Math.min(C.range,25)); wpnWorldFlare(p,new THREE.Vector3(),C.burn,0xff5a2a); }
     if(!h) continue;
@@ -10018,7 +10021,7 @@ function wpnStep(dt){ WS.cool=Math.max(0,WS.cool-dt); const k=WS.wpn;
       if(f.g.position.y<gy){ f.g.position.y=gy; f.v.y=-0.3*f.v.y; f.v.x*=0.5; f.v.z*=0.5; if(f.v.length()<0.2) f.rest=true; } }
     const fade=Math.min(1,(f.burn-f.t)/2); f.li.intensity=Math.max(0,(4.2+1.2*Math.sin(f.t*25)*Math.sin(f.t*13)+0.5*Math.random())*fade);
     if(f.t>f.burn){ scene.remove(f.g); WS.flares.splice(i,1); } }
-  if(PLV.ready){ PLV.S.wpn=k; PLV.S.lit=!!WS.lit||WS.litT>0; } }
+  if(PLV.ready){ PLV.S.wpn=k; PLV.S.lit=!!WS.lit||WS.litT>0; } wpnReticle(dt); }
 function wpnHud(){ const k=WS.wpn; if(!$("wname")){ const c=$("chambers"), tn=c&&c.previousSibling; if(tn&&tn.nodeType===3){ const sp=document.createElement("span"); sp.id="wname"; sp.textContent="REVOLVER"; c.parentNode.insertBefore(sp,tn); tn.textContent=" "; } } const nm=$("wname"); if(nm) nm.textContent=WNAME[k]; if(k==="revolver") return false; const s=wpnState(k), C=CFG.weapons[k];
   if(WGUN(k)){ let h=""; for(let i=0;i<C.mag;i++) h+=`<span class="${i<s.mag?"full":""}"></span>`; $("chambers").innerHTML=h; $("spare").textContent=` +${s.spare}`; }
   else if(k==="flare"){ $("chambers").innerHTML=""; $("spare").textContent=`${s.mag} left${WS.lit?" · burning":""}`; }
@@ -10026,6 +10029,30 @@ function wpnHud(){ const k=WS.wpn; if(!$("wname")){ const c=$("chambers"), tn=c&
 function wpnReset(){ WS.wpn="revolver"; player.wpn="revolver"; WS.owned=["revolver"]; WS.st={}; WS.cool=0; WS.melee=null; WS.lit=0; WS.litT=0; WS.throwT=0; WS.warned=false; for(const f of WS.flares) scene.remove(f.g); WS.flares.length=0; }
 { const gi0=giveItem; giveItem=function(e,silent){ const d=itemDef(e.item), q=+e.qty||1; if(d.weapon){ wpnGive(d.weapon,q,silent); return; } if(d.ammoFor){ wpnAmmo(d.ammoFor,q,silent); return; } return gi0(e,silent); }; }
 { const sp1=skinPlayer; skinPlayer=function(){ sp1(); wpnReset(); }; }
+
+// ---------------------------------------------------------------- the reticle: each gun's own outline of its spread
+// Sized from the real spread angle (what the shot uses), it opens up with recoil and while she moves and closes as she
+// steadies. Revolver: four ticks round a dot. Shotgun: the ring the pellets land in, with the pellets. Rifle: a long thin
+// cross with a tight gap. Pistol: two brackets. Flare gun: a dashed ring with the drop marked under it.
+function wpnSpread(k){ const C=CFG.weapons[k]; const mv=Math.hypot(PLV.S.fwdV||0,PLV.S.sideV||0); return (C.spread||0)+(WS.bloom||0)+Math.min(1.5,mv*0.5)*(k==="rifle"?2:1); }
+let RET=null;
+function wpnReticle(dt){ WS.bloom=Math.max(0,(WS.bloom||0)*Math.exp(-dt*3.2)-dt*0.2);
+  const old=$("reticle"); if(!old) return; const k=WS.wpn, gun=k==="revolver"||WGUN(k), fixed=isFixed();
+  if(!RET){ RET=document.createElementNS("http://www.w3.org/2000/svg","svg"); RET.setAttribute("class","hud"); RET.style.cssText="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible;display:none"; old.parentNode.insertBefore(RET,old); }
+  const show=gun&&player.aiming&&!player.dead; RET.style.display=show?"block":"none"; if(!show){ return; } old.style.display="none";
+  const cw=RET.clientWidth||innerWidth, ch=RET.clientHeight||innerHeight; let cx=cw/2, cy=ch/2;
+  if(fixed){ const a=plvToStage? null:null; const tg=player.aimTarget&&!player.aimTarget.dead?player.aimTarget:null; const p=tg?new THREE.Vector3(tg.pos.x,1.25+0.45*(player.aimHeight||0),tg.pos.z):new THREE.Vector3(player.pos.x+Math.sin(player.yaw)*6,1.3+0.6*(player.aimHeight||0),player.pos.z+Math.cos(player.yaw)*6);
+    p.project(camera); cx=(p.x+1)/2*cw; cy=(1-p.y)/2*ch; }
+  const deg=k==="revolver"? CFG.weapons.revolver.spread+(WS.bloom||0)*0.5 : wpnSpread(k), r=Math.max(2.5,Math.tan(deg*Math.PI/180)/Math.tan(camera.fov*Math.PI/360)*ch/2);
+  const on=old.className.indexOf("on")>=0, wait=player.hammer>0||player.reloading>0||WS.cool>0.25, col=on?"#ff5a4a":wait?"#6a5d4a":"#e6e0d0", sw='stroke="'+col+'" stroke-width="1.5" fill="none" stroke-linecap="round"';
+  const L=(x1,y1,x2,y2)=>`<line x1="${cx+x1}" y1="${cy+y1}" x2="${cx+x2}" y2="${cy+y2}" ${sw}/>`, dot=(x,y,q=1.2)=>`<circle cx="${cx+x}" cy="${cy+y}" r="${q}" fill="${col}"/>`;
+  let h="";
+  if(k==="revolver"){ const g=r+3; h=dot(0,0)+L(-g-6,0,-g,0)+L(g,0,g+6,0)+L(0,-g-6,0,-g)+L(0,g,0,g+6); }
+  else if(k==="shotgun"){ h=`<circle cx="${cx}" cy="${cy}" r="${r}" ${sw} stroke-dasharray="3 4"/>`; const P=[[0.2,0.1],[0.62,-0.35],[-0.5,0.4],[-0.3,-0.65],[0.45,0.6],[-0.75,-0.05],[0.05,-0.85],[0.8,0.2]]; for(const [x,y] of P) h+=dot(x*r,y*r,1.6); }
+  else if(k==="rifle"){ const g=Math.max(3,r); h=dot(0,0,1)+L(-g-22,0,-g,0)+L(g,0,g+22,0)+L(0,g,0,g+22)+L(0,-g-10,0,-g); }
+  else if(k==="pistol"){ const g=r+2, hh=r*0.9+5; h=dot(0,0)+`<path d="M${cx-g+4} ${cy-hh} L${cx-g} ${cy-hh} L${cx-g} ${cy+hh} L${cx-g+4} ${cy+hh}" ${sw}/><path d="M${cx+g-4} ${cy-hh} L${cx+g} ${cy-hh} L${cx+g} ${cy+hh} L${cx+g-4} ${cy+hh}" ${sw}/>`; }
+  else if(k==="flaregun"){ h=`<circle cx="${cx}" cy="${cy}" r="${r+2}" ${sw} stroke-dasharray="2 5"/>`+dot(0,0)+L(0,r+5,0,r+14)+`<path d="M${cx-4} ${cy+r+10} L${cx} ${cy+r+14} L${cx+4} ${cy+r+10}" ${sw}/>`; }
+  RET.innerHTML=h; }
 // ================================================================ maps: new, presets (the playground's arenas and scenarios), import
 function sbNewDoc(name="Untitled map"){
   return {app:"crossed-sandbox", version:1, name, note:"", win:"either", env:Object.assign({},ENV_DEF), start:{hp:"",rounds:"",spare:"",items:[],flashOn:false}, terrain:null, objects:[], customItems:[], textures:[], assets:[]};
