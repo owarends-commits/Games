@@ -67,7 +67,7 @@ function pvWantYaw(b,toX,toZ){ return b.stageYaw(Math.atan2(toX,toZ)); }
 // ---------------------------------------------------------------- the enemy side
 Enemy.prototype.pvInit=function(type){ const K=PVK[type]; this.kind="pv"; this.pvType=type; this.name=`${K.label} ${this.id}`;
   this.root.traverse(o=>{ if(o.isMesh){ o.visible=false; o.userData.enemy=null; } }); if(this.skin&&this.skin.model) this.skin.model.visible=false;
-  const key=pvModel(type); this.mdl=key; this.pv=new PVBody(this,type,key); PV_LIST.push(this.pv);
+  if(K.body) this.pv=new K.body(this,type); else { const key=pvModel(type); this.mdl=key; this.pv=new PVBody(this,type,key); } PV_LIST.push(this.pv);
   const C=CFG[K.cfg]; this.maxHp=this.hp=C.hp; this.radius=K.radius||0.35; this.state="pv"; this.pvMem={}; };
 Enemy.prototype.pvUpdate=function(dt){ const b=this.pv, K=PVK[this.pvType];
   if(!b.ready){ this.syncRoot&&this.syncRoot(); return; }
