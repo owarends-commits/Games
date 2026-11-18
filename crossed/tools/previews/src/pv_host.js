@@ -55,7 +55,7 @@ class PVBody{
     h.nx=this.toStage(player.pos).x; this.nx=h.nx;
     const ev=this.withStage(()=>this.mod.pvStep(h,dt)); this.t=h.t; this.ct+=dt; this.e.pvClipT=this.ct; return ev||[]; }
   // its feet on the map: walls stop it, and the stage follows
-  sync(){ const e=this.e, c=this.ctx, w=this.toWorld(new THREE.Vector3(c.x,0,c.z||0)); const p=w.clone(); collide(p,e.radius*0.8);
+  sync(){ const e=this.e, c=this.ctx, w=this.toWorld(new THREE.Vector3(c.x,0,c.z||0)); const p=w.clone(); if(!(this.K.noCollide&&this.K.noCollide(this))) collide(p,e.radius*0.8);
     if(p.distanceToSquared(w)>1e-8){ const s=this.toStage(p); c.x=s.x; c.z=s.z; }
     e.pos.set(p.x,0,p.z); e.yaw=this.worldYaw(c.yaw); }
   dispose(){ scene.remove(this.stage); const i=PV_LIST.indexOf(this); if(i>=0) PV_LIST.splice(i,1); }

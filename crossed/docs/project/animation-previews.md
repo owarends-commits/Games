@@ -91,7 +91,7 @@ Animation proposals for the Tactician: a man's body under a head nearly a metre 
 ## Contortionist
 Page: `contortionist-preview.html`.
 
-Animation proposals for the Contortionist: spider-like, in three movement subclasses on one body. Its hands and feet plant at fixed points and swing to the next, and the physics guard holds it up on them (centre of mass from the mesh volume). Same animations for every size: the small ones are quicker and lighter, the big ones slower and heavier. In the Combat Playground (see below), apart from the wall climb and drop.
+Animation proposals for the Contortionist: spider-like, in three movement subclasses on one body. Its hands and feet plant at fixed points and swing to the next, and the physics guard holds it up on them (centre of mass from the mesh volume). Same animations for every size: the small ones are quicker and lighter, the big ones slower and heavier. In the Combat Playground (see below).
 
 - **Spider crawl:** Subclass 1. Face down and low, elbows and knees jutting high over its back like a spider's legs. It scuttles in quick bursts and freezes, head up, watching.
 - **Backbend spider walk:** Subclass 2. Bent over backward, belly to the ceiling, walking head first on its hands and feet with the head twisted round the right way up. Fast and skittering.
@@ -194,7 +194,7 @@ Three firearms, three hand weapons, a road flare and a flare gun, each built in 
 ## In the Combat Playground
 These run in `combat_playground.html` on their preview's own code: each preview page is wrapped whole into a module and a playground enemy (or the player) drives it, so they move exactly as approved.
 
-- **The Contortionist** (key 7): the crawl, backbend and upright styles; leg wrap and drag (break free), the wrong-angle strike, the neck-twist bite, folding down. Not yet: the wall climb and drop.
+- **The Contortionist** (key 7): the crawl, backbend and upright styles; leg wrap and drag (break free), the wrong-angle strike, the neck-twist bite, folding down. Out of her sight a low one may go up a real wall nearby (no higher than the wall allows) and hang there; when she walks in under it, it drops on her and pins her (break free to throw it off, or it bites).
 - **The Reachers** (key 8): neck Reachers loom at the edge of their reach and whip, or step in to bite from above or coil round her (break free or it bites her face). Arm Reachers swipe, snatch and reel her in to bite, or sweep her feet and pin her. A shot in the neck mid-whip spoils it; enough shots at an arm joint take the arm off there.
 - **The split-head Reacher** (key 9): the body sits in its own room by the nearest doorway and the neck runs out through it. The head searches low along the floor, holds off at her eye level, darts aside when she aims, baits with the hanging face, bites with the split, or engulfs her head. Shots into the open split make it recoil; the body is the weak point, and the neck drops like a rope when it dies.
 - **The Hob** (key K): crawls after her on its hands and turns as it goes; screeches; grabs her one-handed and squeezes (break free or be crushed); lunges into the throne grab, where two real shots to the cross on its right arm or to its eyes free her, or it bites. A shot to the cross while it crawls stops it dead. It can't be killed. Its code comes from `crossed/tools/hob_preview/` (`src/mkhob.py`).

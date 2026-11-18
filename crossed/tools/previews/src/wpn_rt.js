@@ -1,3 +1,5 @@
+function aimPointOf(tg){ const P=tg.P, h=player.aimHeight||0; let m=null; if(P&&!tg.pv) m= h>0? P.headMesh : h<0&&tg.lost? (tg.lost.legL?(tg.lost.legR?P.torsoMesh:P.legRLo):P.legLLo) : P.torsoMesh;
+  if(m){ const v=new THREE.Vector3(); (m.parent?m:P.torsoMesh).getWorldPosition(v); return v; } return new THREE.Vector3(tg.pos.x,groundY(tg.pos.x,tg.pos.z)+1.2+0.45*h,tg.pos.z); }
 // ================================================================ the weapons she finds
 // Pump shotgun, hunting rifle, 9mm pistol, flare gun; hatchet, crowbar, kitchen knife; road flares. Picked up as items
 // (place them in the editor, or J for the whole armoury), switched with B, fired with the usual buttons, reloaded with R.
@@ -50,7 +52,7 @@ function wpnShoot(k){ const C=CFG.weapons[k], s=wpnState(k);
   const mz=PLV.ready?plvWith(()=>PV_NW.LIVE.wmuzzle(k)):null; if(mz){ mz.applyMatrix4(PLV.stage.matrixWorld); muzzle.position.copy(mz); } else player.P.gun.getWorldPosition(muzzle.position); muzzle.intensity=k==="flaregun"?6:5;
   let origin, base, skip=0;
   if(isFixed()){ origin=new THREE.Vector3(player.pos.x,1.4+groundY(player.pos.x,player.pos.z),player.pos.z); const tg=player.aimTarget&&!player.aimTarget.dead?player.aimTarget:null;
-    base= tg? new THREE.Vector3(tg.pos.x,1.2+0.4*(player.aimHeight||0),tg.pos.z).sub(origin).normalize() : new THREE.Vector3(Math.sin(player.yaw),player.aimHeight*0.15,Math.cos(player.yaw)).normalize(); }
+    base= tg? aimPointOf(tg).sub(origin).normalize() : new THREE.Vector3(Math.sin(player.yaw),player.aimHeight*0.15,Math.cos(player.yaw)).normalize(); }
   else { ray.setFromCamera({x:0,y:0},camera); origin=ray.ray.origin.clone(); base=ray.ray.direction.clone(); skip=camera.position.distanceTo(new THREE.Vector3(player.pos.x,1.5,player.pos.z))*0.6; }
   const targets=world.blockers.concat(enemyMeshes()), d0=CFG.rev.damage; let anyHit=false;
   const spreadNow=wpnSpread(k); WS.bloom=(WS.bloom||0)+C.bloom;
@@ -115,7 +117,7 @@ function wpnReticle(dt){ WS.bloom=Math.max(0,(WS.bloom||0)*Math.exp(-dt*3.2)-dt*
   if(!RET){ RET=document.createElementNS("http://www.w3.org/2000/svg","svg"); RET.setAttribute("class","hud"); RET.style.cssText="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible;display:none"; old.parentNode.insertBefore(RET,old); }
   const show=gun&&player.aiming&&!player.dead; RET.style.display=show?"block":"none"; if(!show){ return; } old.style.display="none";
   const cw=RET.clientWidth||innerWidth, ch=RET.clientHeight||innerHeight; let cx=cw/2, cy=ch/2;
-  if(fixed){ const a=plvToStage? null:null; const tg=player.aimTarget&&!player.aimTarget.dead?player.aimTarget:null; const p=tg?new THREE.Vector3(tg.pos.x,1.25+0.45*(player.aimHeight||0),tg.pos.z):new THREE.Vector3(player.pos.x+Math.sin(player.yaw)*6,1.3+0.6*(player.aimHeight||0),player.pos.z+Math.cos(player.yaw)*6);
+  if(fixed){ const tg=player.aimTarget&&!player.aimTarget.dead?player.aimTarget:null; const gy=groundY(player.pos.x,player.pos.z), p=tg?aimPointOf(tg):new THREE.Vector3(player.pos.x+Math.sin(player.yaw)*6,gy+1.3+0.6*(player.aimHeight||0),player.pos.z+Math.cos(player.yaw)*6);
     p.project(camera); cx=(p.x+1)/2*cw; cy=(1-p.y)/2*ch; }
   const deg=k==="revolver"? CFG.weapons.revolver.spread+(WS.bloom||0)*0.5 : wpnSpread(k), r=Math.max(2.5,Math.tan(deg*Math.PI/180)/Math.tan(camera.fov*Math.PI/360)*ch/2);
   const on=old.className.indexOf("on")>=0, wait=player.hammer>0||player.reloading>0||WS.cool>0.25, col=on?"#ff5a4a":wait?"#6a5d4a":"#e6e0d0", sw='stroke="'+col+'" stroke-width="1.5" fill="none" stroke-linecap="round"';

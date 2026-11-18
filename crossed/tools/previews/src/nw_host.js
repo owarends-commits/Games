@@ -14,7 +14,7 @@ function plvInit(){ if(PLV.loading||PLV.ready||CFG.norah.liveAnims===false) retu
     .catch(err=>{ PLV.loading=false; log(`Norah's animations: model failed (${err&&err.message||err})`,"#ff7070"); }); }
 function plvToStage(v){ const s=PLV.stage; s.updateMatrixWorld(true); return s.worldToLocal(v.clone()); }
 function plvAimAt(){ let p;
-  if(isFixed()){ const tg=player.aimTarget&&!player.aimTarget.dead?player.aimTarget:null; if(tg){ p=new THREE.Vector3(tg.pos.x,1.25+0.45*(player.aimHeight||0),tg.pos.z); } else p=new THREE.Vector3(player.pos.x+Math.sin(player.yaw)*6,1.3+0.6*(player.aimHeight||0),player.pos.z+Math.cos(player.yaw)*6); }
+  if(isFixed()){ const tg=player.aimTarget&&!player.aimTarget.dead?player.aimTarget:null; const gy=groundY(player.pos.x,player.pos.z); if(tg){ p=aimPointOf(tg); } else p=new THREE.Vector3(player.pos.x+Math.sin(player.yaw)*6,gy+1.3+0.6*(player.aimHeight||0),player.pos.z+Math.cos(player.yaw)*6); }
   else { const d=new THREE.Vector3(); camera.getWorldDirection(d); const fw=new THREE.Vector3(Math.sin(player.yaw),0,Math.cos(player.yaw));
     if(!player.aiming||d.dot(fw)<0.6||Math.abs(d.y)>0.7) p=new THREE.Vector3(player.pos.x,1.3+groundY(player.pos.x,player.pos.z),player.pos.z).addScaledVector(fw,6); else p=camera.position.clone().addScaledVector(d,10); }
   return plvToStage(p); }

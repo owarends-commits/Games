@@ -506,7 +506,7 @@ function goreClear(){} function goreStep(){} function headPt(){ return runner.B.
 // ---- the wall, and climbing it. On the wall it hangs by its grip (the guard lets a body that's held hang); let go and
 // gravity has it.
 const WX=4.6; let wallMesh=null; const wallSurfRef=()=>wallSurf;
-function ensureWall(){ if(wallMesh) return; wallMesh=new THREE.Mesh(new THREE.BoxGeometry(0.3,3.6,7),new THREE.MeshLambertMaterial({color:0x4a4640})); wallMesh.position.set(WX+0.15,1.8,0); scene.add(wallMesh); }
+function ensureWall(){ if(ctx&&ctx.live) return; if(wallMesh) return; wallMesh=new THREE.Mesh(new THREE.BoxGeometry(0.3,3.6,7),new THREE.MeshLambertMaterial({color:0x4a4640})); wallMesh.position.set(WX+0.15,1.8,0); scene.add(wallMesh); }
 const wallSurf={ along:()=>new V3(0,1,0), normal:()=>new V3(-1,0,0),
   hold(root,L,Q){ const side=L.s==="L"?-1:1, r=TP().right, p=root.clone(); p.x=WX-(L.arm?0.05:0.07)*Z(); p.addScaledVector(r,side*(Q.splay||0)); p.y+=(Q.reach||0)*(L.arm?1:-0.5); return p; } };
 function wallPoles(L,root){ const side=L.s==="L"?-1:1, r=TP().right; return root.clone().add(new V3(-0.55*Z(),(L.arm?0.25:-0.05)*Z(),0)).addScaledVector(r,side*0.45*Z()); }   /* elbows and knees jut out from the wall */
@@ -516,7 +516,7 @@ const QWALL=()=>({T:0.7/QUICK(),duty:0.65,stride:0.3*Z(),lift:0.1*Z(),splay:0.3*
 function gripErr(ctx){ const BN={armL:["hand_L","forearm_L"],armR:["hand_R","forearm_R"],legL:["foot_L","shin_L"],legR:["foot_R","shin_R"]}; runner.group.updateMatrixWorld(true); const m=runner.pb.measure(); let worst=0, n=0;
   for(const L of LIMBS){ const st=ctx.G&&ctx.G.limb[L.k]; if(!st||!st.anchor) continue; let hi=-1e9; m.pts.forEach((q,k)=>{ const b=m.bone[k]; if(b&&BN[L.k].includes(b.name)) hi=Math.max(hi,q.x); }); worst=Math.max(worst,Math.abs(WX-hi)); n++; }
   ctx.gripN=n; return worst; }   /* how far the planted hands and feet are from the wall surface (the mesh, as the guard sees it) */
-function climbClip(ctx,t,dt,dropOn){ ctx.wall=true; const T=ctx.T, Q=QCRAWL(), QW=QWALL(), sz=Z(), top=(dropOn?1.95:1.75)*sz;
+function climbClip(ctx,t,dt,dropOn){ ctx.wall=true; const T=ctx.T, Q=QCRAWL(), QW=QWALL(), sz=Z(), top=Math.min((dropOn?1.95:1.75)*sz, ctx.wallTop??9);
   if(T.ph==="crawl"){ const vmax=1.5*sz*QUICK(); const go=ctx.x<WX-0.95*sz; ctx.v+=((go?vmax:0)-ctx.v)*Math.min(1,dt*8); ctx.x+=ctx.v*dt; ctx.moving=ctx.v>0.05; ctx.onLimbs=true; ctx.phase="scuttles to the wall";
     if(!go&&ctx.v<0.08){ T.ph="rear"; T.t0=t; T.x0=ctx.x; }
     const J=crawlBody(t,ctx.moving?Math.sin(t*12):0); ctx.post=()=>{ Q.v=vmax; gaitStep(ctx,Q,dt*(ctx.v/vmax),ctx.moving); limbsIK(ctx,crawlPoles); }; return J; }
@@ -560,8 +560,8 @@ A.drop={ start(ctx){ ensureWall(); ctx.wallOn=true; ctx.x=WX-1.6; ctx.yaw=Math.P
   step(t,dt,ctx){ const T=ctx.T, under=WX-1.2*Z();
     // her: walks in under the wall, aiming about; it drops onto her and she goes down under it
     const YW=Math.PI/2;   /* she faces the wall, looking for it */
-    if(!T.landT){ if(T.ph==="hang"||T.ph==="drop"){ if(ctx.nx<under-0.05){ ctx.nph+=dt/0.75; ctx.nx=Math.min(under,ctx.nx+1.1*dt); ctx.nOver={J:NQ.walk(ctx.nph),x:ctx.nx,yaw:YW}; } else ctx.nOver={J:T.ph==="drop"?NQ.aimUp():NQ.aim(),x:ctx.nx,yaw:YW}; } else ctx.nOver={J:NQ.aim(),x:ctx.nx,yaw:YW}; }
-    const J0=climbClip(ctx,t,dt,{ wait:()=> ctx.nx>=under-0.06 ? (T.waitT??(T.waitT=t-T.t0))+0.35 : 99,
+    if(ctx.live){ ctx.nx=NX; } else if(!T.landT){ if(T.ph==="hang"||T.ph==="drop"){ if(ctx.nx<under-0.05){ ctx.nph+=dt/0.75; ctx.nx=Math.min(under,ctx.nx+1.1*dt); ctx.nOver={J:NQ.walk(ctx.nph),x:ctx.nx,yaw:YW}; } else ctx.nOver={J:T.ph==="drop"?NQ.aimUp():NQ.aim(),x:ctx.nx,yaw:YW}; } else ctx.nOver={J:NQ.aim(),x:ctx.nx,yaw:YW}; }
+    const J0=climbClip(ctx,t,dt,{ wait:()=> (ctx.live?ctx.underNow:ctx.nx>=under-0.06) ? (T.waitT??(T.waitT=t-T.t0))+0.35 : 99,
       look:k=>{}, v:()=>({x:-1.6*Z(),y:0.5,z:0}),
       post:k=>{ if(k>0.5&&!T.landT){ T.landT=t; ctx.events.push({kind:"dropHit"}); } } });
     let J=J0;

@@ -1,0 +1,12 @@
+const { chromium } = require('playwright'); const fs=require('fs');
+(async()=>{ const b=await chromium.launch({args:['--use-gl=swiftshader']}); const p=await b.newPage({viewport:{width:900,height:600}});
+  const errs=[]; p.on('pageerror',e=>errs.push('PAGEERR '+e.message));
+  for(const [re,f] of [[/three\.min\.js/,'three.min.js'],[/GLTFLoader\.js/,'GLTFLoader.js'],[/SkeletonUtils\.js/,'SkeletonUtils.js']]) await p.route(re, r=>r.fulfill({body:fs.readFileSync(f),contentType:'application/javascript'}));
+  await p.route(/fonts\./, r=>r.abort()); await p.goto('http://127.0.0.1:8765/test.html'); await p.waitForTimeout(2500);
+  await p.click('#mmStart'); await p.waitForTimeout(300); await p.click('#suGo'); await p.waitForTimeout(400); await p.click('#helpok'); await p.waitForTimeout(1500);
+  for(const W of ["revolver"]){ await p.evaluate(w=>{ window.__W=w; },W); const out=await p.evaluate(async()=>{ clearEnemies(); CFG.ctrl.cam="fixed"; wpnArmoury(); while(WS.wpn!==window.__W) wpnSwitch(1); CFG.world.freezeAI=true;
+    const rc=new THREE.Raycaster(); let ok=false; for(let gx=-30;gx<=30&&!ok;gx+=2) for(let gz=-30;gz<=30&&!ok;gz+=2){ const o=new THREE.Vector3(gx,1.3,gz), d=new THREE.Vector3(0,0,1); rc.set(o,d); rc.far=7; if(rc.intersectObjects(world.blockers,false).length) continue; rc.set(new THREE.Vector3(gx,0.4,gz),d); if(rc.intersectObjects(world.blockers,false).length) continue; player.pos.set(gx,0,gz); player.yaw=0; ok=true; }
+    const e=spawn("walker",player.pos.x,player.pos.z+5,{}); e.hp=e.maxHp=50; keys.KeyC=true; const L=[]; const lg=window.log; window.log=(m,c)=>{ L.push(m); return lg(m,c); };
+    for(let s=0;s<3;s++){ for(let i=0;i<100;i++) step(1/60,1/60); WS.cool=0; fire(); }
+    const o=new THREE.Vector3(player.pos.x,1.4+groundY(player.pos.x,player.pos.z),player.pos.z), r2=new THREE.Raycaster(o,new THREE.Vector3(Math.sin(player.yaw),0,Math.cos(player.yaw))); r2.far=60; const hs=r2.intersectObjects(world.blockers.concat(enemyMeshes()),false).slice(0,3).map(h=>[h.distance.toFixed(2),h.object.userData.enemy?"enemy":(h.object.geometry&&h.object.geometry.type)+" y"+h.object.position.y.toFixed(1)]); L.push(JSON.stringify({hs,pos:[player.pos.x,player.pos.z],yaw:player.yaw,tgt:!!player.aimTarget,epos:[e.pos.x,e.pos.z]})); window.log=lg; return {ok,hp:e.hp, limbs:JSON.stringify(e.limbHp||{}), log:L.filter(x=>/Hit|Miss|cover|spread/.test(x))}; });
+  console.log(W,JSON.stringify(out)); } console.log(errs.join('\n')||'no errors'); await b.close(); })();
