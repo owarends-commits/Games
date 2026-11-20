@@ -5,7 +5,7 @@
 // run the neck-twist bite, or fold down into the crawl.
 PVK.contortionist={ mod:PV_CN, label:"Contortionist", group:"bcross/contortionist", cfg:"contortionist", radius:0.4,
   holds:["wrap","drop"], noCollide:b=>b.clipName==="drop", clips:{drop:PV_CN.A.drop, crawl:PV_CN.LIVE.crawl, bend:PV_CN.LIVE.bend, walk:PV_CN.LIVE.walk, fold:PV_CN.LIVE.fold, die:PV_CN.LIVE.die, strike:PV_CN.A.strike, wrap:PV_CN.A.wrap, bite:PV_CN.A.bite},
-  start(e,b){ const r=rng(); e.pvMem.style= r<0.45?"crawl": r<0.7?"bend":"walk"; e.pvMem.cool=1.0; b.play(e.pvMem.style); },
+  start(e,b){ const r=rng(); e.pvMem.style= r<0.45?"crawl": r<0.7?"bend":"walk"; e.pvMem.cool=1.0; if(e.pvMem.style==="walk") b.play("walk"); else { e.pvMem.after=e.pvMem.style; b.play("fold"); } },   /* a low one comes up out of its rest pose by folding down, not by dropping */
   brain(e,dt,dist,toP){ const C=CFG.contortionist, b=e.pv, m=e.pvMem, name=b.clipName; m.cool-=dt;
     const los=lineOfSight(e.pos.x,e.pos.z,player.pos.x,player.pos.z,false), sees=!player.dead&&los&&dist<C.sight; if(sees) m.last={x:player.pos.x,z:player.pos.z};
     const ATT={strike:6.2,wrap:8.6,bite:6.6};
@@ -15,14 +15,14 @@ PVK.contortionist={ mod:PV_CN, label:"Contortionist", group:"bcross/contortionis
       const held=player.grabbed&&player.grabbed.by===e, pinned=T.landT&&!T.offT&&!T.end&&b.ctx.out==="bitten"&&!m.dropMiss; if(held||pinned){ player.vel.set(0,0,0); player.downT=Math.max(player.downT||0,0.3); }
       if((T.offT&&b.t-T.offT>1.6)||(T.end&&!held)||(T.landT&&b.t-T.landT>5.5&&!held)){ m.style="crawl"; b.play("crawl",{anchor:"keep"}); m.cool=C.attackCool; }
       return; }
-    if(name==="fold"){ if(b.ctx.folded){ m.style="crawl"; b.play("crawl",{anchor:"keep"}); } return; }
+    if(name==="fold"){ if(b.ctx.folded){ m.style=m.after||"crawl"; m.after=null; b.play(m.style,{anchor:"keep"}); } return; }
     if(ATT[name]){ const held=player.grabbed&&player.grabbed.by===e;
       if(name==="wrap"&&held){ const o=m.wrapOff; if(o){ player.pos.x=e.pos.x+o.x; player.pos.z=e.pos.z+o.z; collide(player.pos,0.3); player.vel.set(0,0,0); player.downT=Math.max(player.downT||0,0.3); } return; }
-      if(b.ct>ATT[name] || (name!=="wrap"&&dist>8) || (name==="wrap"&&b.ct>2&&!b.ctx.T.grab&&dist>4)){ b.play(m.style==="walk"?"walk":m.style,{anchor:"keep"}); m.cool=C.attackCool; }
+      if(b.ct>ATT[name] || (name!=="wrap"&&dist>8) || (name==="wrap"&&b.ct>2&&!b.ctx.T.grab&&dist>4)){ if(m.style!=="walk"&&(name==="bite"||name==="strike")){ m.after=m.style; b.play("fold",{anchor:"keep"}); } else b.play(m.style==="walk"?"walk":m.style,{anchor:"keep"}); m.cool=C.attackCool; }   /* upright after a bite: it folds back down (the approved fold) before it crawls on */
       return; }
     if(e.stagger>0){ e.stagger-=dt; b.ctx.wantV=0; return; }
     // toward her, or to where she was last seen, round corners and through doors
-    let tx=null, tz=null; if(sees){ const g=e.goal(dt); tx=g.x; tz=g.z; } else if(m.last&&Math.hypot(m.last.x-e.pos.x,m.last.z-e.pos.z)>0.8){ tx=m.last.x; tz=m.last.z; }
+    let tx=null, tz=null; if(sees){ const g=e.goal(dt); tx=g.x; tz=g.z; } else if(m.last&&Math.hypot(m.last.x-e.pos.x,m.last.z-e.pos.z)>0.8){ const g=pvRouteTo(e,m.last.x,m.last.z); tx=g.x; tz=g.z; }
     if(tx!=null){ b.ctx.wantYaw=pvWantYaw(b,tx-e.pos.x,tz-e.pos.z); b.ctx.wantV= dist>C.stopAt+(m.style==="walk"?0.6:0)?1:0; } else b.ctx.wantV=0;
     // too close to start anything: an upright one folds down; a low one skitters back out to its distance
     if(sees&&dist<2.6&&!player.grabbed){ if(m.style==="walk"&&m.cool<=0.6){ b.play("fold",{anchor:"keep"}); m.cool=0.8; return; }

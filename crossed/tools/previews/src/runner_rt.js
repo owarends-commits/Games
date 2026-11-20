@@ -71,7 +71,7 @@ Enemy.prototype.runnerApply=function(J){ const P=this.P, k=this.scale||1;
 
 // ---------------------------------------------------------------- hits on Norah
 function runnerHitNorah(e, dmg, how, push, down, extra={}){
-  if(player.dead) return false; if(dodgeSaves()){ log(`Norah ducks ${e.name}'s ${how}`,"#bfe0ff"); if(run) run.saves++; return false; }
+  if(player.dead) return false; if((player.guardT||0)>0&&!player.grabbed) return false;   /* stun grace: she gets to move before the next hit */ if(dodgeSaves()){ log(`Norah ducks ${e.name}'s ${how}`,"#bfe0ff"); if(run) run.saves++; return false; }
   player.hurt(dmg, e, how); if(player.dead) return true;
   const d=new THREE.Vector3(player.pos.x-e.pos.x,0,player.pos.z-e.pos.z); if(d.lengthSq()<1e-4) d.set(Math.sin(e.yaw),0,Math.cos(e.yaw)); d.normalize();
   if(push){ player.vel.copy(d.multiplyScalar(push)); } if(down){ player.stumble=Math.max(player.stumble,down); player.downT=down; player.search=null; }
@@ -142,7 +142,7 @@ Enemy.prototype.brainRunner=function(dt,dist,want,toP){
         go("rcharge"); rc.sprint=C.sprintCool; log(`${this.name} curls in, about to charge`,"#ffb070"); return; }
       if(dist<C.holdDist){ this.desired={x:0,z:0}; this.rAnim="neutral"; return; }
       const g=this.goal(dt); this.steer(dt,Math.atan2(g.x-this.pos.x,g.z-this.pos.z),C.walk*(legs?0.3:1),C.turn); this.rAnim="walk"; return; }
-    if(this.lastKnown && Math.hypot(this.lastKnown.x-this.pos.x,this.lastKnown.z-this.pos.z)>0.8){ this.goalPt=null; this.steer(dt,Math.atan2(this.lastKnown.x-this.pos.x,this.lastKnown.z-this.pos.z),C.walk*(legs?0.3:1),C.turn); this.rAnim="walk"; return; }
+    if(this.lastKnown && Math.hypot(this.lastKnown.x-this.pos.x,this.lastKnown.z-this.pos.z)>0.8){ this.goalPt=null; this.steer(dt,(()=>{ const g=route(this.pos.x,this.pos.z,this.lastKnown.x,this.lastKnown.z); return Math.atan2(g.x-this.pos.x,g.z-this.pos.z); })(),C.walk*(legs?0.3:1),C.turn); this.rAnim="walk"; return; }
     this.desired={x:0,z:0}; this.rAnim="neutral"; }
   }
 };

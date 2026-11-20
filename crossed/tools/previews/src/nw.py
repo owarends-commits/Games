@@ -10,7 +10,6 @@ j = rep(j, "if(player.reloading<=0){ player.rounds+=player.reloadAdd;", "if(play
 j = rep(j, '  $("spare").textContent = CFG.rev.infinite?" ∞":` +${player.spare}`;', '  $("spare").textContent = CFG.rev.infinite?" ∞":` +${player.spare}`; wpnHud();')
 j = rep(j, "  if(e.code===\"KeyF\") fire();\n", "  if(e.code===\"KeyF\") fire();\n  if(e.code===\"KeyB\"&&!rep) wpnSwitch(1);\n  if(e.code===\"KeyJ\"&&!rep) wpnArmoury();\n")
 j = rep(j, "  for(const e of enemies) e.update(dt); pvFxAll(dt); plvFrame(dt);", "  for(const e of enemies) e.update(dt); pvFxAll(dt); wpnStep(dt); plvFrame(dt);")
-j = rep(j, '$("reticle").style.display = player.aiming && !fixed ?"block":"none";', '$("reticle").style.display = player.aiming && !fixed && !(RET&&RET.style.display==="block") ?"block":"none";')
 # a spawn can name its exact model (opts.mdl): every BCROSS model can be put in, endgame-only ones too
 j = rep(j, 'this.mdl = big ? (type==="brute"?pickModel("louis"):null) : pickModel(this.variant);', 'this.mdl = opts.mdl&&mdlInfo(opts.mdl) ? opts.mdl : big ? (type==="brute"?pickModel("louis"):null) : pickModel(this.variant);')
 j = rep(j, '  if(e.code==="Digit9") spawn("splithead");', '  if(e.code==="Digit9") spawn("splithead");\n  if(e.code==="KeyU") spawn("runner");')
@@ -19,3 +18,8 @@ j = rep(j, '  if(e.code==="KeyT"){ CFG.world.timeScale = CFG.world.timeScale<1?1
 j = rep(j, 'addEventListener("mousemove", e=>{\n', 'addEventListener("mousemove", e=>{\n  if(WS.wheel){ if(document.pointerLockElement===canvas) wheelMouse(e); return; }\n')
 j = rep(j, 'canvas.addEventListener("mousedown", e=>{\n', 'canvas.addEventListener("mousedown", e=>{\n  if(WS.wheel){ wheelPick(); return; }\n')
 j = rep(j, '    else if(invOpen()||SB.simMenu){ dt=0; }', '    else if(invOpen()||SB.simMenu||WS.wheel){ dt=0; }')
+# a melee weapon out: the shove button swings it (the knife also stabs free of a grab)
+j = rep(j, "function shove(){\n  if(mash()) return;\n", "function shove(){\n  if(WS.wpn===\"knife\"&&player.grabbed){ wpnSwing(\"knife\"); return; }\n  if(mash()) return;\n  if(WMELEE(WS.wpn)&&!player.dead&&!paused){ wpnSwing(WS.wpn); return; }\n")
+# shorter stuns, and no chain of hits while she's stunned: knocked about, she gets a moment to move before the next lands
+j = rep(j, '  else if(player.stumble>0){ player.stumble-=dt; pMode="skid"; }', '  else if(player.stumble>0){ player.stumble-=dt*(CFG.norah.stunRate||1.7); pMode="skid"; }')
+j = rep(j, "  hurt(dmg, from, how){\n    if(this.dead) return;\n", "  hurt(dmg, from, how){\n    if(this.dead) return;\n    if((this.guardT||0)>0&&!this.grabbed&&!/bite|squeeze|crush|pin|throne|engulf|drop|coil|snatch|wrap|grab/i.test(String(how||\"\"))) return;\n")

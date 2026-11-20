@@ -1973,6 +1973,7 @@ const player = {
     if(this.hp<=0){ this.hp=0; this.grabbed=null; this.dead=true; document.getElementById("dead").style.display="flex"; try{ document.exitPointerLock(); }catch(e){} endRun("DIED"); } },
   hurt(dmg, from, how){
     if(this.dead) return;
+    if((this.guardT||0)>0&&!this.grabbed&&!/bite|squeeze|crush|pin|throne|engulf|drop|coil|snatch|wrap|grab/i.test(String(how||""))) return;
     const N=CFG.norah;
     if(this.dodge>0 && this.dodge > N.dodgeTime*(1-N.dodgeIframes)){ log(`Dodged ${from.name}'s ${how}`, "#bfe0ff"); if(run) run.saves++; if(this.dodgeLog) this.dodgeLog.ticks.push({at:1-this.dodge/N.dodgeTime, ok:true}); return; }
     if(this.dodge>0 && this.dodgeLog) this.dodgeLog.ticks.push({at:1-this.dodge/N.dodgeTime, ok:false});
@@ -2173,7 +2174,9 @@ function startReload(){
   log(`Reloading ${n} (${player.reloading.toFixed(2)}s)`, "#9a9283");
 }
 function shove(){
+  if(WS.wpn==="knife"&&player.grabbed){ wpnSwing("knife"); return; }
   if(mash()) return;
+  if(WMELEE(WS.wpn)&&!player.dead&&!paused){ wpnSwing(WS.wpn); return; }
   if(player.dead||player.shoveCd>0||player.dodge>0||player.stumble>0||paused) return;
   player.shoveCd = CFG.norah.shoveCooldown; player.shoveT = 0.3; if(run) run.shoves++; SFX.shove(); makeNoise(player.pos.x,player.pos.z,CFG.stealth.shoveNoise,"shove");
   const f = new THREE.Vector3(Math.sin(player.yaw),0,Math.cos(player.yaw)); let any=false;
@@ -2389,7 +2392,7 @@ function updatePlayer(dt){
     else { player.yaw += wrapA(Math.atan2(g.by.pos.x-player.pos.x,g.by.pos.z-player.pos.z)-player.yaw)*Math.min(1,dt*6); } pMode="pin"; }
   else if(player.crushT>0||player.kneelT>0){ pMode="pin"; if(player.crushT>0) player.aiming=false; player.crushT=Math.max(0,player.crushT-dt); player.kneelT=Math.max(0,player.kneelT-dt); }
   else if(player.search){ updateSearch(dt); pMode="pin"; player.aiming=false; }
-  else if(player.stumble>0){ player.stumble-=dt; pMode="skid"; }
+  else if(player.stumble>0){ player.stumble-=dt*(CFG.norah.stunRate||1.7); pMode="skid"; }
   else if(player.aiming){
     if(!fixed) player.yaw = camYaw;
     else if(tank){ if(keys.KeyA) player.yaw+=turnK; if(keys.KeyD) player.yaw-=turnK; player.yaw -= (pad.move.x+touch.move.x)*turnK; }
@@ -2598,7 +2601,7 @@ function updateHud(){
   $("cool").textContent = bits.join(" · ");
   renderQte();
   const fixed=isFixed();
-  $("reticle").style.display = player.aiming && !fixed && !(RET&&RET.style.display==="block") ?"block":"none"; $("reticle").className = "hud "+(player.hammer>0||player.reloading>0?"wait ":"")+(aimOverCheck(fixed)?"on":"");
+  $("reticle").style.display = player.aiming && !fixed ?"block":"none"; $("reticle").className = "hud "+(player.hammer>0||player.reloading>0?"wait ":"")+(aimOverCheck(fixed)?"on":"");
   $("aimline").textContent = player.aiming && fixed ? (player.aimTarget?`Aiming at ${player.aimTarget.name} · ${player.aimHeight>0?"HIGH (head)":player.aimHeight<0?"LOW (legs)":"body"}`:"Aiming: no target in front") : "";
   { const vis=playerVis(), nr=Math.max(0,hudNoise.r*(1-(gameTime-hudNoise.t)/0.8));
     $("stealthline").textContent = `SEEN ${"▮".repeat(Math.round(vis*6))}${"▯".repeat(6-Math.round(vis*6))} ${Math.round(vis*100)}% · NOISE ${nr>0.05?nr.toFixed(1)+" m":"–"}${player.crouch?" · CROUCHED":""}`; }
@@ -3409,7 +3412,7 @@ function updateFlying(dt){
 }
 function louisTick(dt){
   const N=CFG.norah;
-  if(player.downT>0) player.downT-=dt;
+  if(player.downT>0) player.downT-=dt*(CFG.norah.stunRate||1.7);
   const T=player.thrown;
   if(T){ T.t-=dt; const sp=Math.hypot(player.vel.x,player.vel.z);
     if(!T.hit && T.last>3 && sp<T.last*0.45){ T.hit=true; player.bite(T.by,"grab",CFG.brute.throwWallDamage); shake=Math.max(shake,0.7); SFX.slam(null); log(`Slammed into the wall: −${CFG.brute.throwWallDamage}`,"#ff7070"); }
@@ -3998,7 +4001,7 @@ Enemy.prototype.runnerApply=function(J){ const P=this.P, k=this.scale||1;
 
 // ---------------------------------------------------------------- hits on Norah
 function runnerHitNorah(e, dmg, how, push, down, extra={}){
-  if(player.dead) return false; if(dodgeSaves()){ log(`Norah ducks ${e.name}'s ${how}`,"#bfe0ff"); if(run) run.saves++; return false; }
+  if(player.dead) return false; if((player.guardT||0)>0&&!player.grabbed) return false;   /* stun grace: she gets to move before the next hit */ if(dodgeSaves()){ log(`Norah ducks ${e.name}'s ${how}`,"#bfe0ff"); if(run) run.saves++; return false; }
   player.hurt(dmg, e, how); if(player.dead) return true;
   const d=new THREE.Vector3(player.pos.x-e.pos.x,0,player.pos.z-e.pos.z); if(d.lengthSq()<1e-4) d.set(Math.sin(e.yaw),0,Math.cos(e.yaw)); d.normalize();
   if(push){ player.vel.copy(d.multiplyScalar(push)); } if(down){ player.stumble=Math.max(player.stumble,down); player.downT=down; player.search=null; }
@@ -4069,7 +4072,7 @@ Enemy.prototype.brainRunner=function(dt,dist,want,toP){
         go("rcharge"); rc.sprint=C.sprintCool; log(`${this.name} curls in, about to charge`,"#ffb070"); return; }
       if(dist<C.holdDist){ this.desired={x:0,z:0}; this.rAnim="neutral"; return; }
       const g=this.goal(dt); this.steer(dt,Math.atan2(g.x-this.pos.x,g.z-this.pos.z),C.walk*(legs?0.3:1),C.turn); this.rAnim="walk"; return; }
-    if(this.lastKnown && Math.hypot(this.lastKnown.x-this.pos.x,this.lastKnown.z-this.pos.z)>0.8){ this.goalPt=null; this.steer(dt,Math.atan2(this.lastKnown.x-this.pos.x,this.lastKnown.z-this.pos.z),C.walk*(legs?0.3:1),C.turn); this.rAnim="walk"; return; }
+    if(this.lastKnown && Math.hypot(this.lastKnown.x-this.pos.x,this.lastKnown.z-this.pos.z)>0.8){ this.goalPt=null; this.steer(dt,(()=>{ const g=route(this.pos.x,this.pos.z,this.lastKnown.x,this.lastKnown.z); return Math.atan2(g.x-this.pos.x,g.z-this.pos.z); })(),C.walk*(legs?0.3:1),C.turn); this.rAnim="walk"; return; }
     this.desired={x:0,z:0}; this.rAnim="neutral"; }
   }
 };
@@ -9660,6 +9663,9 @@ Enemy.prototype.pvDie=function(dir){ this.dead=true; this.deadT=0; const K=PVK[t
 // a hit on her from a clip event, if it really reaches her (her body within reach of the given stage point)
 function pvReach(e,stagePt,r){ const b=e.pv, w=b.toWorld(stagePt), p=player.pos; return Math.hypot(w.x-p.x,w.z-p.z)<r && w.y>-0.2 && w.y<2.2; }
 function pvBodyPt(e,bone){ const b=e.pv; b.C.group.updateMatrixWorld(true); return b.withStage(()=>b.C.B[bone].getWorldPosition(new THREE.Vector3())); }
+
+// heading somewhere it can't see (where she was last seen): round walls, furniture and doors, re-planned a few times a second
+function pvRouteTo(e,x,z){ const m=e.pvMem||(e.pvMem={}); m.rT=(m.rT||0)-1/60; if(m.rT<=0||!m.rG||m.rG.tx!==x||m.rG.tz!==z){ m.rT=0.35; const g=route(e.pos.x,e.pos.z,x,z); m.rG={x:g.x,z:g.z,tx:x,tz:z}; } return m.rG; }
 // ================================================================ the Contortionist (BCROSS), in the playground
 // Each one has a way of moving it keeps: the spider crawl, the backbend skitter, or walking like a man (until it folds).
 // Low ones scuttle in and wrap her legs, dragging her along the floor until she kicks free (the break-free prompt), or
@@ -9667,7 +9673,7 @@ function pvBodyPt(e,bone){ const b=e.pv; b.C.group.updateMatrixWorld(true); retu
 // run the neck-twist bite, or fold down into the crawl.
 PVK.contortionist={ mod:PV_CN, label:"Contortionist", group:"bcross/contortionist", cfg:"contortionist", radius:0.4,
   holds:["wrap","drop"], noCollide:b=>b.clipName==="drop", clips:{drop:PV_CN.A.drop, crawl:PV_CN.LIVE.crawl, bend:PV_CN.LIVE.bend, walk:PV_CN.LIVE.walk, fold:PV_CN.LIVE.fold, die:PV_CN.LIVE.die, strike:PV_CN.A.strike, wrap:PV_CN.A.wrap, bite:PV_CN.A.bite},
-  start(e,b){ const r=rng(); e.pvMem.style= r<0.45?"crawl": r<0.7?"bend":"walk"; e.pvMem.cool=1.0; b.play(e.pvMem.style); },
+  start(e,b){ const r=rng(); e.pvMem.style= r<0.45?"crawl": r<0.7?"bend":"walk"; e.pvMem.cool=1.0; if(e.pvMem.style==="walk") b.play("walk"); else { e.pvMem.after=e.pvMem.style; b.play("fold"); } },   /* a low one comes up out of its rest pose by folding down, not by dropping */
   brain(e,dt,dist,toP){ const C=CFG.contortionist, b=e.pv, m=e.pvMem, name=b.clipName; m.cool-=dt;
     const los=lineOfSight(e.pos.x,e.pos.z,player.pos.x,player.pos.z,false), sees=!player.dead&&los&&dist<C.sight; if(sees) m.last={x:player.pos.x,z:player.pos.z};
     const ATT={strike:6.2,wrap:8.6,bite:6.6};
@@ -9677,14 +9683,14 @@ PVK.contortionist={ mod:PV_CN, label:"Contortionist", group:"bcross/contortionis
       const held=player.grabbed&&player.grabbed.by===e, pinned=T.landT&&!T.offT&&!T.end&&b.ctx.out==="bitten"&&!m.dropMiss; if(held||pinned){ player.vel.set(0,0,0); player.downT=Math.max(player.downT||0,0.3); }
       if((T.offT&&b.t-T.offT>1.6)||(T.end&&!held)||(T.landT&&b.t-T.landT>5.5&&!held)){ m.style="crawl"; b.play("crawl",{anchor:"keep"}); m.cool=C.attackCool; }
       return; }
-    if(name==="fold"){ if(b.ctx.folded){ m.style="crawl"; b.play("crawl",{anchor:"keep"}); } return; }
+    if(name==="fold"){ if(b.ctx.folded){ m.style=m.after||"crawl"; m.after=null; b.play(m.style,{anchor:"keep"}); } return; }
     if(ATT[name]){ const held=player.grabbed&&player.grabbed.by===e;
       if(name==="wrap"&&held){ const o=m.wrapOff; if(o){ player.pos.x=e.pos.x+o.x; player.pos.z=e.pos.z+o.z; collide(player.pos,0.3); player.vel.set(0,0,0); player.downT=Math.max(player.downT||0,0.3); } return; }
-      if(b.ct>ATT[name] || (name!=="wrap"&&dist>8) || (name==="wrap"&&b.ct>2&&!b.ctx.T.grab&&dist>4)){ b.play(m.style==="walk"?"walk":m.style,{anchor:"keep"}); m.cool=C.attackCool; }
+      if(b.ct>ATT[name] || (name!=="wrap"&&dist>8) || (name==="wrap"&&b.ct>2&&!b.ctx.T.grab&&dist>4)){ if(m.style!=="walk"&&(name==="bite"||name==="strike")){ m.after=m.style; b.play("fold",{anchor:"keep"}); } else b.play(m.style==="walk"?"walk":m.style,{anchor:"keep"}); m.cool=C.attackCool; }   /* upright after a bite: it folds back down (the approved fold) before it crawls on */
       return; }
     if(e.stagger>0){ e.stagger-=dt; b.ctx.wantV=0; return; }
     // toward her, or to where she was last seen, round corners and through doors
-    let tx=null, tz=null; if(sees){ const g=e.goal(dt); tx=g.x; tz=g.z; } else if(m.last&&Math.hypot(m.last.x-e.pos.x,m.last.z-e.pos.z)>0.8){ tx=m.last.x; tz=m.last.z; }
+    let tx=null, tz=null; if(sees){ const g=e.goal(dt); tx=g.x; tz=g.z; } else if(m.last&&Math.hypot(m.last.x-e.pos.x,m.last.z-e.pos.z)>0.8){ const g=pvRouteTo(e,m.last.x,m.last.z); tx=g.x; tz=g.z; }
     if(tx!=null){ b.ctx.wantYaw=pvWantYaw(b,tx-e.pos.x,tz-e.pos.z); b.ctx.wantV= dist>C.stopAt+(m.style==="walk"?0.6:0)?1:0; } else b.ctx.wantV=0;
     // too close to start anything: an upright one folds down; a low one skitters back out to its distance
     if(sees&&dist<2.6&&!player.grabbed){ if(m.style==="walk"&&m.cool<=0.6){ b.play("fold",{anchor:"keep"}); m.cool=0.8; return; }
@@ -9743,7 +9749,7 @@ function rcBase(type,label,only){ return { mod:PV_RC, label, group:"bcross/reach
       if(b.ct>ATT[name]&&!held){ b.play("loom",{anchor:"keep"}); m.cool=C.attackCool; m.grab=false; m.pinned=null; m.kicked=false; b.ctx.liveShotAt=null; }
       return; }
     // loom: to the edge of its reach, toward her or where she was last seen
-    let tx=null,tz=null; if(sees){ const g=e.goal(dt); tx=g.x; tz=g.z; } else if(m.last&&Math.hypot(m.last.x-e.pos.x,m.last.z-e.pos.z)>1){ tx=m.last.x; tz=m.last.z; b.ctx.gap=99; }
+    let tx=null,tz=null; if(sees){ const g=e.goal(dt); tx=g.x; tz=g.z; } else if(m.last&&Math.hypot(m.last.x-e.pos.x,m.last.z-e.pos.z)>1){ const g=pvRouteTo(e,m.last.x,m.last.z); tx=g.x; tz=g.z; b.ctx.gap=99; }
     if(tx!=null){ b.ctx.wantYaw=pvWantYaw(b,tx-e.pos.x,tz-e.pos.z); b.ctx.wantV=1; } else { b.ctx.wantV=0; }
     const R=PV_RC.LIVE.reach(rcRec(b)), L=b.rc.L, closeD=Math.max(0.62,Math.min(1.3,0.3*L+0.42)), biteD=0.36*L+0.42;
     // a neck one either whips from the edge of its reach or steps in close to bite from above or coil round her
@@ -10037,7 +10043,7 @@ function wpnReload(){ const k=WS.wpn; if(k==="revolver") return false; if(!WGUN(
   const C=CFG.weapons[k], s=wpnState(k), n=Math.min(C.mag-s.mag,s.spare); if(n<=0) return true;
   player.reloadAdd=n; player.reloadTotal=player.reloading=C.reloadBase+C.reloadPer*n; SFX.cylinder(); makeNoise(player.pos.x,player.pos.z,CFG.stealth.reloadNoise,"reload"); wpnAct("load"); log(`Reloading ${WNAME[k].toLowerCase()} (${player.reloading.toFixed(1)}s)`,"#9a9283"); return true; }
 function wpnLoaded(){ const k=WS.wpn, s=wpnState(k); s.mag+=player.reloadAdd; s.spare-=player.reloadAdd; player.reloadAdd=0; SFX.cylinder(); log(`Loaded. ${s.mag} / ${CFG.weapons[k].mag}`,"#9a9283"); }
-function wpnStep(dt){ WS.cool=Math.max(0,WS.cool-dt); const k=WS.wpn;
+function wpnStep(dt){ norahGuard(dt); WS.cool=Math.max(0,WS.cool-dt); const k=WS.wpn;
   if(WLONG(k)&&player.flash.on){ player.flash.on=false; if(!WS.warned){ WS.warned=true; log("Both hands on the gun: the flashlight goes off","#9a9283"); } }
   if(WS.melee){ const m=WS.melee; m.t+=dt; if(!m.done&&m.t>=CFG.weapons[m.k].hitAt){ m.done=true; wpnMeleeHit(m.k); } if(m.t>CFG.weapons[m.k].time) WS.melee=null; }
   if(WS.litT>0){ WS.litT-=dt; if(WS.litT<=0){ WS.lit=CFG.weapons.flare.burn; wpnState("flare").mag--; } }
@@ -10064,6 +10070,7 @@ function wpnReset(){ WS.wpn="revolver"; player.wpn="revolver"; WS.owned=["revolv
 function wpnSpread(k){ const C=CFG.weapons[k]; const mv=Math.hypot(PLV.S.fwdV||0,PLV.S.sideV||0); return (C.spread||0)+(WS.bloom||0)+Math.min(1.5,mv*0.5)*(k==="rifle"?2:1); }
 let RET=null;
 function wpnReticle(dt){ WS.bloom=Math.max(0,(WS.bloom||0)*Math.exp(-dt*3.2)-dt*0.2);
+  return;   /* the per-gun outlines are off: the basic reticle shows for every weapon */
   const old=$("reticle"); if(!old) return; const k=WS.wpn, gun=k==="revolver"||WGUN(k), fixed=isFixed();
   if(!RET){ RET=document.createElementNS("http://www.w3.org/2000/svg","svg"); RET.setAttribute("class","hud"); RET.style.cssText="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible;display:none"; old.parentNode.insertBefore(RET,old); }
   const show=gun&&player.aiming&&!player.dead; RET.style.display=show?"block":"none"; if(!show){ return; } old.style.display="none";
@@ -10110,6 +10117,12 @@ function wheelMouse(e){ const p=WS.wpt||(WS.wpt={x:0,y:0}); p.x=Math.max(-170,Ma
 function wheelKey(e){ if(e.code==="Escape"){ wheelClose(); return true; } if(e.code==="KeyT"){ wheelPick(); return true; }
   const m=/^Digit([1-9])$/.exec(e.code); if(m){ wheelPick(+m[1]-1); return true; } return ["KeyW","KeyA","KeyS","KeyD"].includes(e.code)?false:true; }
 addEventListener("keydown",e=>{ if(WS.wheel&&!e.repeat&&wheelKey(e)){ e.preventDefault(); e.stopImmediatePropagation(); } },true);
+// stun grace: while she's stunned and for a moment after she can move, ordinary hits don't land (wpnStep keeps it)
+function norahGuard(dt){ const st=(player.stumble>0||(player.downT||0)>0)&&!player.grabbed&&!player.dead; if(st) player.guardT=Math.max(player.guardT||0,CFG.norah.stunGrace??0.4); else player.guardT=Math.max(0,(player.guardT||0)-dt); }
+CFG.norah.stunRate=CFG.norah.stunRate??1.7; CFG.norah.stunGrace=CFG.norah.stunGrace??0.4;
+// her stun timers refuse a fresh knockdown while she's under the stun grace (holds may still top them up a little)
+for(const k of ["stumble","downT"]){ let v=player[k]||0; Object.defineProperty(player,k,{configurable:true,enumerable:true,get(){ return v; },
+  set(x){ if(x>v&&x>0.35&&(player.guardT||0)>0&&!player.grabbed&&!player.dead) x=Math.max(v,Math.min(x,0.35)); v=x; }}); }
 // ================================================================ the editor shows the creatures as they are
 // The preview-body creatures (and the Runner and Tactician) are drawn in the editor with their real models, not as an
 // ACROSS person. The model loads in the background; until then a dim outline of its size stands in.
@@ -10133,7 +10146,51 @@ function bcrossModelList(){ return Object.keys(MODEL_LIB).filter(k=>(MODEL_LIB[k
 function spawnBcross(key,x,z,opts={}){ const t=bcrossType(key); if(!t){ log(`No creature plays ${key} yet`,"#ff7070"); return null; } return spawn(t,x,z,Object.assign({},opts,{mdl:key})); }
 // "type@model" (the editor's per-model entries) names the exact model
 // an unknown kind never turns silently into an ACROSS
-{ const sp0=spawn; spawn=function(type,x,z,opts){ if(typeof type==="string"&&type.includes("@")){ const [t,m]=type.split("@"); opts=Object.assign({},opts||{},{mdl:m}); type=t; } if(typeof type==="string"&&!PVK[type]&&!["across","brute","dummy","runner","tactician"].includes(type)&&!/^across/.test(type)){ log(`Unknown enemy "${type}"`,"#ff7070"); return null; } return sp0(type,x,z,opts); }; }
+{ const sp0=spawn; spawn=function(type,x,z,opts){ if(typeof type==="string"&&type.includes("@")){ const [t,m]=type.split("@"); opts=Object.assign({},opts||{},{mdl:m}); type=t; } if(typeof type==="string"&&!PVK[type]&&!["across","brute","dummy","runner","tactician"].includes(type)&&!/^across/.test(type)){ log(`Unknown enemy "${type}"`,"#ff7070"); return null; } const e=sp0(type,x,z,opts); if(e&&!(opts&&opts.aware==="unaware")){ const L={x:player.pos.x,z:player.pos.z}; if(e.kind==="runner"||e.kind==="tactician") e.lastKnown=e.lastKnown||L; if(e.pvMem&&!e.pvMem.last) e.pvMem.last=L; } return e; }; }   /* a hunting one knows where she is to start with */
+// ================================================================ navigation: around walls, furniture, pillars and every other map piece
+// A grid over the map (0.25 m), each cell blocked if a body of 0.32 m radius can't stand there (walls, windows, boxes,
+// pillars; doorways stay open, closed doors are bashed). A* over it; the next waypoint is the furthest point along the
+// path that can be walked to in a straight line. Rebuilt when the map changes or furniture is pushed.
+const NAV={cell:0.25, r:0.32, world:null, sig:"", t:0};
+function navSig(){ let s=world.boxes.length+":"; for(const d of world.doors) s+=(d.broken?"b":d.ang>0.6?"o":"c"); for(const b of world.boxes) s+=(b.x*10|0)+","+(b.z*10|0)+";"; return s+world.segs.length+":"+world.circles.length; }
+function navBuild(){ const B=world.bounds, c=NAV.cell, nx=Math.max(1,Math.ceil((B.x1-B.x0)/c)), nz=Math.max(1,Math.ceil((B.z1-B.z0)/c)), g=new Uint8Array(nx*nz), r=NAV.r;
+  for(let j=0;j<nz;j++) for(let i=0;i<nx;i++){ const x=B.x0+(i+0.5)*c, z=B.z0+(j+0.5)*c; let bl=x<B.x0+r||x>B.x1-r||z<B.z0+r||z>B.z1-r;
+    if(!bl) for(const s of world.segs){ const dx=s.bx-s.ax, dz=s.bz-s.az, L2=dx*dx+dz*dz||1e-9, u=Math.max(0,Math.min(1,((x-s.ax)*dx+(z-s.az)*dz)/L2)); if(Math.hypot(x-s.ax-dx*u,z-s.az-dz*u)<r+(s.t||0.2)/2){ bl=true; break; } }
+    if(!bl) for(const d of world.doors){ if(d.broken||d.ang<=0.6) continue; const sg=doorSeg(d), dx=sg.bx-sg.ax, dz=sg.bz-sg.az, L2=dx*dx+dz*dz||1e-9, u=Math.max(0,Math.min(1,((x-sg.ax)*dx+(z-sg.az)*dz)/L2)); if(Math.hypot(x-sg.ax-dx*u,z-sg.az-dz*u)<r+0.04){ bl=true; break; } }
+    if(!bl) for(const ci of world.circles){ if(Math.hypot(x-ci.x,z-ci.z)<ci.r+r){ bl=true; break; } }
+    if(!bl) for(const b of world.boxes){ const qx=Math.max(b.x0,Math.min(b.x1,x)), qz=Math.max(b.z0,Math.min(b.z1,z)); if(Math.hypot(x-qx,z-qz)<r){ bl=true; break; } }
+    g[j*nx+i]=bl?1:0; }
+  const cl=new Uint8Array(nx*nz).fill(255), Q=[]; for(let k=0;k<nx*nz;k++) if(g[k]){ cl[k]=0; Q.push(k); }
+  for(let q=0;q<Q.length;q++){ const k=Q[q], x=k%nx, z=(k/nx)|0; for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){ const X=x+dx, Z=z+dz; if(X<0||Z<0||X>=nx||Z>=nz) continue; const m=Z*nx+X; if(cl[m]>cl[k]+1){ cl[m]=cl[k]+1; Q.push(m); } } }
+  NAV.g=g; NAV.cl=cl; NAV.nx=nx; NAV.nz=nz; NAV.x0=B.x0; NAV.z0=B.z0; NAV.world=world; NAV.sig=navSig(); }
+function navReady(){ if(NAV.world!==world||!NAV.g){ navBuild(); return; } const now=performance.now(); if(now-NAV.t>700){ NAV.t=now; const s=navSig(); if(s!==NAV.sig) navBuild(); } }
+const navCell=(x,z)=>[Math.floor((x-NAV.x0)/NAV.cell),Math.floor((z-NAV.z0)/NAV.cell)];
+const navFree=(i,j)=>i>=0&&j>=0&&i<NAV.nx&&j<NAV.nz&&!NAV.g[j*NAV.nx+i];
+function navNearestFree(i,j){ if(navFree(i,j)) return [i,j]; for(let R=1;R<10;R++) for(let dj=-R;dj<=R;dj++) for(let di=-R;di<=R;di++){ if(Math.max(Math.abs(di),Math.abs(dj))!==R) continue; if(navFree(i+di,j+dj)) return [i+di,j+dj]; } return null; }
+// can a body walk straight from a to b (grid samples every 8 cm)
+function navLine(ax,az,bx,bz,w=0.14){ const L0=Math.hypot(bx-ax,bz-az)||1, px=-(bz-az)/L0*w, pz=(bx-ax)/L0*w; if(!navLine1(ax,az,bx,bz)) return false; if(L0<0.45) return true; const sx=ax+(bx-ax)*0.3/L0, sz=az+(bz-az)*0.3/L0; return navLine1(sx+px,sz+pz,bx+px,bz+pz)&&navLine1(sx-px,sz-pz,bx-px,bz-pz); }
+function navLine1(ax,az,bx,bz){ const L=Math.hypot(bx-ax,bz-az), n=Math.max(1,Math.ceil(L/0.08)); for(let k=1;k<=n;k++){ const u=k/n, [i,j]=navCell(ax+(bx-ax)*u,az+(bz-az)*u); if(!navFree(i,j)) return false; } return true; }
+function navPath(fx,fz,tx,tz){ navReady(); let s=navCell(fx,fz), g=navCell(tx,tz); s=navNearestFree(s[0],s[1]); g=navNearestFree(g[0],g[1]); if(!s||!g) return null;
+  const nx=NAV.nx, N=nx*NAV.nz, si=s[1]*nx+s[0], gi=g[1]*nx+g[0]; if(si===gi) return [[tx,tz]];
+  const G=new Float32Array(N).fill(1e9), from=new Int32Array(N).fill(-1), closed=new Uint8Array(N), heap=[], h=i=>{ const x=i%nx, z=(i/nx)|0, dx=Math.abs(x-g[0]), dz=Math.abs(z-g[1]); return Math.max(dx,dz)+0.414*Math.min(dx,dz); };
+  const push=(i,f)=>{ heap.push([f,i]); let k=heap.length-1; while(k>0){ const p=(k-1)>>1; if(heap[p][0]<=heap[k][0]) break; [heap[p],heap[k]]=[heap[k],heap[p]]; k=p; } };
+  const pop=()=>{ const top=heap[0], last=heap.pop(); if(heap.length){ heap[0]=last; let k=0; for(;;){ const a=2*k+1, b=a+1; let m=k; if(a<heap.length&&heap[a][0]<heap[m][0]) m=a; if(b<heap.length&&heap[b][0]<heap[m][0]) m=b; if(m===k) break; [heap[m],heap[k]]=[heap[k],heap[m]]; k=m; } } return top; };
+  G[si]=0; push(si,h(si)); let it=0;
+  while(heap.length&&it++<40000){ const [,u]=pop(); if(closed[u]) continue; closed[u]=1; if(u===gi) break; const ux=u%nx, uz=(u/nx)|0;
+    for(let dz=-1;dz<=1;dz++) for(let dx=-1;dx<=1;dx++){ if(!dx&&!dz) continue; const vx=ux+dx, vz=uz+dz; if(!navFree(vx,vz)) continue; if(dx&&dz&&(!navFree(ux+dx,uz)||!navFree(ux,uz+dz))) continue;
+      const v=vz*nx+vx, cv=NAV.cl[v], c=G[u]+(dx&&dz?1.414:1)*(cv<=1?3.0:cv===2?1.6:1); if(c<G[v]){ G[v]=c; from[v]=u; push(v,c+h(v)); } } }
+  if(from[gi]<0) return null; const P=[]; for(let k=gi;k!==si&&k>=0;k=from[k]) P.push(k); P.reverse();
+  const out=P.map(k=>[NAV.x0+((k%nx)+0.5)*NAV.cell, NAV.z0+(((k/nx)|0)+0.5)*NAV.cell]); out[out.length-1]=[tx,tz]; return out; }
+// the playground's route(): the next point to head for (direct when she can be walked to in a straight line)
+const routePortals=route;
+route=function(fx,fz,tx,tz){ navReady();
+  if(navLine(fx,fz,tx,tz)&&wallsClear(fx,fz,tx,tz)) return {x:tx,z:tz,direct:true};
+  const P=navPath(fx,fz,tx,tz); if(!P) return routePortals(fx,fz,tx,tz);
+  let k=0; for(let q=P.length-1;q>=0;q--){ if(navLine(fx,fz,P[q][0],P[q][1])){ k=q; break; } }
+  while(k<P.length-1&&Math.hypot(P[k][0]-fx,P[k][1]-fz)<0.6) k++;   /* never a waypoint at its feet */
+  // a closed door on the way: head for the far side of its middle, as the doorway router did (enemies bash or scratch through)
+  { let q=[fx,fz]; for(let m=0;m<=k;m++){ const r=P[m]; for(const d of world.doors){ if(d.broken||d.ang>0.6) continue; const sg=doorSeg(d); if(segsCross(q[0],q[1],r[0],r[1],sg.ax,sg.az,sg.bx,sg.bz)){ const mx=(sg.ax+sg.bx)/2, mz=(sg.az+sg.bz)/2, L=Math.hypot(sg.bx-sg.ax,sg.bz-sg.az)||1; let nx=-(sg.bz-sg.az)/L, nz=(sg.bx-sg.ax)/L; if((mx-fx)*nx+(mz-fz)*nz<0){ nx=-nx; nz=-nz; } return {x:mx+nx*0.7,z:mz+nz*0.7,direct:false}; } } q=r; } }
+  const w=P[k]; return {x:w[0],z:w[1],direct:k===P.length-1}; };
 // ================================================================ maps: new, presets (the playground's arenas and scenarios), import
 function sbNewDoc(name="Untitled map"){
   return {app:"crossed-sandbox", version:1, name, note:"", win:"either", env:Object.assign({},ENV_DEF), start:{hp:"",rounds:"",spare:"",items:[],flashOn:false}, terrain:null, objects:[], customItems:[], textures:[], assets:[]};

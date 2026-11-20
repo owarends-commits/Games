@@ -24,7 +24,7 @@ function rcBase(type,label,only){ return { mod:PV_RC, label, group:"bcross/reach
       if(b.ct>ATT[name]&&!held){ b.play("loom",{anchor:"keep"}); m.cool=C.attackCool; m.grab=false; m.pinned=null; m.kicked=false; b.ctx.liveShotAt=null; }
       return; }
     // loom: to the edge of its reach, toward her or where she was last seen
-    let tx=null,tz=null; if(sees){ const g=e.goal(dt); tx=g.x; tz=g.z; } else if(m.last&&Math.hypot(m.last.x-e.pos.x,m.last.z-e.pos.z)>1){ tx=m.last.x; tz=m.last.z; b.ctx.gap=99; }
+    let tx=null,tz=null; if(sees){ const g=e.goal(dt); tx=g.x; tz=g.z; } else if(m.last&&Math.hypot(m.last.x-e.pos.x,m.last.z-e.pos.z)>1){ const g=pvRouteTo(e,m.last.x,m.last.z); tx=g.x; tz=g.z; b.ctx.gap=99; }
     if(tx!=null){ b.ctx.wantYaw=pvWantYaw(b,tx-e.pos.x,tz-e.pos.z); b.ctx.wantV=1; } else { b.ctx.wantV=0; }
     const R=PV_RC.LIVE.reach(rcRec(b)), L=b.rc.L, closeD=Math.max(0.62,Math.min(1.3,0.3*L+0.42)), biteD=0.36*L+0.42;
     // a neck one either whips from the edge of its reach or steps in close to bite from above or coil round her

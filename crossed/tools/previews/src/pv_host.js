@@ -94,3 +94,6 @@ Enemy.prototype.pvDie=function(dir){ this.dead=true; this.deadT=0; const K=PVK[t
 // a hit on her from a clip event, if it really reaches her (her body within reach of the given stage point)
 function pvReach(e,stagePt,r){ const b=e.pv, w=b.toWorld(stagePt), p=player.pos; return Math.hypot(w.x-p.x,w.z-p.z)<r && w.y>-0.2 && w.y<2.2; }
 function pvBodyPt(e,bone){ const b=e.pv; b.C.group.updateMatrixWorld(true); return b.withStage(()=>b.C.B[bone].getWorldPosition(new THREE.Vector3())); }
+
+// heading somewhere it can't see (where she was last seen): round walls, furniture and doors, re-planned a few times a second
+function pvRouteTo(e,x,z){ const m=e.pvMem||(e.pvMem={}); m.rT=(m.rT||0)-1/60; if(m.rT<=0||!m.rG||m.rG.tx!==x||m.rG.tz!==z){ m.rT=0.35; const g=route(e.pos.x,e.pos.z,x,z); m.rG={x:g.x,z:g.z,tx:x,tz:z}; } return m.rG; }

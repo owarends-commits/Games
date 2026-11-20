@@ -53,7 +53,7 @@ function updateFlying(dt){
 }
 function louisTick(dt){
   const N=CFG.norah;
-  if(player.downT>0) player.downT-=dt;
+  if(player.downT>0) player.downT-=dt*(CFG.norah.stunRate||1.7);
   const T=player.thrown;
   if(T){ T.t-=dt; const sp=Math.hypot(player.vel.x,player.vel.z);
     if(!T.hit && T.last>3 && sp<T.last*0.45){ T.hit=true; player.bite(T.by,"grab",CFG.brute.throwWallDamage); shake=Math.max(shake,0.7); SFX.slam(null); log(`Slammed into the wall: −${CFG.brute.throwWallDamage}`,"#ff7070"); }

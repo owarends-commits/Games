@@ -86,7 +86,7 @@ function wpnReload(){ const k=WS.wpn; if(k==="revolver") return false; if(!WGUN(
   const C=CFG.weapons[k], s=wpnState(k), n=Math.min(C.mag-s.mag,s.spare); if(n<=0) return true;
   player.reloadAdd=n; player.reloadTotal=player.reloading=C.reloadBase+C.reloadPer*n; SFX.cylinder(); makeNoise(player.pos.x,player.pos.z,CFG.stealth.reloadNoise,"reload"); wpnAct("load"); log(`Reloading ${WNAME[k].toLowerCase()} (${player.reloading.toFixed(1)}s)`,"#9a9283"); return true; }
 function wpnLoaded(){ const k=WS.wpn, s=wpnState(k); s.mag+=player.reloadAdd; s.spare-=player.reloadAdd; player.reloadAdd=0; SFX.cylinder(); log(`Loaded. ${s.mag} / ${CFG.weapons[k].mag}`,"#9a9283"); }
-function wpnStep(dt){ WS.cool=Math.max(0,WS.cool-dt); const k=WS.wpn;
+function wpnStep(dt){ norahGuard(dt); WS.cool=Math.max(0,WS.cool-dt); const k=WS.wpn;
   if(WLONG(k)&&player.flash.on){ player.flash.on=false; if(!WS.warned){ WS.warned=true; log("Both hands on the gun: the flashlight goes off","#9a9283"); } }
   if(WS.melee){ const m=WS.melee; m.t+=dt; if(!m.done&&m.t>=CFG.weapons[m.k].hitAt){ m.done=true; wpnMeleeHit(m.k); } if(m.t>CFG.weapons[m.k].time) WS.melee=null; }
   if(WS.litT>0){ WS.litT-=dt; if(WS.litT<=0){ WS.lit=CFG.weapons.flare.burn; wpnState("flare").mag--; } }
@@ -113,6 +113,7 @@ function wpnReset(){ WS.wpn="revolver"; player.wpn="revolver"; WS.owned=["revolv
 function wpnSpread(k){ const C=CFG.weapons[k]; const mv=Math.hypot(PLV.S.fwdV||0,PLV.S.sideV||0); return (C.spread||0)+(WS.bloom||0)+Math.min(1.5,mv*0.5)*(k==="rifle"?2:1); }
 let RET=null;
 function wpnReticle(dt){ WS.bloom=Math.max(0,(WS.bloom||0)*Math.exp(-dt*3.2)-dt*0.2);
+  return;   /* the per-gun outlines are off: the basic reticle shows for every weapon */
   const old=$("reticle"); if(!old) return; const k=WS.wpn, gun=k==="revolver"||WGUN(k), fixed=isFixed();
   if(!RET){ RET=document.createElementNS("http://www.w3.org/2000/svg","svg"); RET.setAttribute("class","hud"); RET.style.cssText="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible;display:none"; old.parentNode.insertBefore(RET,old); }
   const show=gun&&player.aiming&&!player.dead; RET.style.display=show?"block":"none"; if(!show){ return; } old.style.display="none";
@@ -159,3 +160,9 @@ function wheelMouse(e){ const p=WS.wpt||(WS.wpt={x:0,y:0}); p.x=Math.max(-170,Ma
 function wheelKey(e){ if(e.code==="Escape"){ wheelClose(); return true; } if(e.code==="KeyT"){ wheelPick(); return true; }
   const m=/^Digit([1-9])$/.exec(e.code); if(m){ wheelPick(+m[1]-1); return true; } return ["KeyW","KeyA","KeyS","KeyD"].includes(e.code)?false:true; }
 addEventListener("keydown",e=>{ if(WS.wheel&&!e.repeat&&wheelKey(e)){ e.preventDefault(); e.stopImmediatePropagation(); } },true);
+// stun grace: while she's stunned and for a moment after she can move, ordinary hits don't land (wpnStep keeps it)
+function norahGuard(dt){ const st=(player.stumble>0||(player.downT||0)>0)&&!player.grabbed&&!player.dead; if(st) player.guardT=Math.max(player.guardT||0,CFG.norah.stunGrace??0.4); else player.guardT=Math.max(0,(player.guardT||0)-dt); }
+CFG.norah.stunRate=CFG.norah.stunRate??1.7; CFG.norah.stunGrace=CFG.norah.stunGrace??0.4;
+// her stun timers refuse a fresh knockdown while she's under the stun grace (holds may still top them up a little)
+for(const k of ["stumble","downT"]){ let v=player[k]||0; Object.defineProperty(player,k,{configurable:true,enumerable:true,get(){ return v; },
+  set(x){ if(x>v&&x>0.35&&(player.guardT||0)>0&&!player.grabbed&&!player.dead) x=Math.max(v,Math.min(x,0.35)); v=x; }}); }
