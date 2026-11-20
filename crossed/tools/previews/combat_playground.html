@@ -9466,7 +9466,8 @@ function pvFx(dt){ if(typeof goreStep==="function") goreStep(dt);
 const LIVE={}; let NX=3.2;   /* the creature pages keep a target here; Norah has none */
 const LEN_W=1.15, LEN_R=2.1, LEN_C=0.85;
 const ease=(D,k,to,r,dt)=>{ D[k]=(D[k]??to)+(to-(D[k]??to))*Math.min(1,dt*r); return D[k]; };
-LIVE.drive={ start(ctx){ nStart(ctx,0); ctx.D={ph:0}; ctx.aimT=1.5; },
+let PLVctx=null;
+LIVE.drive={ start(ctx){ nStart(ctx,0); ctx.D={ph:0}; ctx.aimT=1.5; PLVctx=ctx; },
   step(t,dt,ctx){ const S=ctx.S||{}, D=ctx.D, P=TP(), fv=S.fwdV||0, sv=S.sideV||0, sp=Math.hypot(fv,sv);
     const L= S.run?LEN_R: S.crouch?LEN_C: LEN_W, dir= fv<-0.05&&Math.abs(fv)>=Math.abs(sv)?-1:1;
     D.ph=((D.ph+dir*sp*dt/L)%1+1)%1;
@@ -9541,27 +9542,30 @@ const WPN={
   rifle:{hold:k=>["rf_aim",0.8+0.6*k], fire:["rf_fire",0.9,2.95], load:["rf_load",0,4.6]},
   pistol:{hold:k=>["ps_aim",0.8+0.45*k], fire:["ps_fire",0.85,1.3], load:["ps_load",0,3.2]},
   flaregun:{hold:k=>["fg_fire",0.6+0.4*k], fire:["fg_fire",1.75,3.4], load:["fg_load",0,3.6]},
-  hatchet:{hold:()=>["hx_chop",0.3], fire:["hx_chop",0.55,2.4]},
-  crowbar:{hold:()=>["cb_swing",0.3], fire:["cb_swing",0.55,2.5]},
+  hatchet:{hold:()=>["hx_chop",0.3], fire:["hx_chop",0.55,2.4], flurry:["hx_flurry",0.5,2.9]},
+  crowbar:{hold:()=>["cb_swing",0.3], fire:["cb_swing",0.55,2.5], pry:["cb_pry",0.4,6.4]},
   knife:{hold:()=>["kn_slash",0.3], fire:["kn_slash",0.75,2.2]},
   flare:{hold:()=>["fl_strike",0.3], light:["fl_strike",0.3,2.6], lit:["fl_strike",3.4], fire:["fl_throw",0.6,2.2]} };
 function hideWeapons(){ if(typeof W!=="undefined") for(const q in W) if(W[q]&&W[q].obj) W[q].obj.visible=false; if(typeof TL!=="undefined"&&TL) TL.visible=false; }
-function subStart(c,ctx){ const keep={x:ctx.x,z:ctx.z,yaw:ctx.yaw,ph:ctx.ph,look:ctx.look,D:ctx.D,S:ctx.S,aimT:ctx.aimT,T:ctx.T}; A[c].start(ctx); const st={}; for(const q of ["shots","out","mash","s0","yaw0"]) if(ctx[q]!==undefined) st[q]=ctx[q]; Object.assign(ctx,keep); return st; }
-function runSub(c,tc,dt,ctx,T,st){ const keep={x:ctx.x,z:ctx.z,yaw:ctx.yaw,ph:ctx.ph,look:ctx.look,D:ctx.D,S:ctx.S}; const T0=ctx.T; ctx.T=T; if(st) Object.assign(ctx,st); const J=A[c].step(tc,dt,ctx); ctx.T=T0; Object.assign(ctx,keep); return J; }
+function subStart(c,ctx,place){ const keep={x:ctx.x,z:ctx.z,yaw:ctx.yaw,ph:ctx.ph,look:ctx.look,D:ctx.D,S:ctx.S,aimT:ctx.aimT,T:ctx.T}; A[c].start(ctx); if(place){ keep.x=ctx.x; keep.z=ctx.z; keep.yaw=ctx.yaw; } const st={}; for(const q of ["shots","out","mash","s0","yaw0"]) if(ctx[q]!==undefined) st[q]=ctx[q]; Object.assign(ctx,keep); return st; }
+function runSub(c,tc,dt,ctx,T,st,place){ const keep={x:ctx.x,z:ctx.z,yaw:ctx.yaw,ph:ctx.ph,look:ctx.look,D:ctx.D,S:ctx.S}; const T0=ctx.T; ctx.T=T; if(st) Object.assign(ctx,st); const J=A[c].step(tc,dt,ctx); ctx.T=T0; if(place){ keep.x=ctx.x; keep.z=ctx.z; keep.yaw=ctx.yaw; } Object.assign(ctx,keep); return J; }
 function weaponPose(t,dt,ctx,S,D,Jb,mv,aimK){ const k=S.wpn, Wd=WPN[k]; if(!Wd) return null;
   if(D.wk!==k){ const keep={look:ctx.look,D:ctx.D,S:ctx.S,aimT:ctx.aimT}; wStart(ctx,k); Object.assign(ctx,keep); D.wk=k; D.sub=null; D.lastAct=null; D.hc=null; }
   // a new action from the host: start its clip
-  const act=S.act; if(act&&act.id!==D.lastAct){ D.lastAct=act.id; const c=Wd[act.kind]; if(c){ D.sub={c:c[0],from:c[1],to:c[2],t0:t,T:{},kind:act.kind,dur:act.dur,st:subStart(c[0],ctx)}; if(act.kind==="fire"&&k==="flare") D.sub.T.cap=1; } }
+  const act=S.act; if(act&&act.id!==D.lastAct){ D.lastAct=act.id; if(act.kind==="cancel"){ D.sub=null; } const c=Wd[act.kind]; if(c){ const place=act.kind==="pry"; D.sub={c:c[0],from:c[1],to:c[2],t0:t,T:{},kind:act.kind,dur:act.dur,place,st:subStart(c[0],ctx,place)}; if(place){ D.pryX=ctx.x; D.pryZ=ctx.z; D.pryYaw=ctx.yaw; } if(act.kind==="fire"&&k==="flare") D.sub.T.cap=1; } }
   let J=null, sub=D.sub;
   if(sub&&sub.kind==="load"){ if(S.reload==null) { D.sub=sub=null; } }
   if(sub){ let tc; if(sub.kind==="load") tc=sub.from+(S.reload||0)*(sub.to-sub.from); else tc=sub.from+(t-sub.t0)*(sub.dur?(sub.to-sub.from)/sub.dur:1);
-    if(tc>sub.to&&sub.kind!=="load"){ D.sub=sub=null; } else J=runSub(sub.c,Math.min(tc,sub.to),dt,ctx,sub.T,sub.st); }
+    if(tc>sub.to&&sub.kind!=="load"){ D.sub=sub=null; } else { J=runSub(sub.c,Math.min(tc,sub.to),dt,ctx,sub.T,sub.st,sub.place); if(sub.place){ D.pryX=ctx.x; D.pryZ=ctx.z; D.pryYaw=ctx.yaw; D.doorAng=DOOR?Math.abs(DOOR.leaf.rotation.y):0; if(DOOR) DOOR.visible=false; } } }
+  if(!sub&&D.pryX!=null){ D.pryX=null; ctx.x=0; ctx.z=0; ctx.yaw=Math.PI/2; }
   if(!J){ const h= k==="flare"&&S.lit? Wd.lit : Wd.hold(aimK); D.holdT=D.holdT||{}; if(k==="flare"&&S.lit){ D.holdT.cap=1; D.holdT.lit=D.holdT.lit||0.01; } if(D.hc!==h[0]){ D.hc=h[0]; D.hst=subStart(h[0],ctx); } J=runSub(h[0],h[1],dt,ctx,k==="flare"&&S.lit?D.holdT:{},D.hst); }
   // the legs keep walking under it
   if(mv>0.05) for(const q of ["lLx","lRx","lLz","lRz","kL","kR","fL","fR","hd"]) J[q]=Jb[q];
   ctx.phase=(sub?sub.kind:"holds")+" · "+k; return J; }
 LIVE.wmuzzle=k=>{ const o=W[k]; if(!o) return null; o.obj.updateMatrixWorld(true); return o.obj.localToWorld((o.pts.muzzle||o.pts.tip||new V3()).clone()); };
 LIVE.wtip=k=>{ const o=W[k]; if(!o) return null; o.obj.updateMatrixWorld(true); return o.obj.localToWorld((o.pts.tip||o.pts.muzzle||new V3()).clone()); };
+LIVE.pryState=()=>{ const D=PLVctx&&PLVctx.D; return D&&D.pryX!=null?{x:D.pryX,z:D.pryZ,yaw:D.pryYaw,door:D.doorAng||0,on:!!(D.sub&&D.sub.kind==="pry")}:null; };
+LIVE.itemModel=k=>{ const key=WX[k]?"w_"+k:k; if(!ITEMS[key]) return null; const g=buildItem(key); if(g.parent) g.parent.remove(g); return g; };
 LIVE.loose=()=>({pieces:PIECES, blood:BLOOD, flares:FLARES});
 LIVE.flareStep=dt=>{ if(typeof flareStep==="function") flareStep(dt); };
 
@@ -9919,8 +9923,8 @@ PVK.hob={ mod:PV_HOB, label:"The Hob", cfg:"hob", radius:1.2, body:HobBody,
 // the revolver's hammer, trigger and cylinder and the flashlight's switch move with it.
 const PLV={ready:false, loading:false, C:null, stage:null, ctx:null, t:0, S:{shots:[],shotN:0}, last:null, hp:null, rl:0};
 function plvRec(){ return {C:PLV.C, ctx:PLV.ctx, t:PLV.t, stage:PLV.stage, norah:null, clip:PV_NW.LIVE.drive, nx:0}; }
-function plvWith(fn){ const s=PLV.stage; s.position.set(0,0,0); s.rotation.set(0,0,0); s.updateMatrixWorld(true); try{ return fn(); } finally { plvPlace(); } }
-function plvPlace(){ const s=PLV.stage; s.position.set(player.pos.x,groundY(player.pos.x,player.pos.z)+(player.posY||0),player.pos.z); s.rotation.set(0,player.yaw-Math.PI/2,0); s.updateMatrixWorld(true); }
+function plvWith(fn){ const s=PLV.stage; s.position.set(0,0,0); s.rotation.set(0,0,0); s.scale.set(1,1,1); s.updateMatrixWorld(true); try{ return fn(); } finally { plvPlace(); } }
+function plvPlace(){ const s=PLV.stage, M=PLV.pryM; if(M){ s.position.set(M.pos.x,groundY(M.pos.x,M.pos.z),M.pos.z); s.rotation.set(0,M.th,0); s.scale.set(1,1,M.mirror); s.updateMatrixWorld(true); return; } s.scale.set(1,1,1); s.position.set(player.pos.x,groundY(player.pos.x,player.pos.z)+(player.posY||0),player.pos.z); s.rotation.set(0,player.yaw-Math.PI/2,0); s.updateMatrixWorld(true); }
 function plvInit(){ if(PLV.loading||PLV.ready||CFG.norah.liveAnims===false) return; const key=pickModel("norah"); if(!key) return; PLV.loading=true; PLV.key=key;
   PLV.stage=new THREE.Group(); scene.add(PLV.stage);
   mdlLoad(key).then(g=>{ plvWith(()=>{ PV_NW.pvBind(plvRec()); PLV.C=PV_NW.makeChar(g); PV_NW.pvSetup(PLV.C); PLV.ctx={events:[],x:0,z:0,yaw:Math.PI/2,v:0,live:true,T:{}}; PV_NW.pvBind(plvRec()); PV_NW.LIVE.drive.start(PLV.ctx); });
@@ -10021,9 +10025,10 @@ function wpnShoot(k){ const C=CFG.weapons[k], s=wpnState(k);
     else if(i<2){ SFX.cover(h.point); spray(h.point,dir.clone().negate(),0x8a7a60); } }
   if(anyHit) hitstop=Math.max(hitstop,CFG.rev.hitstop); else log(k==="shotgun"?"The spread goes wide":"Miss","#7d7668"); }
 // a swing: what's in front of her, in reach, when the blade or bar comes round
-function wpnSwing(k){ const C=CFG.weapons[k]; if(WS.cool>0) return;
+function wpnSwing(k){ const C=CFG.weapons[k]; if(WS.cool>0&&!(k==="hatchet"&&WS.melee&&!WS.melee.combo)) return;
   if(k==="knife"&&player.grabbed){ const g=player.grabbed; log(`Norah stabs ${g.by.name} and tears free`,"#9ed08a"); CFG.rev.damage*=C.dmg; try{ const m=enemyMeshes().find(x=>x.userData.enemy===g.by); if(m) g.by.hit(m,m.getWorldPosition(new THREE.Vector3()),new THREE.Vector3(Math.sin(player.yaw),0,Math.cos(player.yaw))); } finally { CFG.rev.damage/=C.dmg; } pushOff(g); WS.cool=0.8; return; }
-  if(player.grabbed) return; WS.cool=C.time; WS.melee={k,t:0,done:false}; wpnAct("fire"); SFX.shove(); makeNoise(player.pos.x,player.pos.z,CFG.stealth.shoveNoise,"swing"); }
+  if(k==="hatchet"&&WS.melee&&WS.melee.k==="hatchet"&&!WS.melee.combo&&WS.melee.t>0.15&&WS.melee.t<1.0){ WS.melee={k,t:0,hits:[0.42,0.95],done:0,time:2.1,combo:true}; WS.cool=2.0; wpnAct("flurry"); SFX.shove(); return; }   /* pressed again mid-chop: the flurry */
+  if(player.grabbed) return; WS.cool=C.time; WS.melee={k,t:0,hits:[C.hitAt],done:0,time:C.time}; wpnAct("fire"); SFX.shove(); makeNoise(player.pos.x,player.pos.z,CFG.stealth.shoveNoise,"swing"); }
 function wpnMeleeHit(k){ const C=CFG.weapons[k], fw=new THREE.Vector3(Math.sin(player.yaw),0,Math.cos(player.yaw)), at=new THREE.Vector3(player.pos.x,1.25,player.pos.z).addScaledVector(fw,C.reach*0.7);
   let best=null, bd=1e9; for(const e of enemies){ if(e.dead) continue; const d=new THREE.Vector3(e.pos.x-player.pos.x,0,e.pos.z-player.pos.z), L=d.length(); if(L>C.reach+(e.radius||0.35)) continue;
     if(L>0.2&&Math.acos(Math.max(-1,Math.min(1,d.normalize().dot(fw))))>C.arc*Math.PI/360) continue; if(L<bd){ bd=L; best=e; } }
@@ -10045,7 +10050,8 @@ function wpnReload(){ const k=WS.wpn; if(k==="revolver") return false; if(!WGUN(
 function wpnLoaded(){ const k=WS.wpn, s=wpnState(k); s.mag+=player.reloadAdd; s.spare-=player.reloadAdd; player.reloadAdd=0; SFX.cylinder(); log(`Loaded. ${s.mag} / ${CFG.weapons[k].mag}`,"#9a9283"); }
 function wpnStep(dt){ norahGuard(dt); WS.cool=Math.max(0,WS.cool-dt); const k=WS.wpn;
   if(WLONG(k)&&player.flash.on){ player.flash.on=false; if(!WS.warned){ WS.warned=true; log("Both hands on the gun: the flashlight goes off","#9a9283"); } }
-  if(WS.melee){ const m=WS.melee; m.t+=dt; if(!m.done&&m.t>=CFG.weapons[m.k].hitAt){ m.done=true; wpnMeleeHit(m.k); } if(m.t>CFG.weapons[m.k].time) WS.melee=null; }
+  if(WS.melee){ const m=WS.melee; m.t+=dt; while(m.done<m.hits.length&&m.t>=m.hits[m.done]){ m.done++; wpnMeleeHit(m.k); } if(m.t>m.time) WS.melee=null; }
+  wpnPryStep(dt);
   if(WS.litT>0){ WS.litT-=dt; if(WS.litT<=0){ WS.lit=CFG.weapons.flare.burn; wpnState("flare").mag--; } }
   if(WS.lit){ if(WS.throwT>0){ WS.throwT-=dt; if(WS.throwT<=0){ const fw=new THREE.Vector3(Math.sin(player.yaw),0,Math.cos(player.yaw)); const p=new THREE.Vector3(player.pos.x,1.1+groundY(player.pos.x,player.pos.z),player.pos.z).addScaledVector(fw,0.4);
         wpnWorldFlare(p,fw.multiplyScalar(5.2).add(new THREE.Vector3(0,2.4,0)),WS.lit,0xff3a1a); WS.lit=0; log("Throws the flare: it burns on the floor","#ffb070"); } }
@@ -10123,6 +10129,29 @@ CFG.norah.stunRate=CFG.norah.stunRate??1.7; CFG.norah.stunGrace=CFG.norah.stunGr
 // her stun timers refuse a fresh knockdown while she's under the stun grace (holds may still top them up a little)
 for(const k of ["stumble","downT"]){ let v=player[k]||0; Object.defineProperty(player,k,{configurable:true,enumerable:true,get(){ return v; },
   set(x){ if(x>v&&x>0.35&&(player.guardT||0)>0&&!player.grabbed&&!player.dead) x=Math.max(v,Math.min(x,0.35)); v=x; }}); }
+
+// ---------------------------------------------------------------- weapons lying on the floor look like themselves
+{ const bp0=sbBuildPickup; sbBuildPickup=function(o){ bp0(o); const d=itemDef(o.item), k=d.weapon; if(!k||!PV_NW.LIVE.itemModel) return; const pk=world.pickups[world.pickups.length-1]; if(!pk||pk.oid!==o.id) return;
+    const m=PV_NW.LIVE.itemModel(k); if(!m) return; const box=pk.g.children.find(c=>c.isMesh&&!c.userData.glint); if(box) pk.g.remove(box);
+    if(WX_LONG_AXIS_Y(k)) m.rotation.set(Math.PI/2,0,Math.PI/2); else m.rotation.set(Math.PI/2,0,0); m.rotation.y=0; const w=new THREE.Group(); w.add(m); w.rotation.y=(o.yaw||((o.x*7+o.z*3)%6));
+    m.updateMatrixWorld(true); const bb=new THREE.Box3().setFromObject(m); m.position.y=-bb.min.y+0.004; pk.g.add(w); }; }
+function WX_LONG_AXIS_Y(k){ return ["hatchet","crowbar","knife","flare"].includes(k); }
+// ---------------------------------------------------------------- the crowbar on a locked door: the approved pry
+// Her stage is laid over the door so the clip's door frame sits on the real one (hinge on hinge, its edge along the
+// real leaf, her on her side of it); the real door follows the clip's leaf: the heaves, the give, the shove; then it's open.
+{ const tu0=tryUnlock; tryUnlock=function(door){ if(door.key&&hasItem(door.key)) return tu0(door); if(WS.wpn==="crowbar"&&!door.broken&&PLV.ready&&!WS.pry){ wpnPryStart(door); return false; } return tu0(door); }; }
+function wpnPryStart(door){ door.ang=0; { const e=doorEnd(door), nx=-(e.z-door.hz), nz=(e.x-door.hx), toP=(player.pos.x-door.hx)*nx+(player.pos.z-door.hz)*nz; door.side=toP>0?-1:1; }   /* it swings away from her, as a door she opens does */
+  const u=new THREE.Vector3(Math.cos(door.base),0,Math.sin(door.base)), n=new THREE.Vector3(-u.z,0,u.x), H=new THREE.Vector3(door.hx,0,door.hz);
+  const side=Math.sign((player.pos.x-door.hx)*n.x+(player.pos.z-door.hz)*n.z)||1, nN=n.clone().multiplyScalar(side), ex=nN.clone().negate(), ez=u.clone();
+  let th=Math.atan2(-ex.z,ex.x); const zLocal=new THREE.Vector3(Math.sin(th),0,Math.cos(th)), mirror=(zLocal.dot(ez)<0?-1:1);
+  const O=H.clone().addScaledVector(ex,-0.72).addScaledVector(ez,0.42);
+  PLV.pryM={pos:O,th,mirror}; WS.pry={door,t:0,started:false}; door.locked=true; wpnAct("pry",6.0); log("Norah works the crowbar into the gap","#e8c77a"); SFX.shove(); }
+function wpnPryStep(dt){ const P=WS.pry; if(!P) return; P.t+=dt; const st=PV_NW.LIVE.pryState&&PV_NW.LIVE.pryState();
+  if(player.grabbed||player.dead||(player.downT||0)>0){ PLV.S.act={id:++WS.act,kind:"cancel"}; WS.pry=null; PLV.pryM=null; log("The pry is broken off","#e0a070"); return; }
+  if(st){ P.started=true; const M=PLV.pryM, s=Math.sin(M.th), c=Math.cos(M.th); const lx=st.x, lz=st.z*M.mirror; player.pos.x=M.pos.x+lx*c+lz*s; player.pos.z=M.pos.z-lx*s+lz*c; player.vel.set(0,0,0);
+    P.door.ang=P.door.target=Math.min(1.45,st.door*1.0); applyDoor(P.door); }
+  if((P.started&&!st)||P.t>8){ P.door.locked=false; P.door.target=1.45; WS.pry=null; PLV.pryM=null; log("The door gives and swings open","#9ed08a"); SFX.slam&&SFX.slam(player.pos); }
+}
 // ================================================================ the editor shows the creatures as they are
 // The preview-body creatures (and the Runner and Tactician) are drawn in the editor with their real models, not as an
 // ACROSS person. The model loads in the background; until then a dim outline of its size stands in.

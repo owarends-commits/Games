@@ -64,9 +64,10 @@ function wpnShoot(k){ const C=CFG.weapons[k], s=wpnState(k);
     else if(i<2){ SFX.cover(h.point); spray(h.point,dir.clone().negate(),0x8a7a60); } }
   if(anyHit) hitstop=Math.max(hitstop,CFG.rev.hitstop); else log(k==="shotgun"?"The spread goes wide":"Miss","#7d7668"); }
 // a swing: what's in front of her, in reach, when the blade or bar comes round
-function wpnSwing(k){ const C=CFG.weapons[k]; if(WS.cool>0) return;
+function wpnSwing(k){ const C=CFG.weapons[k]; if(WS.cool>0&&!(k==="hatchet"&&WS.melee&&!WS.melee.combo)) return;
   if(k==="knife"&&player.grabbed){ const g=player.grabbed; log(`Norah stabs ${g.by.name} and tears free`,"#9ed08a"); CFG.rev.damage*=C.dmg; try{ const m=enemyMeshes().find(x=>x.userData.enemy===g.by); if(m) g.by.hit(m,m.getWorldPosition(new THREE.Vector3()),new THREE.Vector3(Math.sin(player.yaw),0,Math.cos(player.yaw))); } finally { CFG.rev.damage/=C.dmg; } pushOff(g); WS.cool=0.8; return; }
-  if(player.grabbed) return; WS.cool=C.time; WS.melee={k,t:0,done:false}; wpnAct("fire"); SFX.shove(); makeNoise(player.pos.x,player.pos.z,CFG.stealth.shoveNoise,"swing"); }
+  if(k==="hatchet"&&WS.melee&&WS.melee.k==="hatchet"&&!WS.melee.combo&&WS.melee.t>0.15&&WS.melee.t<1.0){ WS.melee={k,t:0,hits:[0.42,0.95],done:0,time:2.1,combo:true}; WS.cool=2.0; wpnAct("flurry"); SFX.shove(); return; }   /* pressed again mid-chop: the flurry */
+  if(player.grabbed) return; WS.cool=C.time; WS.melee={k,t:0,hits:[C.hitAt],done:0,time:C.time}; wpnAct("fire"); SFX.shove(); makeNoise(player.pos.x,player.pos.z,CFG.stealth.shoveNoise,"swing"); }
 function wpnMeleeHit(k){ const C=CFG.weapons[k], fw=new THREE.Vector3(Math.sin(player.yaw),0,Math.cos(player.yaw)), at=new THREE.Vector3(player.pos.x,1.25,player.pos.z).addScaledVector(fw,C.reach*0.7);
   let best=null, bd=1e9; for(const e of enemies){ if(e.dead) continue; const d=new THREE.Vector3(e.pos.x-player.pos.x,0,e.pos.z-player.pos.z), L=d.length(); if(L>C.reach+(e.radius||0.35)) continue;
     if(L>0.2&&Math.acos(Math.max(-1,Math.min(1,d.normalize().dot(fw))))>C.arc*Math.PI/360) continue; if(L<bd){ bd=L; best=e; } }
@@ -88,7 +89,8 @@ function wpnReload(){ const k=WS.wpn; if(k==="revolver") return false; if(!WGUN(
 function wpnLoaded(){ const k=WS.wpn, s=wpnState(k); s.mag+=player.reloadAdd; s.spare-=player.reloadAdd; player.reloadAdd=0; SFX.cylinder(); log(`Loaded. ${s.mag} / ${CFG.weapons[k].mag}`,"#9a9283"); }
 function wpnStep(dt){ norahGuard(dt); WS.cool=Math.max(0,WS.cool-dt); const k=WS.wpn;
   if(WLONG(k)&&player.flash.on){ player.flash.on=false; if(!WS.warned){ WS.warned=true; log("Both hands on the gun: the flashlight goes off","#9a9283"); } }
-  if(WS.melee){ const m=WS.melee; m.t+=dt; if(!m.done&&m.t>=CFG.weapons[m.k].hitAt){ m.done=true; wpnMeleeHit(m.k); } if(m.t>CFG.weapons[m.k].time) WS.melee=null; }
+  if(WS.melee){ const m=WS.melee; m.t+=dt; while(m.done<m.hits.length&&m.t>=m.hits[m.done]){ m.done++; wpnMeleeHit(m.k); } if(m.t>m.time) WS.melee=null; }
+  wpnPryStep(dt);
   if(WS.litT>0){ WS.litT-=dt; if(WS.litT<=0){ WS.lit=CFG.weapons.flare.burn; wpnState("flare").mag--; } }
   if(WS.lit){ if(WS.throwT>0){ WS.throwT-=dt; if(WS.throwT<=0){ const fw=new THREE.Vector3(Math.sin(player.yaw),0,Math.cos(player.yaw)); const p=new THREE.Vector3(player.pos.x,1.1+groundY(player.pos.x,player.pos.z),player.pos.z).addScaledVector(fw,0.4);
         wpnWorldFlare(p,fw.multiplyScalar(5.2).add(new THREE.Vector3(0,2.4,0)),WS.lit,0xff3a1a); WS.lit=0; log("Throws the flare: it burns on the floor","#ffb070"); } }
@@ -166,3 +168,26 @@ CFG.norah.stunRate=CFG.norah.stunRate??1.7; CFG.norah.stunGrace=CFG.norah.stunGr
 // her stun timers refuse a fresh knockdown while she's under the stun grace (holds may still top them up a little)
 for(const k of ["stumble","downT"]){ let v=player[k]||0; Object.defineProperty(player,k,{configurable:true,enumerable:true,get(){ return v; },
   set(x){ if(x>v&&x>0.35&&(player.guardT||0)>0&&!player.grabbed&&!player.dead) x=Math.max(v,Math.min(x,0.35)); v=x; }}); }
+
+// ---------------------------------------------------------------- weapons lying on the floor look like themselves
+{ const bp0=sbBuildPickup; sbBuildPickup=function(o){ bp0(o); const d=itemDef(o.item), k=d.weapon; if(!k||!PV_NW.LIVE.itemModel) return; const pk=world.pickups[world.pickups.length-1]; if(!pk||pk.oid!==o.id) return;
+    const m=PV_NW.LIVE.itemModel(k); if(!m) return; const box=pk.g.children.find(c=>c.isMesh&&!c.userData.glint); if(box) pk.g.remove(box);
+    if(WX_LONG_AXIS_Y(k)) m.rotation.set(Math.PI/2,0,Math.PI/2); else m.rotation.set(Math.PI/2,0,0); m.rotation.y=0; const w=new THREE.Group(); w.add(m); w.rotation.y=(o.yaw||((o.x*7+o.z*3)%6));
+    m.updateMatrixWorld(true); const bb=new THREE.Box3().setFromObject(m); m.position.y=-bb.min.y+0.004; pk.g.add(w); }; }
+function WX_LONG_AXIS_Y(k){ return ["hatchet","crowbar","knife","flare"].includes(k); }
+// ---------------------------------------------------------------- the crowbar on a locked door: the approved pry
+// Her stage is laid over the door so the clip's door frame sits on the real one (hinge on hinge, its edge along the
+// real leaf, her on her side of it); the real door follows the clip's leaf: the heaves, the give, the shove; then it's open.
+{ const tu0=tryUnlock; tryUnlock=function(door){ if(door.key&&hasItem(door.key)) return tu0(door); if(WS.wpn==="crowbar"&&!door.broken&&PLV.ready&&!WS.pry){ wpnPryStart(door); return false; } return tu0(door); }; }
+function wpnPryStart(door){ door.ang=0; { const e=doorEnd(door), nx=-(e.z-door.hz), nz=(e.x-door.hx), toP=(player.pos.x-door.hx)*nx+(player.pos.z-door.hz)*nz; door.side=toP>0?-1:1; }   /* it swings away from her, as a door she opens does */
+  const u=new THREE.Vector3(Math.cos(door.base),0,Math.sin(door.base)), n=new THREE.Vector3(-u.z,0,u.x), H=new THREE.Vector3(door.hx,0,door.hz);
+  const side=Math.sign((player.pos.x-door.hx)*n.x+(player.pos.z-door.hz)*n.z)||1, nN=n.clone().multiplyScalar(side), ex=nN.clone().negate(), ez=u.clone();
+  let th=Math.atan2(-ex.z,ex.x); const zLocal=new THREE.Vector3(Math.sin(th),0,Math.cos(th)), mirror=(zLocal.dot(ez)<0?-1:1);
+  const O=H.clone().addScaledVector(ex,-0.72).addScaledVector(ez,0.42);
+  PLV.pryM={pos:O,th,mirror}; WS.pry={door,t:0,started:false}; door.locked=true; wpnAct("pry",6.0); log("Norah works the crowbar into the gap","#e8c77a"); SFX.shove(); }
+function wpnPryStep(dt){ const P=WS.pry; if(!P) return; P.t+=dt; const st=PV_NW.LIVE.pryState&&PV_NW.LIVE.pryState();
+  if(player.grabbed||player.dead||(player.downT||0)>0){ PLV.S.act={id:++WS.act,kind:"cancel"}; WS.pry=null; PLV.pryM=null; log("The pry is broken off","#e0a070"); return; }
+  if(st){ P.started=true; const M=PLV.pryM, s=Math.sin(M.th), c=Math.cos(M.th); const lx=st.x, lz=st.z*M.mirror; player.pos.x=M.pos.x+lx*c+lz*s; player.pos.z=M.pos.z-lx*s+lz*c; player.vel.set(0,0,0);
+    P.door.ang=P.door.target=Math.min(1.45,st.door*1.0); applyDoor(P.door); }
+  if((P.started&&!st)||P.t>8){ P.door.locked=false; P.door.target=1.45; WS.pry=null; PLV.pryM=null; log("The door gives and swings open","#9ed08a"); SFX.slam&&SFX.slam(player.pos); }
+}

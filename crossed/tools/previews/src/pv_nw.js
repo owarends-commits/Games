@@ -1413,7 +1413,8 @@ function pvFx(dt){ if(typeof goreStep==="function") goreStep(dt);
 const LIVE={}; let NX=3.2;   /* the creature pages keep a target here; Norah has none */
 const LEN_W=1.15, LEN_R=2.1, LEN_C=0.85;
 const ease=(D,k,to,r,dt)=>{ D[k]=(D[k]??to)+(to-(D[k]??to))*Math.min(1,dt*r); return D[k]; };
-LIVE.drive={ start(ctx){ nStart(ctx,0); ctx.D={ph:0}; ctx.aimT=1.5; },
+let PLVctx=null;
+LIVE.drive={ start(ctx){ nStart(ctx,0); ctx.D={ph:0}; ctx.aimT=1.5; PLVctx=ctx; },
   step(t,dt,ctx){ const S=ctx.S||{}, D=ctx.D, P=TP(), fv=S.fwdV||0, sv=S.sideV||0, sp=Math.hypot(fv,sv);
     const L= S.run?LEN_R: S.crouch?LEN_C: LEN_W, dir= fv<-0.05&&Math.abs(fv)>=Math.abs(sv)?-1:1;
     D.ph=((D.ph+dir*sp*dt/L)%1+1)%1;
@@ -1488,27 +1489,30 @@ const WPN={
   rifle:{hold:k=>["rf_aim",0.8+0.6*k], fire:["rf_fire",0.9,2.95], load:["rf_load",0,4.6]},
   pistol:{hold:k=>["ps_aim",0.8+0.45*k], fire:["ps_fire",0.85,1.3], load:["ps_load",0,3.2]},
   flaregun:{hold:k=>["fg_fire",0.6+0.4*k], fire:["fg_fire",1.75,3.4], load:["fg_load",0,3.6]},
-  hatchet:{hold:()=>["hx_chop",0.3], fire:["hx_chop",0.55,2.4]},
-  crowbar:{hold:()=>["cb_swing",0.3], fire:["cb_swing",0.55,2.5]},
+  hatchet:{hold:()=>["hx_chop",0.3], fire:["hx_chop",0.55,2.4], flurry:["hx_flurry",0.5,2.9]},
+  crowbar:{hold:()=>["cb_swing",0.3], fire:["cb_swing",0.55,2.5], pry:["cb_pry",0.4,6.4]},
   knife:{hold:()=>["kn_slash",0.3], fire:["kn_slash",0.75,2.2]},
   flare:{hold:()=>["fl_strike",0.3], light:["fl_strike",0.3,2.6], lit:["fl_strike",3.4], fire:["fl_throw",0.6,2.2]} };
 function hideWeapons(){ if(typeof W!=="undefined") for(const q in W) if(W[q]&&W[q].obj) W[q].obj.visible=false; if(typeof TL!=="undefined"&&TL) TL.visible=false; }
-function subStart(c,ctx){ const keep={x:ctx.x,z:ctx.z,yaw:ctx.yaw,ph:ctx.ph,look:ctx.look,D:ctx.D,S:ctx.S,aimT:ctx.aimT,T:ctx.T}; A[c].start(ctx); const st={}; for(const q of ["shots","out","mash","s0","yaw0"]) if(ctx[q]!==undefined) st[q]=ctx[q]; Object.assign(ctx,keep); return st; }
-function runSub(c,tc,dt,ctx,T,st){ const keep={x:ctx.x,z:ctx.z,yaw:ctx.yaw,ph:ctx.ph,look:ctx.look,D:ctx.D,S:ctx.S}; const T0=ctx.T; ctx.T=T; if(st) Object.assign(ctx,st); const J=A[c].step(tc,dt,ctx); ctx.T=T0; Object.assign(ctx,keep); return J; }
+function subStart(c,ctx,place){ const keep={x:ctx.x,z:ctx.z,yaw:ctx.yaw,ph:ctx.ph,look:ctx.look,D:ctx.D,S:ctx.S,aimT:ctx.aimT,T:ctx.T}; A[c].start(ctx); if(place){ keep.x=ctx.x; keep.z=ctx.z; keep.yaw=ctx.yaw; } const st={}; for(const q of ["shots","out","mash","s0","yaw0"]) if(ctx[q]!==undefined) st[q]=ctx[q]; Object.assign(ctx,keep); return st; }
+function runSub(c,tc,dt,ctx,T,st,place){ const keep={x:ctx.x,z:ctx.z,yaw:ctx.yaw,ph:ctx.ph,look:ctx.look,D:ctx.D,S:ctx.S}; const T0=ctx.T; ctx.T=T; if(st) Object.assign(ctx,st); const J=A[c].step(tc,dt,ctx); ctx.T=T0; if(place){ keep.x=ctx.x; keep.z=ctx.z; keep.yaw=ctx.yaw; } Object.assign(ctx,keep); return J; }
 function weaponPose(t,dt,ctx,S,D,Jb,mv,aimK){ const k=S.wpn, Wd=WPN[k]; if(!Wd) return null;
   if(D.wk!==k){ const keep={look:ctx.look,D:ctx.D,S:ctx.S,aimT:ctx.aimT}; wStart(ctx,k); Object.assign(ctx,keep); D.wk=k; D.sub=null; D.lastAct=null; D.hc=null; }
   // a new action from the host: start its clip
-  const act=S.act; if(act&&act.id!==D.lastAct){ D.lastAct=act.id; const c=Wd[act.kind]; if(c){ D.sub={c:c[0],from:c[1],to:c[2],t0:t,T:{},kind:act.kind,dur:act.dur,st:subStart(c[0],ctx)}; if(act.kind==="fire"&&k==="flare") D.sub.T.cap=1; } }
+  const act=S.act; if(act&&act.id!==D.lastAct){ D.lastAct=act.id; if(act.kind==="cancel"){ D.sub=null; } const c=Wd[act.kind]; if(c){ const place=act.kind==="pry"; D.sub={c:c[0],from:c[1],to:c[2],t0:t,T:{},kind:act.kind,dur:act.dur,place,st:subStart(c[0],ctx,place)}; if(place){ D.pryX=ctx.x; D.pryZ=ctx.z; D.pryYaw=ctx.yaw; } if(act.kind==="fire"&&k==="flare") D.sub.T.cap=1; } }
   let J=null, sub=D.sub;
   if(sub&&sub.kind==="load"){ if(S.reload==null) { D.sub=sub=null; } }
   if(sub){ let tc; if(sub.kind==="load") tc=sub.from+(S.reload||0)*(sub.to-sub.from); else tc=sub.from+(t-sub.t0)*(sub.dur?(sub.to-sub.from)/sub.dur:1);
-    if(tc>sub.to&&sub.kind!=="load"){ D.sub=sub=null; } else J=runSub(sub.c,Math.min(tc,sub.to),dt,ctx,sub.T,sub.st); }
+    if(tc>sub.to&&sub.kind!=="load"){ D.sub=sub=null; } else { J=runSub(sub.c,Math.min(tc,sub.to),dt,ctx,sub.T,sub.st,sub.place); if(sub.place){ D.pryX=ctx.x; D.pryZ=ctx.z; D.pryYaw=ctx.yaw; D.doorAng=DOOR?Math.abs(DOOR.leaf.rotation.y):0; if(DOOR) DOOR.visible=false; } } }
+  if(!sub&&D.pryX!=null){ D.pryX=null; ctx.x=0; ctx.z=0; ctx.yaw=Math.PI/2; }
   if(!J){ const h= k==="flare"&&S.lit? Wd.lit : Wd.hold(aimK); D.holdT=D.holdT||{}; if(k==="flare"&&S.lit){ D.holdT.cap=1; D.holdT.lit=D.holdT.lit||0.01; } if(D.hc!==h[0]){ D.hc=h[0]; D.hst=subStart(h[0],ctx); } J=runSub(h[0],h[1],dt,ctx,k==="flare"&&S.lit?D.holdT:{},D.hst); }
   // the legs keep walking under it
   if(mv>0.05) for(const q of ["lLx","lRx","lLz","lRz","kL","kR","fL","fR","hd"]) J[q]=Jb[q];
   ctx.phase=(sub?sub.kind:"holds")+" · "+k; return J; }
 LIVE.wmuzzle=k=>{ const o=W[k]; if(!o) return null; o.obj.updateMatrixWorld(true); return o.obj.localToWorld((o.pts.muzzle||o.pts.tip||new V3()).clone()); };
 LIVE.wtip=k=>{ const o=W[k]; if(!o) return null; o.obj.updateMatrixWorld(true); return o.obj.localToWorld((o.pts.tip||o.pts.muzzle||new V3()).clone()); };
+LIVE.pryState=()=>{ const D=PLVctx&&PLVctx.D; return D&&D.pryX!=null?{x:D.pryX,z:D.pryZ,yaw:D.pryYaw,door:D.doorAng||0,on:!!(D.sub&&D.sub.kind==="pry")}:null; };
+LIVE.itemModel=k=>{ const key=WX[k]?"w_"+k:k; if(!ITEMS[key]) return null; const g=buildItem(key); if(g.parent) g.parent.remove(g); return g; };
 LIVE.loose=()=>({pieces:PIECES, blood:BLOOD, flares:FLARES});
 LIVE.flareStep=dt=>{ if(typeof flareStep==="function") flareStep(dt); };
 

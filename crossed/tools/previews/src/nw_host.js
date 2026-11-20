@@ -5,8 +5,8 @@
 // the revolver's hammer, trigger and cylinder and the flashlight's switch move with it.
 const PLV={ready:false, loading:false, C:null, stage:null, ctx:null, t:0, S:{shots:[],shotN:0}, last:null, hp:null, rl:0};
 function plvRec(){ return {C:PLV.C, ctx:PLV.ctx, t:PLV.t, stage:PLV.stage, norah:null, clip:PV_NW.LIVE.drive, nx:0}; }
-function plvWith(fn){ const s=PLV.stage; s.position.set(0,0,0); s.rotation.set(0,0,0); s.updateMatrixWorld(true); try{ return fn(); } finally { plvPlace(); } }
-function plvPlace(){ const s=PLV.stage; s.position.set(player.pos.x,groundY(player.pos.x,player.pos.z)+(player.posY||0),player.pos.z); s.rotation.set(0,player.yaw-Math.PI/2,0); s.updateMatrixWorld(true); }
+function plvWith(fn){ const s=PLV.stage; s.position.set(0,0,0); s.rotation.set(0,0,0); s.scale.set(1,1,1); s.updateMatrixWorld(true); try{ return fn(); } finally { plvPlace(); } }
+function plvPlace(){ const s=PLV.stage, M=PLV.pryM; if(M){ s.position.set(M.pos.x,groundY(M.pos.x,M.pos.z),M.pos.z); s.rotation.set(0,M.th,0); s.scale.set(1,1,M.mirror); s.updateMatrixWorld(true); return; } s.scale.set(1,1,1); s.position.set(player.pos.x,groundY(player.pos.x,player.pos.z)+(player.posY||0),player.pos.z); s.rotation.set(0,player.yaw-Math.PI/2,0); s.updateMatrixWorld(true); }
 function plvInit(){ if(PLV.loading||PLV.ready||CFG.norah.liveAnims===false) return; const key=pickModel("norah"); if(!key) return; PLV.loading=true; PLV.key=key;
   PLV.stage=new THREE.Group(); scene.add(PLV.stage);
   mdlLoad(key).then(g=>{ plvWith(()=>{ PV_NW.pvBind(plvRec()); PLV.C=PV_NW.makeChar(g); PV_NW.pvSetup(PLV.C); PLV.ctx={events:[],x:0,z:0,yaw:Math.PI/2,v:0,live:true,T:{}}; PV_NW.pvBind(plvRec()); PV_NW.LIVE.drive.start(PLV.ctx); });
