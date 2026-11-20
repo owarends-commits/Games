@@ -336,7 +336,7 @@ body.play #panel.hidden + #toggle{display:none}
   <b>Bag</b> I or Tab: use pills and batteries, read notes · <b>Flashlight</b> L (its light makes Norah easier to see)<br>
   <b>Vault</b> Space next to a low surface (slow, quiet) · Shift + Space (fast, loud)<br><br>
   <b>N</b> restart the map · <b>1</b> random ACROSS · <b>4</b> upright · <b>5</b> Crawler · <b>2</b> Louis · <b>3</b> dummy · <b>6</b> Tactician · <b>7</b> Contortionist · <b>8</b> Reacher · <b>9</b> split-head Reacher · <b>K</b> the Hob · <b>0</b> clear<br>
-  <b>P</b> pause · <b>.</b> one frame · <b>Y</b> replay the last 10 s · <b>H</b> hit zones · <b>T</b> slow motion · <b>G</b> overlays · <b>`</b> tuning panel<br><br>
+  <b>P</b> pause · <b>.</b> one frame · <b>Y</b> replay the last 10 s · <b>H</b> hit zones · <b>T</b> weapon wheel · <b>G</b> overlays · <b>`</b> tuning panel<br><br>
   <b>Pad:</b> sticks move/look · LT aim · RT fire · X reload · Y shove · B run/dodge · A use · Start pause · Back replay · D-pad ↑ restart<br>
   <div class="btns" style="margin-top:8px"><button id="helpok">Start</button></div>
 </div>
@@ -1189,7 +1189,7 @@ class Enemy{
     if(!big){ const keys=VARIANTS.filter(v=>v.key!=="mourner").map(v=>v.key); this.variant = opts.variant ? (VMAP[opts.variant]?opts.variant:"walker") : keys[Math.floor(rng()*keys.length)]; this.V=VMAP[this.variant];
       this.stance = this.V.stance==="crawl"?"crawling":"standing"; this.move = pickMove(opts.move, this.variant); this.gait={mode:"stall",t:0.2,dur:0.2,mul:1};
       this.disguised = !!(this.V.fight.disguise && rng()<0.7); this.disguiseYaw=rng()*Math.PI*2; this.wailCool=2+rng()*3; this.rally=0; }
-    this.mdl = big ? (type==="brute"?pickModel("louis"):null) : pickModel(this.variant);
+    this.mdl = opts.mdl&&mdlInfo(opts.mdl) ? opts.mdl : big ? (type==="brute"?pickModel("louis"):null) : pickModel(this.variant);
     const S = this.S;
     this.name = type==="dummy" ? `Dummy ${this.id}` : type==="brute" ? `Louis ${this.id}` : `${this.V.name} ${this.id}`;
     this.root = big ? buildBody(type==="dummy"?"dummy":"brute", this) : buildBody("across", this, {variant:this.variant, seed:(rng()*1e9)|0}); this.P = this.root.userData.parts;
@@ -2025,10 +2025,11 @@ function onKey(e){
   if(e.code==="Digit7") spawn("contortionist");
   if(e.code==="Digit8") spawn(rng()<0.5?"reacher":"reacher_arm");
   if(e.code==="Digit9") spawn("splithead");
+  if(e.code==="KeyU") spawn("runner");
   if(e.code==="KeyK") spawn("hob");
   if(e.code==="Digit0") clearAll();
   if(e.code==="KeyH"){ CFG.world.showZones=!CFG.world.showZones; setZoneView(CFG.world.showZones); refreshPanel(); }
-  if(e.code==="KeyT"){ CFG.world.timeScale = CFG.world.timeScale<1?1:0.25; refreshPanel(); }
+  if(e.code==="KeyT"&&!rep){ wheelOpen(); return; }
   if(e.code==="KeyG"){ const on=!(CFG.debug.rings&&CFG.debug.cone); CFG.debug.rings=CFG.debug.cone=CFG.debug.attackLog=on; refreshPanel(); log(`Overlays ${on?"on":"off"}`,"#9a9283"); }
   if(e.code==="KeyP"||e.code==="Escape") openSimMenu();
   if(e.code==="Period" && paused) stepFrames++;
@@ -2044,6 +2045,7 @@ addEventListener("keyup", e=>{ keys[e.code]=false; if(player.aiming && isFixed()
 canvas.addEventListener("contextmenu", e=>e.preventDefault());
 let dragLook=null;
 canvas.addEventListener("mousedown", e=>{
+  if(WS.wheel){ wheelPick(); return; }
   if(MODE!=="play"||invOpen()||SB.simMenu) return;
   audio();
   if(replay.on){ dragLook={x:e.clientX,y:e.clientY}; return; }
@@ -2054,6 +2056,7 @@ canvas.addEventListener("mousedown", e=>{
 });
 addEventListener("mouseup", e=>{ if(e.button===2) mouseAim=false; dragLook=null; });
 addEventListener("mousemove", e=>{
+  if(WS.wheel){ if(document.pointerLockElement===canvas) wheelMouse(e); return; }
   if(replay.on && dragLook){ replay.yaw -= (e.clientX-dragLook.x)*0.005; replay.pitch=clamp(replay.pitch-(e.clientY-dragLook.y)*0.005,-1.5,1.5); dragLook={x:e.clientX,y:e.clientY}; return; }
   if(document.pointerLockElement!==canvas) return;
   const s = 0.0025*CFG.ctrl.mouseSens*(player.aiming&&SB.aimOver?CFG.rev.aimFriction:1); const dy = (CFG.ctrl.invertY?-1:1)*e.movementY;
@@ -2298,7 +2301,7 @@ function spawn(type, x, z, opts={}){
     else { const a = player.yaw + (rng()-.5)*1.2, d = 7+rng()*2; x = player.pos.x+Math.sin(a)*d; z = player.pos.z+Math.cos(a)*d; }
   }
   const p=new THREE.Vector3(x,0,z); collide(p, type==="across"?0.4:0.45);
-  if(PVK[type]){ const e=new Enemy("across",p.x,p.z,Object.assign({},opts,{variant:"walker"})); e.pvInit(type); return e; }
+  if(PVK[type]){ const e=new Enemy("across",p.x,p.z,Object.assign({},opts,{variant:"walker"})); e.pvInit(type,opts.mdl); return e; }
   const e = new Enemy(type,p.x,p.z,opts); if(legless){ e.lost.legL=e.lost.legR=true; e.P.legL.visible=e.P.legR.visible=false; e.P.legL.traverse(o=>{ if(o.isMesh) o.userData={}; }); e.P.legR.traverse(o=>{ if(o.isMesh) o.userData={}; }); } if(!QUIET_SPAWN) log(`Spawned ${e.name}`,"#9a9283"); return e;
 }
 function clearEnemies(){
@@ -2896,7 +2899,7 @@ function frame(now){
   else {
     let dt = rdt*CFG.world.timeScale;
     if(paused){ dt = stepFrames>0 ? (stepFrames--, CFG.world.timeScale/60) : 0; }
-    else if(invOpen()||SB.simMenu){ dt=0; }
+    else if(invOpen()||SB.simMenu||WS.wheel){ dt=0; }
     else if(hitstop>0){ hitstop-=rdt; dt=0; }
     else if(player.grabbed){ dt*=CFG.across.qteSlow; qteTick(rdt); }
     else if(killSlowmo>0){ killSlowmo-=rdt; dt*=0.3; }
@@ -9628,11 +9631,11 @@ function pvFxAll(dt){ for(const k in PVK){ const m=PVK[k].mod; if(m&&m.pvFx){ co
 function pvWantYaw(b,toX,toZ){ return b.stageYaw(Math.atan2(toX,toZ)); }
 
 // ---------------------------------------------------------------- the enemy side
-Enemy.prototype.pvInit=function(type){ const K=PVK[type]; this.kind="pv"; this.pvType=type; this.name=`${K.label} ${this.id}`;
+Enemy.prototype.pvInit=function(type,mdl){ const K=PVK[type]; this.kind="pv"; this.pvType=type; this.name=`${K.label} ${this.id}`;
   this.root.traverse(o=>{ if(o.isMesh){ o.visible=false; o.userData.enemy=null; } });
   // its ACROSS body is never used: drop it now, so one still loading can't attach later and show beside (or instead of) the creature
   if(this.skin){ skinDrop(this.skin); this.skin=null; }
-  if(K.body) this.pv=new K.body(this,type); else { const key=pvModel(type); this.mdl=key; this.pv=new PVBody(this,type,key); } PV_LIST.push(this.pv);
+  if(K.body) this.pv=new K.body(this,type); else { const key=mdl&&MODEL_LIB[mdl]?mdl:pvModel(type); this.mdl=key; this.pv=new PVBody(this,type,key); } PV_LIST.push(this.pv);
   const C=CFG[K.cfg]; this.maxHp=this.hp=C.hp; this.radius=K.radius||0.35; this.state="pv"; this.pvMem={}; };
 Enemy.prototype.pvUpdate=function(dt){ const b=this.pv, K=PVK[this.pvType];
   if(!b.ready){ this.syncRoot&&this.syncRoot(); return; }
@@ -10077,23 +10080,60 @@ function wpnReticle(dt){ WS.bloom=Math.max(0,(WS.bloom||0)*Math.exp(-dt*3.2)-dt*
   else if(k==="pistol"){ const g=r+2, hh=r*0.9+5; h=dot(0,0)+`<path d="M${cx-g+4} ${cy-hh} L${cx-g} ${cy-hh} L${cx-g} ${cy+hh} L${cx-g+4} ${cy+hh}" ${sw}/><path d="M${cx+g-4} ${cy-hh} L${cx+g} ${cy-hh} L${cx+g} ${cy+hh} L${cx+g-4} ${cy+hh}" ${sw}/>`; }
   else if(k==="flaregun"){ h=`<circle cx="${cx}" cy="${cy}" r="${r+2}" ${sw} stroke-dasharray="2 5"/>`+dot(0,0)+L(0,r+5,0,r+14)+`<path d="M${cx-4} ${cy+r+10} L${cx} ${cy+r+14} L${cx+4} ${cy+r+10}" ${sw}/>`; }
   RET.innerHTML=h; }
+// ---------------------------------------------------------------- the weapon wheel (T): every weapon, pick one
+// T opens it and the simulation holds still. Move the mouse toward a weapon (or press its number) and click, or press T
+// again, to take it; Esc closes it. In the playground every weapon is on the wheel: one she hasn't found yet is given to her.
+const WSHORT={revolver:"REVOLVER",pistol:"PISTOL",shotgun:"SHOTGUN",rifle:"RIFLE",flaregun:"FLARE GUN",flare:"FLARES",knife:"KNIFE",hatchet:"HATCHET",crowbar:"CROWBAR"};
+const WHEEL=["revolver","pistol","shotgun","rifle","flaregun","flare","knife","hatchet","crowbar"];
+let WHL=null;
+function wheelEl(){ if(WHL) return WHL; const d=document.createElement("div"); d.id="wwheel"; d.style.cssText="position:fixed;left:50%;top:50%;width:380px;height:380px;margin:-190px 0 0 -190px;z-index:30;display:none;pointer-events:auto;font-family:'Courier New',monospace";
+  d.innerHTML=`<svg viewBox="-190 -190 380 380" width="380" height="380" style="position:absolute;left:0;top:0"><circle r="182" fill="rgba(10,8,6,.82)" stroke="#6b5c3e"/><circle r="54" fill="rgba(20,16,12,.95)" stroke="#6b5c3e"/><g id="wwSeg"></g></svg><div id="wwMid" style="position:absolute;left:0;right:0;top:172px;text-align:center;font-size:12px;color:#e8c77a"></div>`;
+  document.body.appendChild(d); WHL=d;
+  d.addEventListener("mousemove",e=>{ if(document.pointerLockElement) return; const r=d.getBoundingClientRect(); WS.wpt={x:e.clientX-r.left-190,y:e.clientY-r.top-190}; wheelDraw(); });
+  d.addEventListener("mousedown",e=>{ e.preventDefault(); e.stopPropagation(); wheelPick(); });
+  return d; }
+function wheelSel(){ const p=WS.wpt; if(!p||Math.hypot(p.x,p.y)<40) return WS.wsel??WHEEL.indexOf(WS.wpn); const a=(Math.atan2(p.x,-p.y)+Math.PI*2)%(Math.PI*2); return Math.floor((a+Math.PI/WHEEL.length)/(Math.PI*2/WHEEL.length))%WHEEL.length; }
+function wheelDraw(){ const el=wheelEl(), g=el.querySelector("#wwSeg"), n=WHEEL.length, sel=WS.wsel=wheelSel(); let h="";
+  for(let i=0;i<n;i++){ const k=WHEEL[i], a0=(i-0.5)*Math.PI*2/n, a1=(i+0.5)*Math.PI*2/n, R=178, r=58, P=(rr,a)=>`${(rr*Math.sin(a)).toFixed(1)} ${(-rr*Math.cos(a)).toFixed(1)}`;
+    const on=i===sel, cur=k===WS.wpn, own=k==="revolver"||WS.owned.includes(k), s=k==="revolver"?null:wpnState(k);
+    const am= k==="revolver"? `${player.rounds}+${player.spare}` : WGUN(k)? `${s.mag}+${s.spare}` : k==="flare"? `${s.mag} left` : "";
+    h+=`<path d="M${P(r,a0)} L${P(R,a0)} A${R} ${R} 0 0 1 ${P(R,a1)} L${P(r,a1)} A${r} ${r} 0 0 0 ${P(r,a0)}Z" fill="${on?"rgba(150,110,40,.6)":"rgba(40,34,26,.35)"}" stroke="#4a4236"/>`;
+    const m=(a0+a1)/2, tx=120*Math.sin(m), ty=-120*Math.cos(m);
+    h+=`<text x="${tx.toFixed(1)}" y="${(ty-4).toFixed(1)}" text-anchor="middle" font-size="12" fill="${cur?"#e8c77a":own?"#e6e0d0":"#8a8274"}">${i+1} ${WSHORT[k]}</text><text x="${tx.toFixed(1)}" y="${(ty+12).toFixed(1)}" text-anchor="middle" font-size="10" fill="#9a9283">${own?am:"take it"}</text>`; }
+  g.innerHTML=h; el.querySelector("#wwMid").textContent=WNAME[WHEEL[sel]]||""; }
+function wheelOpen(){ if(MODE!=="play"||player.dead||player.grabbed) return; WS.wheel=true; WS.wpt=null; WS.wsel=WHEEL.indexOf(WS.wpn); wheelEl().style.display="block"; wheelDraw(); }
+function wheelClose(){ WS.wheel=false; if(WHL) WHL.style.display="none"; }
+function wheelPick(i){ const k=WHEEL[i??wheelSel()]; wheelClose(); if(!k) return;
+  if(k!=="revolver"&&!WS.owned.includes(k)){ wpnGive(k,k==="flare"?3:1,true); if(WGUN(k)) wpnState(k).spare+=CFG.weapons[k].mag*2; }
+  if(player.reloading>0){ player.reloading=0; player.reloadAdd=0; } WS.melee=null; if(k!==WS.wpn){ WS.wpn=k; player.wpn=k; WS.cool=0.3; log(`${WNAME[k]}${WLONG(k)?" · both hands: no light":""}`,"#bfe0ff"); } }
+function wheelMouse(e){ const p=WS.wpt||(WS.wpt={x:0,y:0}); p.x=Math.max(-170,Math.min(170,p.x+e.movementX)); p.y=Math.max(-170,Math.min(170,p.y+e.movementY)); wheelDraw(); }
+function wheelKey(e){ if(e.code==="Escape"){ wheelClose(); return true; } if(e.code==="KeyT"){ wheelPick(); return true; }
+  const m=/^Digit([1-9])$/.exec(e.code); if(m){ wheelPick(+m[1]-1); return true; } return ["KeyW","KeyA","KeyS","KeyD"].includes(e.code)?false:true; }
+addEventListener("keydown",e=>{ if(WS.wheel&&!e.repeat&&wheelKey(e)){ e.preventDefault(); e.stopImmediatePropagation(); } },true);
 // ================================================================ the editor shows the creatures as they are
 // The preview-body creatures (and the Runner and Tactician) are drawn in the editor with their real models, not as an
 // ACROSS person. The model loads in the background; until then a dim outline of its size stands in.
 const ED_GROUP={runner:"bcross/runner",tactician:"bcross/tactician"};
-function edCreatureKind(k){ return !!(PVK[k]||ED_GROUP[k]); }
+function edCreatureKind(k){ k=String(k).split("@")[0]; return !!(PVK[k]||ED_GROUP[k]); }
 let ED_HOB=null;
-function edCreature(k,o){ const g=new THREE.Group(), K=PVK[k];
+function edCreature(k,o){ const forced=String(k).split("@")[1]; k=String(k).split("@")[0]; const g=new THREE.Group(), K=PVK[k];
   const ph=new THREE.Mesh(k==="hob"?new THREE.BoxGeometry(3.0,1.4,7):new THREE.CylinderGeometry(0.3,0.3,1.7,10),new THREE.MeshBasicMaterial({color:0xd8b040,wireframe:true,transparent:true,opacity:0.35}));
   ph.position.set(0,k==="hob"?0.7:0.85,k==="hob"?-2.6:0); g.add(ph);
   const put=sc=>{ g.remove(ph); g.add(sc); };
   if(k==="hob"){ (ED_HOB||(ED_HOB=new Promise((res,rej)=>new THREE.GLTFLoader().load("m/bosses/hob/hob_rigged.json",res,undefined,rej)))).then(gl=>put(THREE.SkeletonUtils.clone(gl.scene))).catch(()=>{}); return g; }
-  const pool=Object.keys(MODEL_LIB).filter(m=>MODEL_LIB[m].g===(K?K.group:ED_GROUP[k])&&(!K||!K.only||K.only(m))); if(!pool.length) return g;
+  const pool=forced&&MODEL_LIB[forced]?[forced]:Object.keys(MODEL_LIB).filter(m=>MODEL_LIB[m].g===(K?K.group:ED_GROUP[k])&&(!K||!K.only||K.only(m))); if(!pool.length) return g;
   const key=pool[((((o&&o.x)||0)*1000+((o&&o.z)||0)*37)|0)%pool.length<0?0:((((o&&o.x)||0)*1000+((o&&o.z)||0)*37)|0)%pool.length];
   mdlLoad(key).then(()=>{ const c=mdlClone(key); if(c) put(c.scene); }).catch(()=>{});
   return g; }
+// every BCROSS model, and the creature type that plays it
+function bcrossType(key){ const g=(MODEL_LIB[key]||{}).g||""; if(g==="bcross/runner") return "runner"; if(g==="bcross/tactician") return "tactician"; if(g==="bcross/contortionist") return "contortionist";
+  if(g==="bcross/reacher") return /f01$/.test(key)?"splithead":/(m02|f02)$/.test(key)?"reacher_arm":"reacher"; if(g==="bcross/brute") return (typeof BRUTE_TYPE==="function"&&BRUTE_TYPE(key))||(key==="louis_brute"?"brute":null); return null; }
+const BCROSS_NAMES={runner:"Runner",tactician:"Tactician",contortionist:"Contortionist",reacher:"Reacher (neck)",reacher_arm:"Reacher (arms)",splithead:"Split-head Reacher",brute:"Louis"};
+function bcrossModelList(){ return Object.keys(MODEL_LIB).filter(k=>(MODEL_LIB[k].g||"").startsWith("bcross/")&&bcrossType(k)).map(k=>[k,`${(typeof BRUTE_NAMES!=="undefined"&&BRUTE_NAMES[bcrossType(k)])||BCROSS_NAMES[bcrossType(k)]||bcrossType(k)} · ${k}${MODEL_LIB[k].end?" (endgame)":""}`]); }
+function spawnBcross(key,x,z,opts={}){ const t=bcrossType(key); if(!t){ log(`No creature plays ${key} yet`,"#ff7070"); return null; } return spawn(t,x,z,Object.assign({},opts,{mdl:key})); }
+// "type@model" (the editor's per-model entries) names the exact model
 // an unknown kind never turns silently into an ACROSS
-{ const sp0=spawn; spawn=function(type,x,z,opts){ if(typeof type==="string"&&!PVK[type]&&!["across","brute","dummy","runner","tactician"].includes(type)&&!/^across/.test(type)){ log(`Unknown enemy "${type}"`,"#ff7070"); return null; } return sp0(type,x,z,opts); }; }
+{ const sp0=spawn; spawn=function(type,x,z,opts){ if(typeof type==="string"&&type.includes("@")){ const [t,m]=type.split("@"); opts=Object.assign({},opts||{},{mdl:m}); type=t; } if(typeof type==="string"&&!PVK[type]&&!["across","brute","dummy","runner","tactician"].includes(type)&&!/^across/.test(type)){ log(`Unknown enemy "${type}"`,"#ff7070"); return null; } return sp0(type,x,z,opts); }; }
 // ================================================================ maps: new, presets (the playground's arenas and scenarios), import
 function sbNewDoc(name="Untitled map"){
   return {app:"crossed-sandbox", version:1, name, note:"", win:"either", env:Object.assign({},ENV_DEF), start:{hp:"",rounds:"",spare:"",items:[],flashOn:false}, terrain:null, objects:[], customItems:[], textures:[], assets:[]};
@@ -10765,7 +10805,7 @@ function fSelect(o,k,options,opt={}){ const s=H("select"); for(const opt of opti
 function fBtns(list){ return H("div",{class:"fbtns"},list.map(([t,f,cls])=>H("button",{class:"btn small"+(cls?" "+cls:""),text:t,onclick:e=>{ e.currentTarget.blur(); f(e); }}))); }
 function fConfirm(text, f){ const b=H("button",{class:"btn small danger",text}); let armed=0; b.onclick=()=>{ if(armed&&Date.now()-armed<3000){ armed=0; b.textContent=text; f(); } else { armed=Date.now(); b.textContent="Click again to confirm"; setTimeout(()=>{ if(armed){ armed=0; b.textContent=text; } },3000); } }; return b; }
 function fHead(t,sub){ return H("div",{class:"fhead"},[H("h3",{text:t}),sub?H("p",{class:"muted",text:sub}):null]); }
-const enemyOptions=()=>[["across","Random ACROSS"],{group:"ACROSS subclasses",items:VARIANTS.map(v=>["across:"+v.key,v.name])},["across_legless","Legless crawler"],["brute","Louis (Brute)"],["runner","Runner (BCROSS)"],["tactician","Tactician (BCROSS)"],["contortionist","Contortionist (BCROSS)"],["reacher","Reacher, long neck (BCROSS)"],["reacher_arm","Reacher, long arms (BCROSS)"],["splithead","Split-head Reacher (unique)"],["hob","The Hob (boss)"],["dummy","Training dummy"]];
+const enemyOptions=()=>[["across","Random ACROSS"],{group:"ACROSS subclasses",items:VARIANTS.map(v=>["across:"+v.key,v.name])},["across_legless","Legless crawler"],["brute","Louis (Brute)"],["runner","Runner (BCROSS)"],["tactician","Tactician (BCROSS)"],["contortionist","Contortionist (BCROSS)"],["reacher","Reacher, long neck (BCROSS)"],["reacher_arm","Reacher, long arms (BCROSS)"],["splithead","Split-head Reacher (unique)"],["hob","The Hob (boss)"],["dummy","Training dummy"],{group:"BCROSS · a particular model",items:(typeof bcrossModelList==="function"?bcrossModelList():[]).map(([k,l])=>[bcrossType(k)+"@"+k,l])}];
 const startOptions=[["hunting","Hunting Norah"],["wander","Wandering (unaware)"],["stand","Standing still"],["feed","Feeding"],["playdead","Playing dead"],["lurk","Lurking"]];
 function assetOptions(){ const cats={}; for(const a of sbAssetList()) (cats[a.cat||"other"]=cats[a.cat||"other"]||[]).push([a.id,a.name]); return Object.entries(cats).map(([c,items])=>({group:c,items})); }
 
@@ -11190,6 +11230,8 @@ function renderSimMenu(result){
     btn("Spawn Runner",()=>{ spawn("runner"); }), btn("Spawn Tactician",()=>{ spawn("tactician"); }), btn("Spawn Contortionist",()=>{ spawn("contortionist"); }),
     btn("Spawn Reacher",()=>{ spawn(rng()<0.5?"reacher":"reacher_arm"); }), btn("Spawn split-head",()=>{ spawn("splithead"); }), btn("Spawn the Hob",()=>{ spawn("hob"); }),
     btn("Tuning panel",()=>{ closeSimMenu(); $("panel").classList.remove("hidden"); try{ document.exitPointerLock(); }catch(e){} })]));
+  { const sel=document.createElement("select"); sel.style.cssText="flex:1;min-width:0"; for(const [k,lab] of bcrossModelList()){ const o=document.createElement("option"); o.value=k; o.textContent=lab; sel.appendChild(o); }
+    const go=btn("Spawn this BCROSS model",()=>{ spawnBcross(sel.value); }); const row=document.createElement("div"); row.style.cssText="display:flex;gap:6px;margin-top:6px"; row.append(sel,go); B.appendChild(row); }
   B.appendChild(mh("p",{class:"smHint",text:"Esc or P closes this menu · N restarts · ` opens the tuning panel"}));
 }
 // extra enemies from the setup screen, at open spots away from Norah

@@ -11,3 +11,11 @@ j = rep(j, '  $("spare").textContent = CFG.rev.infinite?" ∞":` +${player.spare
 j = rep(j, "  if(e.code===\"KeyF\") fire();\n", "  if(e.code===\"KeyF\") fire();\n  if(e.code===\"KeyB\"&&!rep) wpnSwitch(1);\n  if(e.code===\"KeyJ\"&&!rep) wpnArmoury();\n")
 j = rep(j, "  for(const e of enemies) e.update(dt); pvFxAll(dt); plvFrame(dt);", "  for(const e of enemies) e.update(dt); pvFxAll(dt); wpnStep(dt); plvFrame(dt);")
 j = rep(j, '$("reticle").style.display = player.aiming && !fixed ?"block":"none";', '$("reticle").style.display = player.aiming && !fixed && !(RET&&RET.style.display==="block") ?"block":"none";')
+# a spawn can name its exact model (opts.mdl): every BCROSS model can be put in, endgame-only ones too
+j = rep(j, 'this.mdl = big ? (type==="brute"?pickModel("louis"):null) : pickModel(this.variant);', 'this.mdl = opts.mdl&&mdlInfo(opts.mdl) ? opts.mdl : big ? (type==="brute"?pickModel("louis"):null) : pickModel(this.variant);')
+j = rep(j, '  if(e.code==="Digit9") spawn("splithead");', '  if(e.code==="Digit9") spawn("splithead");\n  if(e.code==="KeyU") spawn("runner");')
+# the weapon wheel on T (slow motion stays in the pause menu)
+j = rep(j, '  if(e.code==="KeyT"){ CFG.world.timeScale = CFG.world.timeScale<1?1:0.25; refreshPanel(); }', '  if(e.code==="KeyT"&&!rep){ wheelOpen(); return; }')
+j = rep(j, 'addEventListener("mousemove", e=>{\n', 'addEventListener("mousemove", e=>{\n  if(WS.wheel){ if(document.pointerLockElement===canvas) wheelMouse(e); return; }\n')
+j = rep(j, 'canvas.addEventListener("mousedown", e=>{\n', 'canvas.addEventListener("mousedown", e=>{\n  if(WS.wheel){ wheelPick(); return; }\n')
+j = rep(j, '    else if(invOpen()||SB.simMenu){ dt=0; }', '    else if(invOpen()||SB.simMenu||WS.wheel){ dt=0; }')

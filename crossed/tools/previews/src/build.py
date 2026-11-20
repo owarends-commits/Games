@@ -34,7 +34,7 @@ b = b[:help_start] + '''<div id="help">
   <b>Bag</b> I or Tab: use pills and batteries, read notes · <b>Flashlight</b> L (its light makes Norah easier to see)<br>
   <b>Vault</b> Space next to a low surface (slow, quiet) · Shift + Space (fast, loud)<br><br>
   <b>N</b> restart the map · <b>1</b> random ACROSS · <b>4</b> upright · <b>5</b> Crawler · <b>2</b> Louis · <b>3</b> dummy · <b>6</b> Tactician · <b>7</b> Contortionist · <b>8</b> Reacher · <b>9</b> split-head Reacher · <b>K</b> the Hob · <b>0</b> clear<br>
-  <b>P</b> pause · <b>.</b> one frame · <b>Y</b> replay the last 10 s · <b>H</b> hit zones · <b>T</b> slow motion · <b>G</b> overlays · <b>`</b> tuning panel<br><br>
+  <b>P</b> pause · <b>.</b> one frame · <b>Y</b> replay the last 10 s · <b>H</b> hit zones · <b>T</b> weapon wheel · <b>G</b> overlays · <b>`</b> tuning panel<br><br>
   <b>Pad:</b> sticks move/look · LT aim · RT fire · X reload · Y shove · B run/dodge · A use · Start pause · Back replay · D-pad ↑ restart<br>
   <div class="btns" style="margin-top:8px"><button id="helpok">Start</button></div>
 </div>''' + b[help_end:]

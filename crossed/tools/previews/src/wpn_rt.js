@@ -129,3 +129,33 @@ function wpnReticle(dt){ WS.bloom=Math.max(0,(WS.bloom||0)*Math.exp(-dt*3.2)-dt*
   else if(k==="pistol"){ const g=r+2, hh=r*0.9+5; h=dot(0,0)+`<path d="M${cx-g+4} ${cy-hh} L${cx-g} ${cy-hh} L${cx-g} ${cy+hh} L${cx-g+4} ${cy+hh}" ${sw}/><path d="M${cx+g-4} ${cy-hh} L${cx+g} ${cy-hh} L${cx+g} ${cy+hh} L${cx+g-4} ${cy+hh}" ${sw}/>`; }
   else if(k==="flaregun"){ h=`<circle cx="${cx}" cy="${cy}" r="${r+2}" ${sw} stroke-dasharray="2 5"/>`+dot(0,0)+L(0,r+5,0,r+14)+`<path d="M${cx-4} ${cy+r+10} L${cx} ${cy+r+14} L${cx+4} ${cy+r+10}" ${sw}/>`; }
   RET.innerHTML=h; }
+// ---------------------------------------------------------------- the weapon wheel (T): every weapon, pick one
+// T opens it and the simulation holds still. Move the mouse toward a weapon (or press its number) and click, or press T
+// again, to take it; Esc closes it. In the playground every weapon is on the wheel: one she hasn't found yet is given to her.
+const WSHORT={revolver:"REVOLVER",pistol:"PISTOL",shotgun:"SHOTGUN",rifle:"RIFLE",flaregun:"FLARE GUN",flare:"FLARES",knife:"KNIFE",hatchet:"HATCHET",crowbar:"CROWBAR"};
+const WHEEL=["revolver","pistol","shotgun","rifle","flaregun","flare","knife","hatchet","crowbar"];
+let WHL=null;
+function wheelEl(){ if(WHL) return WHL; const d=document.createElement("div"); d.id="wwheel"; d.style.cssText="position:fixed;left:50%;top:50%;width:380px;height:380px;margin:-190px 0 0 -190px;z-index:30;display:none;pointer-events:auto;font-family:'Courier New',monospace";
+  d.innerHTML=`<svg viewBox="-190 -190 380 380" width="380" height="380" style="position:absolute;left:0;top:0"><circle r="182" fill="rgba(10,8,6,.82)" stroke="#6b5c3e"/><circle r="54" fill="rgba(20,16,12,.95)" stroke="#6b5c3e"/><g id="wwSeg"></g></svg><div id="wwMid" style="position:absolute;left:0;right:0;top:172px;text-align:center;font-size:12px;color:#e8c77a"></div>`;
+  document.body.appendChild(d); WHL=d;
+  d.addEventListener("mousemove",e=>{ if(document.pointerLockElement) return; const r=d.getBoundingClientRect(); WS.wpt={x:e.clientX-r.left-190,y:e.clientY-r.top-190}; wheelDraw(); });
+  d.addEventListener("mousedown",e=>{ e.preventDefault(); e.stopPropagation(); wheelPick(); });
+  return d; }
+function wheelSel(){ const p=WS.wpt; if(!p||Math.hypot(p.x,p.y)<40) return WS.wsel??WHEEL.indexOf(WS.wpn); const a=(Math.atan2(p.x,-p.y)+Math.PI*2)%(Math.PI*2); return Math.floor((a+Math.PI/WHEEL.length)/(Math.PI*2/WHEEL.length))%WHEEL.length; }
+function wheelDraw(){ const el=wheelEl(), g=el.querySelector("#wwSeg"), n=WHEEL.length, sel=WS.wsel=wheelSel(); let h="";
+  for(let i=0;i<n;i++){ const k=WHEEL[i], a0=(i-0.5)*Math.PI*2/n, a1=(i+0.5)*Math.PI*2/n, R=178, r=58, P=(rr,a)=>`${(rr*Math.sin(a)).toFixed(1)} ${(-rr*Math.cos(a)).toFixed(1)}`;
+    const on=i===sel, cur=k===WS.wpn, own=k==="revolver"||WS.owned.includes(k), s=k==="revolver"?null:wpnState(k);
+    const am= k==="revolver"? `${player.rounds}+${player.spare}` : WGUN(k)? `${s.mag}+${s.spare}` : k==="flare"? `${s.mag} left` : "";
+    h+=`<path d="M${P(r,a0)} L${P(R,a0)} A${R} ${R} 0 0 1 ${P(R,a1)} L${P(r,a1)} A${r} ${r} 0 0 0 ${P(r,a0)}Z" fill="${on?"rgba(150,110,40,.6)":"rgba(40,34,26,.35)"}" stroke="#4a4236"/>`;
+    const m=(a0+a1)/2, tx=120*Math.sin(m), ty=-120*Math.cos(m);
+    h+=`<text x="${tx.toFixed(1)}" y="${(ty-4).toFixed(1)}" text-anchor="middle" font-size="12" fill="${cur?"#e8c77a":own?"#e6e0d0":"#8a8274"}">${i+1} ${WSHORT[k]}</text><text x="${tx.toFixed(1)}" y="${(ty+12).toFixed(1)}" text-anchor="middle" font-size="10" fill="#9a9283">${own?am:"take it"}</text>`; }
+  g.innerHTML=h; el.querySelector("#wwMid").textContent=WNAME[WHEEL[sel]]||""; }
+function wheelOpen(){ if(MODE!=="play"||player.dead||player.grabbed) return; WS.wheel=true; WS.wpt=null; WS.wsel=WHEEL.indexOf(WS.wpn); wheelEl().style.display="block"; wheelDraw(); }
+function wheelClose(){ WS.wheel=false; if(WHL) WHL.style.display="none"; }
+function wheelPick(i){ const k=WHEEL[i??wheelSel()]; wheelClose(); if(!k) return;
+  if(k!=="revolver"&&!WS.owned.includes(k)){ wpnGive(k,k==="flare"?3:1,true); if(WGUN(k)) wpnState(k).spare+=CFG.weapons[k].mag*2; }
+  if(player.reloading>0){ player.reloading=0; player.reloadAdd=0; } WS.melee=null; if(k!==WS.wpn){ WS.wpn=k; player.wpn=k; WS.cool=0.3; log(`${WNAME[k]}${WLONG(k)?" · both hands: no light":""}`,"#bfe0ff"); } }
+function wheelMouse(e){ const p=WS.wpt||(WS.wpt={x:0,y:0}); p.x=Math.max(-170,Math.min(170,p.x+e.movementX)); p.y=Math.max(-170,Math.min(170,p.y+e.movementY)); wheelDraw(); }
+function wheelKey(e){ if(e.code==="Escape"){ wheelClose(); return true; } if(e.code==="KeyT"){ wheelPick(); return true; }
+  const m=/^Digit([1-9])$/.exec(e.code); if(m){ wheelPick(+m[1]-1); return true; } return ["KeyW","KeyA","KeyS","KeyD"].includes(e.code)?false:true; }
+addEventListener("keydown",e=>{ if(WS.wheel&&!e.repeat&&wheelKey(e)){ e.preventDefault(); e.stopImmediatePropagation(); } },true);

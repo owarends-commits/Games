@@ -159,6 +159,8 @@ function renderSimMenu(result){
     btn("Spawn Runner",()=>{ spawn("runner"); }), btn("Spawn Tactician",()=>{ spawn("tactician"); }), btn("Spawn Contortionist",()=>{ spawn("contortionist"); }),
     btn("Spawn Reacher",()=>{ spawn(rng()<0.5?"reacher":"reacher_arm"); }), btn("Spawn split-head",()=>{ spawn("splithead"); }), btn("Spawn the Hob",()=>{ spawn("hob"); }),
     btn("Tuning panel",()=>{ closeSimMenu(); $("panel").classList.remove("hidden"); try{ document.exitPointerLock(); }catch(e){} })]));
+  { const sel=document.createElement("select"); sel.style.cssText="flex:1;min-width:0"; for(const [k,lab] of bcrossModelList()){ const o=document.createElement("option"); o.value=k; o.textContent=lab; sel.appendChild(o); }
+    const go=btn("Spawn this BCROSS model",()=>{ spawnBcross(sel.value); }); const row=document.createElement("div"); row.style.cssText="display:flex;gap:6px;margin-top:6px"; row.append(sel,go); B.appendChild(row); }
   B.appendChild(mh("p",{class:"smHint",text:"Esc or P closes this menu · N restarts · ` opens the tuning panel"}));
 }
 // extra enemies from the setup screen, at open spots away from Norah
