@@ -1,0 +1,14 @@
+const { chromium } = require('playwright'); const fs=require('fs');
+(async()=>{ const b=await chromium.launch({args:['--use-gl=swiftshader']}); const p=await b.newPage({viewport:{width:640,height:400}});
+  const errs=[]; p.on('pageerror',e=>errs.push('PAGEERR '+e.message));
+  for(const [re,f] of [[/three\.min\.js/,'three.min.js'],[/GLTFLoader\.js/,'GLTFLoader.js'],[/SkeletonUtils\.js/,'SkeletonUtils.js']]) await p.route(re, r=>r.fulfill({body:fs.readFileSync(f),contentType:'application/javascript'}));
+  await p.route(/fonts\./, r=>r.abort()); await p.goto('http://127.0.0.1:8765/test.html'); await p.waitForTimeout(2500);
+  await p.click('#mmStart'); await p.waitForTimeout(300); await p.click('#suGo'); await p.waitForTimeout(400); await p.click('#helpok'); await p.waitForTimeout(300);
+  for(let i=0;i<40&&!(await p.evaluate(()=>PLV.ready));i++) await p.waitForTimeout(250);
+  await p.addScriptTag({content:fs.readFileSync('seam_lib.js','utf8')});
+  console.log(await p.evaluate(()=>{ window.requestAnimationFrame=()=>0; clearEnemies(); const W={}; const check=tag=>{ PLV.C.group.traverse(m=>{ if(m.isSkinnedMesh&&m.visible) for(const f of SEAM.floaters(m,0.012)){ const k=tag+" "+f.bone+" "+f.verts+"v"; W[k]=Math.max(W[k]||0,f.gap===">5cm"?5:f.gap); } }); };
+    const run=(n,tag,fn)=>{ for(let i=0;i<n;i++){ fn&&fn(); step(1/60,1/60); if(i%10===0) check(tag); } };
+    run(60,"walk",()=>{ keys.KeyW=true; }); run(60,"run",()=>{ keys.ShiftLeft=true; }); keys.KeyW=false; keys.ShiftLeft=false; run(40,"idle");
+    keys.KeyC=true; run(40,"aim"); fire(); run(40,"fire"); keys.KeyC=false; player.rounds=1; player.spare=20; startReload(); run(150,"reload");
+    player.downT=1.5; player.stumble=1; run(150,"down"); return Object.keys(W).length?JSON.stringify(W):"no floating pieces"; }));
+  console.log(errs.join('\n')||'no errors'); await b.close(); })();

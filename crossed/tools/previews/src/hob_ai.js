@@ -7,7 +7,7 @@ class HobBody{
   constructor(e){ this.e=e; this.K=PVK.hob; this.mod=PV_HOB; this.stage=new THREE.Group(); scene.add(this.stage); this.ready=false; this.hits=[]; this.ctx={}; this.t=0; this.ct=0; this.clipName=null; this.stun=0;
     for(const o of enemies) if(o!==e&&o.pvType==="hob"&&!o.removed){ o.remove(); const i=enemies.indexOf(o); if(i>=0) enemies.splice(i,1); }
     this.yaw=Math.atan2(player.pos.x-e.pos.x,player.pos.z-e.pos.z); this.pos=new THREE.Vector3(e.pos.x,0,e.pos.z); this.place();
-    new THREE.GLTFLoader().load("m/bosses/hob/hob_rigged.json", g=>{ if(e.removed) return; PV_HOB.hobInit(g,this.stage); this.makeHits(); this.ready=true; this.K.start(e,this); },
+    new THREE.GLTFLoader().load("m/bosses/hob/hob_rigged.json", g=>{ if(e.removed) return; if(typeof meshFixAll==="function") meshFixAll(g.scene); PV_HOB.hobInit(g,this.stage); this.makeHits(); this.ready=true; this.K.start(e,this); },
       undefined, err=>log(`${e.name}: model failed (${err&&err.message||err})`,"#ff7070")); }
   dir(){ return new THREE.Vector3(Math.sin(this.yaw),0,Math.cos(this.yaw)); }
   place(){ this.stage.position.copy(this.pos); this.stage.rotation.set(0,this.yaw-Math.PI/2,0); this.stage.updateMatrixWorld(true); }

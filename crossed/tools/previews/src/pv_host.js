@@ -11,7 +11,7 @@ class PVBody{
   constructor(e,type,key){ this.e=e; this.type=type; this.K=PVK[type]; this.mod=this.K.mod; this.key=key; this.stage=new THREE.Group(); scene.add(this.stage);
     this.M=new THREE.Matrix4(); this.Mi=new THREE.Matrix4(); this.a=0; this.ctx={events:[],x:0,z:0,yaw:Math.PI/2,v:0,live:true,T:{}}; this.t=0; this.ct=0; this.C=null; this.ready=false; this.hits=[];
     this.norah=this.makeNorah(); this.clip=null; this.clipName=null;
-    mdlLoad(key).then(g=>{ if(e.removed) return; this.withStage(()=>{ this.mod.pvBind(this.rec()); if(this.mod.pvPrep) this.mod.pvPrep(g,this); this.C=this.mod.makeChar(g); if(this.mod.pvPost) this.mod.pvPost(this.C,this); this.mod.pvSetup(this.C); }); this.makeHits(); this.ready=true; if(this.K.start) this.K.start(e,this); })
+    mdlLoad(key).then(g=>{ if(e.removed) return; this.withStage(()=>{ this.mod.pvBind(this.rec()); if(this.mod.pvPrep) this.mod.pvPrep(g,this); if(!g.userData.mfDone2&&typeof meshFixAll==="function"){ g.userData.mfDone2=true; meshFixAll(g.scene); } this.C=this.mod.makeChar(g); if(this.mod.pvPost) this.mod.pvPost(this.C,this); this.mod.pvSetup(this.C); }); this.makeHits(); this.ready=true; if(this.K.start) this.K.start(e,this); })
       .catch(err=>{ log(`${e.name}: model failed (${err&&err.message||err})`,"#ff7070"); }); }
   // the stage: world = M · stage. Posing runs with the stage at the origin, so its world is the preview's world
   anchor(worldPos,worldDir,stageX=0,stageZ=0){ const a=Math.atan2(-worldDir.z,worldDir.x)+Math.PI/2, M0=this.M.clone(); this.a=a; const R=new THREE.Matrix4().makeRotationY(a-Math.PI/2);

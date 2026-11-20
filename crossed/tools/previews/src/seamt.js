@@ -16,8 +16,8 @@ const { chromium } = require('playwright'); const fs=require('fs');
         const e=__e; if(!e||e.dead||e.removed) return; const lost=e.lost&&Object.values(e.lost).some(Boolean); if(lost) return; if(e.pv&&e.pv.rc&&e.pv.C&&e.pv.C.ar&&Object.values(e.pv.C.ar).some(a=>a&&a.cut!=null)) return;
         const root= e.pvType==="hob"? (PV_HOB.H&&PV_HOB.H.group) : e.pv? (e.pv.C&&e.pv.C.group) : (e.skin&&e.skin.model); if(!root) return;
         const clip=e.pv?e.pv.clipName:(e.state||"?");
-        for(const m of SEAM.meshes(root)){ const w=SEAM.gap(m); if(!w.g) continue; const k=clip+" | "+w.kind+" "+w.a+"~"+w.b; if(!__W[k]||w.g>__W[k]) __W[k]=w.g; } }); }
+        window.__n=(window.__n||0)+1; if(__n%2) return; for(const m of SEAM.meshes(root)){ if(m.material&&m.material.visible===false) continue; for(const f of SEAM.floaters(m,0.012)){ const k=clip+" | floating piece ("+f.verts+" verts, "+f.bone+")"; const g=f.gap===">5cm"?0.05:f.gap/100; if(!__W[k]||g>__W[k]) __W[k]=g; } } }); }
     const res=await p.evaluate(()=>{ const e=__e, root= e.pvType==="hob"? (PV_HOB.H&&PV_HOB.H.group) : e.pv? (e.pv.C&&e.pv.C.group) : (e.skin&&e.skin.model); const ms=root?SEAM.meshes(root):[];
-      return {mdl:e.mdl||(e.pv&&e.pv.key)||"", meshes:ms.map(m=>{ const I=SEAM.prep(m); return {n:m.geometry.attributes.position.count,islands:I.islands,pairs:I.pairs.length,contacts:I.pairs.filter(x=>x[3]==="contact").length}; }), worst:Object.entries(__W).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([k,g])=>(g*100).toFixed(1)+" cm  "+k)}; });
+      return {mdl:e.mdl||(e.pv&&e.pv.key)||"", meshes:ms.map(m=>{ const I=SEAM.prep(m); return {n:m.geometry.attributes.position.count,islands:I.islands,pairs:I.pairs.length,contacts:I.pairs.filter(x=>x[3]==="contact").length}; }), worst:Object.entries(__W).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([k,g])=>(g>=0.05?">5":(g*100).toFixed(1))+" cm  "+k)}; });
     console.log("== "+type+" ("+res.mdl+") "+JSON.stringify(res.meshes)); console.log(res.worst.join("\n")||"  (no openings)"); }
   console.log(errs.slice(0,6).join('\n')||'no errors'); await b.close(); })();
