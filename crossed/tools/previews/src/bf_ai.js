@@ -61,5 +61,5 @@ PVK.brute_onearm={ mod:PV_OA, label:"One-arm Brute", group:"bcross/brute", only:
       else if(k==="charge"){ if(Math.hypot(player.pos.x-e.pos.x,player.pos.z-e.pos.z)<1.9&&runnerHitNorah(e,C.chargeDamage,"charge",5.0,C.chargeDown)){ shake=Math.max(shake,0.4); log(`${e.name} rams her off her feet`,"#ff7070"); } }
       else if(k==="chargeMiss"){ log(`${e.name} can't stop · it runs on past`,"#9ed08a"); } } } };
 
-function BRUTE_TYPE(key){ return {brute_clubfist_m01:"brute_club",brute_onearm_f01:"brute_onearm"}[key]||null; }
+let BRUTE_TYPE=function(key){ return {brute_clubfist_m01:"brute_club",brute_onearm_f01:"brute_onearm"}[key]||null; };
 const BRUTE_NAMES={brute_club:"Club-fist Brute",brute_onearm:"One-arm Brute"};

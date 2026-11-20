@@ -157,7 +157,7 @@ function renderSimMenu(result){
     btn("Heal + refill",()=>{ player.hp=CFG.norah.hp; player.rounds=CFG.rev.chambers; player.spare=Math.max(player.spare,CFG.rev.spare); if(player.dead) respawn(); renderSimMenu(result); }),
     btn("Spawn ACROSS",()=>{ spawn("across"); }), btn("Spawn Louis",()=>{ spawn("brute"); }), btn("Spawn dummy",()=>{ spawn("dummy"); }),
     btn("Spawn Runner",()=>{ spawn("runner"); }), btn("Spawn Tactician",()=>{ spawn("tactician"); }), btn("Spawn Contortionist",()=>{ spawn("contortionist"); }),
-    btn("Spawn Reacher",()=>{ spawn(rng()<0.5?"reacher":"reacher_arm"); }), btn("Spawn split-head",()=>{ spawn("splithead"); }), btn("Spawn the Hob",()=>{ spawn("hob"); }),
+    btn("Spawn Reacher",()=>{ spawn(rng()<0.5?"reacher":"reacher_arm"); }), btn("Spawn split-head",()=>{ spawn("splithead"); }), btn("Spawn the Hob",()=>{ spawn("hob"); }), btn("Spawn a Brute",()=>{ const L=["brute2","brute2_legless","brute2_split","brute2_armored","brute_club","brute_onearm"]; spawn(L[Math.floor(rng()*L.length)]); }),
     btn("Tuning panel",()=>{ closeSimMenu(); $("panel").classList.remove("hidden"); try{ document.exitPointerLock(); }catch(e){} })]));
   { const sel=document.createElement("select"); sel.style.cssText="flex:1;min-width:0"; for(const [k,lab] of bcrossModelList()){ const o=document.createElement("option"); o.value=k; o.textContent=lab; sel.appendChild(o); }
     const go=btn("Spawn this BCROSS model",()=>{ spawnBcross(sel.value); }); const row=document.createElement("div"); row.style.cssText="display:flex;gap:6px;margin-top:6px"; row.append(sel,go); B.appendChild(row); }
