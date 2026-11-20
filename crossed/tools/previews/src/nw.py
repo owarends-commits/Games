@@ -23,3 +23,7 @@ j = rep(j, "function shove(){\n  if(mash()) return;\n", "function shove(){\n  if
 # shorter stuns, and no chain of hits while she's stunned: knocked about, she gets a moment to move before the next lands
 j = rep(j, '  else if(player.stumble>0){ player.stumble-=dt; pMode="skid"; }', '  else if(player.stumble>0){ player.stumble-=dt*(CFG.norah.stunRate||1.7); pMode="skid"; }')
 j = rep(j, "  hurt(dmg, from, how){\n    if(this.dead) return;\n", "  hurt(dmg, from, how){\n    if(this.dead) return;\n    if((this.guardT||0)>0&&!this.grabbed&&!/bite|squeeze|crush|pin|throne|engulf|drop|coil|snatch|wrap|grab/i.test(String(how||\"\"))) return;\n")
+# windows: a smashed window loses its glass, not its sill (Norah vaults the sill; the enemies that climb, climb); shots break glass
+j = rep(j, 'if(win.broken) return; win.broken=true; for(const sg of win.segs){ const i=world.segs.indexOf(sg); if(i>=0) world.segs.splice(i,1); }', 'if(win.broken) return; win.broken=true; for(const sg of win.segs){ if(!sg.glass) continue; const i=world.segs.indexOf(sg); if(i>=0) world.segs.splice(i,1); }')
+j = rep(j, '  const targets = world.blockers.concat(enemyMeshes());', '  const targets = world.blockers.concat(enemyMeshes(), windowGlass());')
+j = rep(j, '  if(!h){ log("Miss","#7d7668"); return; }', '  if(!h){ log("Miss","#7d7668"); return; }\n  if(h.object.userData.winGlass){ smashWindow(h.object.userData.winGlass,{name:"Norah"}); return; }')

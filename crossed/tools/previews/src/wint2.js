@@ -1,0 +1,14 @@
+const { chromium } = require('playwright'); const fs=require('fs');
+(async()=>{ const b=await chromium.launch({args:['--use-gl=swiftshader']}); const p=await b.newPage({viewport:{width:900,height:600}});
+  const errs=[]; p.on('pageerror',e=>errs.push('PAGEERR '+e.message));
+  for(const [re,f] of [[/three\.min\.js/,'three.min.js'],[/GLTFLoader\.js/,'GLTFLoader.js'],[/SkeletonUtils\.js/,'SkeletonUtils.js']]) await p.route(re, r=>r.fulfill({body:fs.readFileSync(f),contentType:'application/javascript'}));
+  await p.route(/fonts\./, r=>r.abort()); await p.goto('http://127.0.0.1:8765/test.html'); await p.waitForTimeout(2500);
+  await p.click('#mmStart'); await p.waitForTimeout(300); await p.click('#suGo'); await p.waitForTimeout(400); await p.click('#helpok'); await p.waitForTimeout(800);
+  console.log(await p.evaluate(()=>{ window.requestAnimationFrame=()=>0; clearEnemies(); const out=[]; const ws=world.windows.filter(w=>w.glass); for(const w of ws) smashWindow(w,{name:"test"});
+    for(const w of ws){ const g=w.glass.getWorldPosition(new THREE.Vector3()), s=w.segs.find(x=>!x.glass), u=new THREE.Vector3(s.bx-s.ax,0,s.bz-s.az).normalize(), n=new THREE.Vector3(-u.z,0,u.x);
+      for(const sd of [1,-1]){ const q=new THREE.Vector3(g.x,0,g.z).addScaledVector(n,0.75*sd), q2=q.clone(); collide(q2,0.3); if(q2.distanceTo(q)>0.05) continue; player.pos.copy(q); player.yaw=Math.atan2(g.x-q.x,g.z-q.z); player.vault=null; player.posY=0;
+        const v=findVault(); if(!v||v.win!==w){ const off=(s.t||0.2)/2+0.42, P=player.pos, dx=s.bx-s.ax, dz=s.bz-s.az, L2=dx*dx+dz*dz, uu=clamp(((P.x-s.ax)*dx+(P.z-s.az)*dz)/L2,0.08,0.92), cx=s.ax+dx*uu, cz=s.az+dz*uu, ex=P.x-cx, ez=P.z-cz, dd=Math.hypot(ex,ez), land=new THREE.Vector3(cx-ex/dd*off,0,cz-ez/dd*off); const near=[]; for(const sg of world.segs){ const ddx=sg.bx-sg.ax, ddz=sg.bz-sg.az, l2=ddx*ddx+ddz*ddz||1, k=clamp(((land.x-sg.ax)*ddx+(land.z-sg.az)*ddz)/l2,0,1), dist=Math.hypot(land.x-sg.ax-ddx*k,land.z-sg.az-ddz*k); if(dist<0.6) near.push("seg t"+sg.t+" d"+dist.toFixed(2)+(sg.win?" win":"")); } for(const bx of world.boxes){ const qx=clamp(land.x,bx.x0,bx.x1), qz=clamp(land.z,bx.z0,bx.z1); if(Math.hypot(land.x-qx,land.z-qz)<0.6) near.push("box "+bx.name); } for(const c of world.circles) if(Math.hypot(c.x-land.x,c.z-land.z)<c.r+0.5) near.push("circle r"+c.r); out.push("window side "+sd+": not offered · d "+dd.toFixed(2)+" · near the landing: "+near.join(", ")); continue; }
+        const ok=tryVault(false); let maxY=0; for(let i=0;i<150;i++){ step(1/60,1/60); maxY=Math.max(maxY,player.posY||0); }
+        const far=player.pos.clone().sub(new THREE.Vector3(g.x,0,g.z)).dot(n)*sd<0; out.push(`window side ${sd}: vault ${ok} · rose ${maxY.toFixed(2)} m over the ${v.h.toFixed(2)} m sill · now on the far side ${far}`); } }
+    return out.join("\n"); }));
+  console.log(errs.join('\n')||'no errors'); await b.close(); })();

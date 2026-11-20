@@ -1,0 +1,16 @@
+const { chromium } = require('playwright'); const fs=require('fs');
+(async()=>{ const b=await chromium.launch({args:['--use-gl=swiftshader']}); const p=await b.newPage({viewport:{width:900,height:600}});
+  const errs=[]; p.on('pageerror',e=>errs.push('PAGEERR '+e.message+' '+(e.stack||'').split('\n').slice(1,3).join(' | '))); p.on('console',m=>{ if(m.type()==='error') errs.push('CONSOLE '+m.text().slice(0,200)); });
+  for(const [re,f] of [[/three\.min\.js/,'three.min.js'],[/GLTFLoader\.js/,'GLTFLoader.js'],[/SkeletonUtils\.js/,'SkeletonUtils.js']]) await p.route(re, r=>r.fulfill({body:fs.readFileSync(f),contentType:'application/javascript'}));
+  await p.route(/fonts\./, r=>r.abort()); await p.goto('http://127.0.0.1:8765/test.html'); await p.waitForTimeout(2500);
+  await p.evaluate(()=>{ const f0=meshFix; window.__mf=[]; meshFix=function(m){ const t=performance.now(); const r=f0(m); if(r) __mf.push([m.geometry.attributes.position.count,+(performance.now()-t).toFixed(0)]); return r; }; });
+  await p.click('#mmStart'); await p.waitForTimeout(300); await p.click('#suGo'); await p.waitForTimeout(400); await p.click('#helpok'); await p.waitForTimeout(500);
+  await p.evaluate(()=>{ for(const t of ["across","across","runner","tactician","contortionist","reacher","brute"]) spawn(t); });
+  await p.waitForTimeout(15000);
+  const r=await p.evaluate(()=>{ window.requestAnimationFrame=()=>0; const T={}; const time=(k,fn)=>{ const t=performance.now(); fn(); T[k]=(T[k]||0)+performance.now()-t; };
+    const nr0=navReady; let navT=0; navReady=function(){ const t=performance.now(); nr0(); navT+=performance.now()-t; };
+    const r0=route; let rT=0, rN=0; route=function(...a){ const t=performance.now(); const x=r0(...a); rT+=performance.now()-t; rN++; return x; };
+    const t0=performance.now(); for(let i=0;i<120;i++) step(1/60,1/60); const st=(performance.now()-t0)/120;
+    const t1=performance.now(); for(let i=0;i<20;i++) renderer.render(scene,camera); const rt=(performance.now()-t1)/20;
+    return {stepMs:+st.toFixed(1), renderMs:+rt.toFixed(1), navMsPerStep:+(navT/120).toFixed(2), routeCallsPerStep:+(rN/120).toFixed(1), routeMsPerStep:+(rT/120).toFixed(2), meshFix:__mf, enemies:enemies.map(e=>(e.pvType||e.kind)+(e.pv?(e.pv.ready?"":"(not ready)"):(e.skin&&e.skin.model?"":"(no model)")))}; });
+  console.log(JSON.stringify(r)); console.log(errs.slice(0,8).join('\n')||'no errors'); await b.close(); })();

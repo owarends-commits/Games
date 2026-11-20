@@ -5,12 +5,15 @@
 const NAV={cell:0.25, r:0.32, world:null, sig:"", t:0};
 function navSig(){ let s=world.boxes.length+":"; for(const d of world.doors) s+=(d.broken?"b":d.ang>0.6?"o":"c"); for(const b of world.boxes) s+=(b.x*10|0)+","+(b.z*10|0)+";"; return s+world.segs.length+":"+world.circles.length; }
 function navBuild(){ const B=world.bounds, c=NAV.cell, nx=Math.max(1,Math.ceil((B.x1-B.x0)/c)), nz=Math.max(1,Math.ceil((B.z1-B.z0)/c)), g=new Uint8Array(nx*nz), r=NAV.r;
-  for(let j=0;j<nz;j++) for(let i=0;i<nx;i++){ const x=B.x0+(i+0.5)*c, z=B.z0+(j+0.5)*c; let bl=x<B.x0+r||x>B.x1-r||z<B.z0+r||z>B.z1-r;
-    if(!bl) for(const s of world.segs){ const dx=s.bx-s.ax, dz=s.bz-s.az, L2=dx*dx+dz*dz||1e-9, u=Math.max(0,Math.min(1,((x-s.ax)*dx+(z-s.az)*dz)/L2)); if(Math.hypot(x-s.ax-dx*u,z-s.az-dz*u)<r+(s.t||0.2)/2){ bl=true; break; } }
-    if(!bl) for(const d of world.doors){ if(d.broken||d.ang<=0.6) continue; const sg=doorSeg(d), dx=sg.bx-sg.ax, dz=sg.bz-sg.az, L2=dx*dx+dz*dz||1e-9, u=Math.max(0,Math.min(1,((x-sg.ax)*dx+(z-sg.az)*dz)/L2)); if(Math.hypot(x-sg.ax-dx*u,z-sg.az-dz*u)<r+0.04){ bl=true; break; } }
-    if(!bl) for(const ci of world.circles){ if(Math.hypot(x-ci.x,z-ci.z)<ci.r+r){ bl=true; break; } }
-    if(!bl) for(const b of world.boxes){ const qx=Math.max(b.x0,Math.min(b.x1,x)), qz=Math.max(b.z0,Math.min(b.z1,z)); if(Math.hypot(x-qx,z-qz)<r){ bl=true; break; } }
-    g[j*nx+i]=bl?1:0; }
+  // each obstacle marks the cells it covers (its bounding box grown by the body's radius), tested exactly there
+  const mark=(x0,z0,x1,z1,hit)=>{ const i0=Math.max(0,Math.floor((x0-r-B.x0)/c)), i1=Math.min(nx-1,Math.floor((x1+r-B.x0)/c)), j0=Math.max(0,Math.floor((z0-r-B.z0)/c)), j1=Math.min(nz-1,Math.floor((z1+r-B.z0)/c));
+    for(let j=j0;j<=j1;j++) for(let i=i0;i<=i1;i++){ const k=j*nx+i; if(g[k]) continue; if(hit(B.x0+(i+0.5)*c,B.z0+(j+0.5)*c)) g[k]=1; } };
+  const segHit=(s,t)=>(x,z)=>{ const dx=s.bx-s.ax, dz=s.bz-s.az, L2=dx*dx+dz*dz||1e-9, u=Math.max(0,Math.min(1,((x-s.ax)*dx+(z-s.az)*dz)/L2)); return Math.hypot(x-s.ax-dx*u,z-s.az-dz*u)<r+t; };
+  for(const s of world.segs){ if(s.win) continue;   /* windows: the enemies that climb go through them (and smash the glass) */ const t=(s.t||0.2)/2; mark(Math.min(s.ax,s.bx)-t,Math.min(s.az,s.bz)-t,Math.max(s.ax,s.bx)+t,Math.max(s.az,s.bz)+t,segHit(s,t)); }
+  for(const d of world.doors){ if(d.broken||d.ang<=0.6) continue; const s=doorSeg(d); mark(Math.min(s.ax,s.bx),Math.min(s.az,s.bz),Math.max(s.ax,s.bx),Math.max(s.az,s.bz),segHit(s,0.04)); }
+  for(const ci of world.circles) mark(ci.x-ci.r,ci.z-ci.r,ci.x+ci.r,ci.z+ci.r,(x,z)=>Math.hypot(x-ci.x,z-ci.z)<ci.r+r);
+  for(const b of world.boxes) mark(b.x0,b.z0,b.x1,b.z1,(x,z)=>{ const qx=Math.max(b.x0,Math.min(b.x1,x)), qz=Math.max(b.z0,Math.min(b.z1,z)); return Math.hypot(x-qx,z-qz)<r; });
+  for(let j=0;j<nz;j++) for(let i=0;i<nx;i++){ const x=B.x0+(i+0.5)*c, z=B.z0+(j+0.5)*c; if(x<B.x0+r||x>B.x1-r||z<B.z0+r||z>B.z1-r) g[j*nx+i]=1; }
   const cl=new Uint8Array(nx*nz).fill(255), Q=[]; for(let k=0;k<nx*nz;k++) if(g[k]){ cl[k]=0; Q.push(k); }
   for(let q=0;q<Q.length;q++){ const k=Q[q], x=k%nx, z=(k/nx)|0; for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){ const X=x+dx, Z=z+dz; if(X<0||Z<0||X>=nx||Z>=nz) continue; const m=Z*nx+X; if(cl[m]>cl[k]+1){ cl[m]=cl[k]+1; Q.push(m); } } }
   NAV.g=g; NAV.cl=cl; NAV.nx=nx; NAV.nz=nz; NAV.x0=B.x0; NAV.z0=B.z0; NAV.world=world; NAV.sig=navSig(); }

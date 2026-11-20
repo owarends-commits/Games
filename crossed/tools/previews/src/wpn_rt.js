@@ -54,12 +54,13 @@ function wpnShoot(k){ const C=CFG.weapons[k], s=wpnState(k);
   if(isFixed()){ origin=new THREE.Vector3(player.pos.x,1.4+groundY(player.pos.x,player.pos.z),player.pos.z); const tg=player.aimTarget&&!player.aimTarget.dead?player.aimTarget:null;
     base= tg? aimPointOf(tg).sub(origin).normalize() : new THREE.Vector3(Math.sin(player.yaw),player.aimHeight*0.15,Math.cos(player.yaw)).normalize(); }
   else { ray.setFromCamera({x:0,y:0},camera); origin=ray.ray.origin.clone(); base=ray.ray.direction.clone(); skip=camera.position.distanceTo(new THREE.Vector3(player.pos.x,1.5,player.pos.z))*0.6; }
-  const targets=world.blockers.concat(enemyMeshes()), d0=CFG.rev.damage; let anyHit=false;
+  const targets=world.blockers.concat(enemyMeshes(),windowGlass()), d0=CFG.rev.damage; let anyHit=false;
   const spreadNow=wpnSpread(k); WS.bloom=(WS.bloom||0)+C.bloom;
   for(let i=0;i<C.pellets;i++){ const a=spreadNow*Math.PI/180, dir=base.clone(); if(a>0){ const r=Math.sqrt(Math.random())*a, th=Math.random()*Math.PI*2, u=new THREE.Vector3().crossVectors(dir,new THREE.Vector3(0,1,0)).normalize(), v=new THREE.Vector3().crossVectors(u,dir).normalize(); dir.addScaledVector(u,Math.tan(r)*Math.cos(th)).addScaledVector(v,Math.tan(r)*Math.sin(th)).normalize(); }
     ray.set(origin,dir); ray.far=C.range; const h=ray.intersectObjects(targets,false).find(x=>x.distance>skip);
     if(k==="flaregun"){ const p=h?h.point:origin.clone().addScaledVector(dir,Math.min(C.range,25)); wpnWorldFlare(p,new THREE.Vector3(),C.burn,0xff5a2a); }
     if(!h) continue;
+    if(h.object.userData.winGlass){ smashWindow(h.object.userData.winGlass,{name:"Norah"}); anyHit=true; continue; }
     if(h.object.userData.enemy){ CFG.rev.damage=d0*C.dmg; try{ h.object.userData.enemy.hit(h.object,h.point,dir); } finally { CFG.rev.damage=d0; } anyHit=true; }
     else if(i<2){ SFX.cover(h.point); spray(h.point,dir.clone().negate(),0x8a7a60); } }
   if(anyHit) hitstop=Math.max(hitstop,CFG.rev.hitstop); else log(k==="shotgun"?"The spread goes wide":"Miss","#7d7668"); }
@@ -71,7 +72,7 @@ function wpnSwing(k){ const C=CFG.weapons[k]; if(WS.cool>0&&!(k==="hatchet"&&WS.
 function wpnMeleeHit(k){ const C=CFG.weapons[k], fw=new THREE.Vector3(Math.sin(player.yaw),0,Math.cos(player.yaw)), at=new THREE.Vector3(player.pos.x,1.25,player.pos.z).addScaledVector(fw,C.reach*0.7);
   let best=null, bd=1e9; for(const e of enemies){ if(e.dead) continue; const d=new THREE.Vector3(e.pos.x-player.pos.x,0,e.pos.z-player.pos.z), L=d.length(); if(L>C.reach+(e.radius||0.35)) continue;
     if(L>0.2&&Math.acos(Math.max(-1,Math.min(1,d.normalize().dot(fw))))>C.arc*Math.PI/360) continue; if(L<bd){ bd=L; best=e; } }
-  if(!best){ log("The swing meets air","#7d7668"); return; }
+  if(!best){ if(!wpnSmashWindow(C.reach)) log("The swing meets air","#7d7668"); return; }
   let mesh=null, md=1e9; for(const m of enemyMeshes()){ if(m.userData.enemy!==best) continue; const p=m.getWorldPosition(new THREE.Vector3()), d=p.distanceTo(at); if(d<md){ md=d; mesh=m; } }
   if(!mesh) return; const p=mesh.getWorldPosition(new THREE.Vector3()), d0=CFG.rev.damage; CFG.rev.damage=d0*C.dmg; try{ best.hit(mesh,p,fw); } finally { CFG.rev.damage=d0; }
   shake=Math.max(shake,0.18); hitstop=Math.max(hitstop,0.06); SFX.flesh&&SFX.flesh(p); if(k==="crowbar"&&best.kind!=="pv"){ best.stagger=Math.max(best.stagger||0,0.8); } }
@@ -191,3 +192,23 @@ function wpnPryStep(dt){ const P=WS.pry; if(!P) return; P.t+=dt; const st=PV_NW.
     P.door.ang=P.door.target=Math.min(1.45,st.door*1.0); applyDoor(P.door); }
   if((P.started&&!st)||P.t>8){ P.door.locked=false; P.door.target=1.45; WS.pry=null; PLV.pryM=null; log("The door gives and swings open","#9ed08a"); SFX.slam&&SFX.slam(player.pos); }
 }
+
+// ---------------------------------------------------------------- windows: shot or struck, the glass goes; then she can vault the sill
+function windowGlass(){ const out=[]; for(const w of world.windows||[]){ if(w.broken||!w.glass||!w.glass.visible) continue; w.glass.userData.winGlass=w; out.push(w.glass); } return out; }
+function wpnSmashWindow(reach){ const fw=new THREE.Vector3(Math.sin(player.yaw),0,Math.cos(player.yaw)); let best=null, bd=1e9;
+  for(const w of world.windows||[]){ if(w.broken||!w.glass) continue; const p=w.glass.getWorldPosition(new THREE.Vector3()), d=new THREE.Vector3(p.x-player.pos.x,0,p.z-player.pos.z), L=d.length();
+    if(L>reach+0.35) continue; if(L>0.2&&d.normalize().dot(fw)<0.45) continue; if(L<bd){ bd=L; best=w; } }
+  if(!best) return false; smashWindow(best,{name:"Norah"}); shake=Math.max(shake,0.12); return true; }
+// a broken window's sill is a low wall she can vault, like furniture
+{ const fv0=findVault; findVault=function(){ const v=fv0(); const N=CFG.norah, p=player.pos, fx=Math.sin(player.yaw), fz=Math.cos(player.yaw); let best=v, bd=v?Math.hypot(v.land.x-p.x,v.land.z-p.z)-0.5:1e9;
+    for(const w of world.windows||[]){ if(!w.broken) continue; for(const s of w.segs){ if(s.glass) continue; const dx=s.bx-s.ax, dz=s.bz-s.az, L2=dx*dx+dz*dz||1e-9, u=clamp(((p.x-s.ax)*dx+(p.z-s.az)*dz)/L2,0.08,0.92), cx=s.ax+dx*u, cz=s.az+dz*u, ex=p.x-cx, ez=p.z-cz, d=Math.hypot(ex,ez);
+        if(d<1e-3||d>N.vaultReach+0.35||d>=bd) continue; if(-(ex*fx+ez*fz)/d<0.5) continue;   /* facing it */
+        const sill=(w.meshes||[]).reduce((h,m)=>{ const bb=new THREE.Box3().setFromObject(m); return bb.min.y<0.3&&bb.max.y<1.6?Math.max(h,bb.max.y):h; },0)||0.9;
+        if(sill<N.vaultMinH||sill>N.vaultMaxH) continue;
+        let land=null; const off0=(s.t||0.2)/2+0.42, ux=dx/Math.sqrt(L2), uz=dz/Math.sqrt(L2);
+        for(const fo of [0,0.25,0.5,0.75]) for(const so of [0,0.3,-0.3,0.55,-0.55]){ if(land) break; const q=new THREE.Vector3(cx-ex/d*(off0+fo)+ux*so,0,cz-ez/d*(off0+fo)+uz*so), pr=q.clone(); collide(pr,0.3); if(Math.hypot(pr.x-q.x,pr.z-q.z)<=0.08&&!segBetween(cx-ex/d*off0,cz-ez/d*off0,q.x,q.z)) land=q; }   /* the first clear spot past the sill */
+        if(!land){ if(performance.now()-(WS.noRoomT||0)>1500){ WS.noRoomT=performance.now(); log("Something's in the way on the other side","#9a9283"); } continue; }
+        bd=d; best={box:null, win:w, land, h:sill, depth:(s.t||0.2)+0.2+Math.max(0,land.distanceTo(new THREE.Vector3(cx,0,cz))-0.6)}; } }
+    return best; }; }
+
+function segBetween(ax,az,bx,bz){ for(const sg of world.segs) if(segsCross(ax,az,bx,bz,sg.ax,sg.az,sg.bx,sg.bz)) return true; return false; }
