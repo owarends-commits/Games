@@ -156,6 +156,8 @@ function renderSimMenu(result){
     btn("Clear enemies",()=>{ clearEnemies(); log("Enemies cleared","#9a9283"); renderSimMenu(result); }),
     btn("Heal + refill",()=>{ player.hp=CFG.norah.hp; player.rounds=CFG.rev.chambers; player.spare=Math.max(player.spare,CFG.rev.spare); if(player.dead) respawn(); renderSimMenu(result); }),
     btn("Spawn ACROSS",()=>{ spawn("across"); }), btn("Spawn Louis",()=>{ spawn("brute"); }), btn("Spawn dummy",()=>{ spawn("dummy"); }),
+    btn("Spawn Runner",()=>{ spawn("runner"); }), btn("Spawn Tactician",()=>{ spawn("tactician"); }), btn("Spawn Contortionist",()=>{ spawn("contortionist"); }),
+    btn("Spawn Reacher",()=>{ spawn(rng()<0.5?"reacher":"reacher_arm"); }), btn("Spawn split-head",()=>{ spawn("splithead"); }), btn("Spawn the Hob",()=>{ spawn("hob"); }),
     btn("Tuning panel",()=>{ closeSimMenu(); $("panel").classList.remove("hidden"); try{ document.exitPointerLock(); }catch(e){} })]));
   B.appendChild(mh("p",{class:"smHint",text:"Esc or P closes this menu · N restarts · ` opens the tuning panel"}));
 }

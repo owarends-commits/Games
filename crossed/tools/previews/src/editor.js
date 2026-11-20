@@ -53,7 +53,7 @@ function edBuildHelpers(){
   for(const o of ED.doc.objects){
     if(o.type==="spawn"){ const r=buildBody("norah",null); r.position.set(o.x,groundY(o.x,o.z),o.z); r.rotation.y=(o.yaw||0)*D2R; tag(r,o); tag(ring(o,0x59a6c9,0.45),o); tag(arrow(o,0x59a6c9),o); }
     else if(o.type==="enemy"){ let r; const k=o.kind||"across";
-      if(k==="brute"||k==="dummy"){ r=buildBody(k,null); r.scale.setScalar(CFG.brute.height/1.8); }
+      if(edCreatureKind(k)){ r=edCreature(k,o); } else if(k==="brute"||k==="dummy"){ r=buildBody(k,null); r.scale.setScalar(CFG.brute.height/1.8); }
       else { const v=k.startsWith("across:")?k.slice(7):k==="across_legless"?"crawler":"walker"; r=buildPerson(VMAP[v]||VMAP.walker, (o.x*1000+o.z*37)|0).root; if(k==="across") r.traverse(c=>{ if(c.isMesh&&c.material&&c.material.color){ c.material=c.material.clone(); c.material.color.multiplyScalar(0.7); } }); }
       r.position.set(o.x,groundY(o.x,o.z),o.z); r.rotation.y=(o.yaw||0)*D2R; tag(r,o); tag(ring(o,o.start==="hunting"?0xd84040:0xd8b040,0.42),o); tag(arrow(o,0xd84040),o); }
     else if(o.type==="light"){ const m=new THREE.Mesh(new THREE.OctahedronGeometry(0.14,0),new THREE.MeshBasicMaterial({color:hexNum(o.color||"#ffb060")})); m.position.set(o.x,o.y??2.6,o.z); tag(m,o);

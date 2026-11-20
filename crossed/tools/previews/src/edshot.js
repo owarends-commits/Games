@@ -1,0 +1,12 @@
+const { chromium } = require('playwright'); const fs=require('fs');
+(async()=>{ const b=await chromium.launch({args:['--use-gl=swiftshader']}); const p=await b.newPage({viewport:{width:1200,height:760}});
+  const errs=[]; p.on('pageerror',e=>errs.push('PAGEERR '+e.message+' '+(e.stack||'').split('\n').slice(1,3).join(' | ')));
+  for(const [re,f] of [[/three\.min\.js/,'three.min.js'],[/GLTFLoader\.js/,'GLTFLoader.js'],[/SkeletonUtils\.js/,'SkeletonUtils.js']]) await p.route(re, r=>r.fulfill({body:fs.readFileSync(f),contentType:'application/javascript'}));
+  await p.route(/fonts\./, r=>r.abort()); await p.goto('http://127.0.0.1:8766/'); await p.waitForTimeout(3000);
+  await p.evaluate(()=>{ const d=ED.doc; d.objects=d.objects.filter(o=>o.type!=="enemy"); const sp=d.objects.find(o=>o.type==="spawn")||{x:0,z:0}; window.__sp=sp; let i=0;
+    for(const k of ["hob","splithead","reacher","reacher_arm","contortionist","runner","tactician"]){ d.objects.push({id:"t"+k,type:"enemy",kind:k,x:sp.x-6+i*2,z:sp.z+6,yaw:180,start:"hunting"}); i++; } edDoRebuild(); });
+  await p.waitForTimeout(8000);
+  await p.evaluate(()=>{ edDoRebuild(); }); await p.waitForTimeout(4000);
+  await p.evaluate(()=>{ window.requestAnimationFrame=()=>0; }); await p.waitForTimeout(300); await p.evaluate(()=>{ $("mm").hidden=true; const sp=__sp, cam=new THREE.PerspectiveCamera(45,1200/760,0.05,200); cam.position.set(sp.x,4.2,sp.z-3.5); cam.lookAt(sp.x-0.5,0.8,sp.z+6); const hl=new THREE.HemisphereLight(0xffffff,0x555555,1.4); scene.add(hl); renderer.setSize(1200,760,false); renderer.render(scene,cam); scene.remove(hl); });
+  await p.screenshot({path:'/tmp/claude-0/-home-user/e5900e36-00d6-5b4b-82f0-38a92cf30ee1/scratchpad/shots/ed_models.png'});
+  console.log(errs.slice(0,6).join('\n')||'no errors'); await b.close(); })();

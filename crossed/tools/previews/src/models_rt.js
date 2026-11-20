@@ -131,7 +131,7 @@ function mdlCollapse(S, limb, seg){
 
 // ---------------------------------------------------------------- bodies
 function skinEnemy(e){
-  if(!e.mdl) return; const I=mdlInfo(e.mdl); if(!I) return;
+  if(!e.mdl||e.kind==="pv") return;   /* a preview-body creature never takes an ACROSS skin */ const I=mdlInfo(e.mdl); if(!I) return;
   const person=e.kind!=="brute"; const procHip = person ? e.root.userData.person.hipY : 0.95;
   const H = e.kind==="brute" ? CFG.brute.height*I.h/MDL_LOUIS_H() : I.h;
   const fit=mdlFit(e.root, procHip, e.mdl, H); e.scale=fit.k; if(person) e.height=fit.H;

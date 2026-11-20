@@ -3760,7 +3760,7 @@ function mdlCollapse(S, limb, seg){
 
 // ---------------------------------------------------------------- bodies
 function skinEnemy(e){
-  if(!e.mdl) return; const I=mdlInfo(e.mdl); if(!I) return;
+  if(!e.mdl||e.kind==="pv") return;   /* a preview-body creature never takes an ACROSS skin */ const I=mdlInfo(e.mdl); if(!I) return;
   const person=e.kind!=="brute"; const procHip = person ? e.root.userData.person.hipY : 0.95;
   const H = e.kind==="brute" ? CFG.brute.height*I.h/MDL_LOUIS_H() : I.h;
   const fit=mdlFit(e.root, procHip, e.mdl, H); e.scale=fit.k; if(person) e.height=fit.H;
@@ -9629,7 +9629,9 @@ function pvWantYaw(b,toX,toZ){ return b.stageYaw(Math.atan2(toX,toZ)); }
 
 // ---------------------------------------------------------------- the enemy side
 Enemy.prototype.pvInit=function(type){ const K=PVK[type]; this.kind="pv"; this.pvType=type; this.name=`${K.label} ${this.id}`;
-  this.root.traverse(o=>{ if(o.isMesh){ o.visible=false; o.userData.enemy=null; } }); if(this.skin&&this.skin.model) this.skin.model.visible=false;
+  this.root.traverse(o=>{ if(o.isMesh){ o.visible=false; o.userData.enemy=null; } });
+  // its ACROSS body is never used: drop it now, so one still loading can't attach later and show beside (or instead of) the creature
+  if(this.skin){ skinDrop(this.skin); this.skin=null; }
   if(K.body) this.pv=new K.body(this,type); else { const key=pvModel(type); this.mdl=key; this.pv=new PVBody(this,type,key); } PV_LIST.push(this.pv);
   const C=CFG[K.cfg]; this.maxHp=this.hp=C.hp; this.radius=K.radius||0.35; this.state="pv"; this.pvMem={}; };
 Enemy.prototype.pvUpdate=function(dt){ const b=this.pv, K=PVK[this.pvType];
@@ -10075,6 +10077,23 @@ function wpnReticle(dt){ WS.bloom=Math.max(0,(WS.bloom||0)*Math.exp(-dt*3.2)-dt*
   else if(k==="pistol"){ const g=r+2, hh=r*0.9+5; h=dot(0,0)+`<path d="M${cx-g+4} ${cy-hh} L${cx-g} ${cy-hh} L${cx-g} ${cy+hh} L${cx-g+4} ${cy+hh}" ${sw}/><path d="M${cx+g-4} ${cy-hh} L${cx+g} ${cy-hh} L${cx+g} ${cy+hh} L${cx+g-4} ${cy+hh}" ${sw}/>`; }
   else if(k==="flaregun"){ h=`<circle cx="${cx}" cy="${cy}" r="${r+2}" ${sw} stroke-dasharray="2 5"/>`+dot(0,0)+L(0,r+5,0,r+14)+`<path d="M${cx-4} ${cy+r+10} L${cx} ${cy+r+14} L${cx+4} ${cy+r+10}" ${sw}/>`; }
   RET.innerHTML=h; }
+// ================================================================ the editor shows the creatures as they are
+// The preview-body creatures (and the Runner and Tactician) are drawn in the editor with their real models, not as an
+// ACROSS person. The model loads in the background; until then a dim outline of its size stands in.
+const ED_GROUP={runner:"bcross/runner",tactician:"bcross/tactician"};
+function edCreatureKind(k){ return !!(PVK[k]||ED_GROUP[k]); }
+let ED_HOB=null;
+function edCreature(k,o){ const g=new THREE.Group(), K=PVK[k];
+  const ph=new THREE.Mesh(k==="hob"?new THREE.BoxGeometry(3.0,1.4,7):new THREE.CylinderGeometry(0.3,0.3,1.7,10),new THREE.MeshBasicMaterial({color:0xd8b040,wireframe:true,transparent:true,opacity:0.35}));
+  ph.position.set(0,k==="hob"?0.7:0.85,k==="hob"?-2.6:0); g.add(ph);
+  const put=sc=>{ g.remove(ph); g.add(sc); };
+  if(k==="hob"){ (ED_HOB||(ED_HOB=new Promise((res,rej)=>new THREE.GLTFLoader().load("m/bosses/hob/hob_rigged.json",res,undefined,rej)))).then(gl=>put(THREE.SkeletonUtils.clone(gl.scene))).catch(()=>{}); return g; }
+  const pool=Object.keys(MODEL_LIB).filter(m=>MODEL_LIB[m].g===(K?K.group:ED_GROUP[k])&&(!K||!K.only||K.only(m))); if(!pool.length) return g;
+  const key=pool[((((o&&o.x)||0)*1000+((o&&o.z)||0)*37)|0)%pool.length<0?0:((((o&&o.x)||0)*1000+((o&&o.z)||0)*37)|0)%pool.length];
+  mdlLoad(key).then(()=>{ const c=mdlClone(key); if(c) put(c.scene); }).catch(()=>{});
+  return g; }
+// an unknown kind never turns silently into an ACROSS
+{ const sp0=spawn; spawn=function(type,x,z,opts){ if(typeof type==="string"&&!PVK[type]&&!["across","brute","dummy","runner","tactician"].includes(type)&&!/^across/.test(type)){ log(`Unknown enemy "${type}"`,"#ff7070"); return null; } return sp0(type,x,z,opts); }; }
 // ================================================================ maps: new, presets (the playground's arenas and scenarios), import
 function sbNewDoc(name="Untitled map"){
   return {app:"crossed-sandbox", version:1, name, note:"", win:"either", env:Object.assign({},ENV_DEF), start:{hp:"",rounds:"",spare:"",items:[],flashOn:false}, terrain:null, objects:[], customItems:[], textures:[], assets:[]};
@@ -10402,7 +10421,7 @@ function edBuildHelpers(){
   for(const o of ED.doc.objects){
     if(o.type==="spawn"){ const r=buildBody("norah",null); r.position.set(o.x,groundY(o.x,o.z),o.z); r.rotation.y=(o.yaw||0)*D2R; tag(r,o); tag(ring(o,0x59a6c9,0.45),o); tag(arrow(o,0x59a6c9),o); }
     else if(o.type==="enemy"){ let r; const k=o.kind||"across";
-      if(k==="brute"||k==="dummy"){ r=buildBody(k,null); r.scale.setScalar(CFG.brute.height/1.8); }
+      if(edCreatureKind(k)){ r=edCreature(k,o); } else if(k==="brute"||k==="dummy"){ r=buildBody(k,null); r.scale.setScalar(CFG.brute.height/1.8); }
       else { const v=k.startsWith("across:")?k.slice(7):k==="across_legless"?"crawler":"walker"; r=buildPerson(VMAP[v]||VMAP.walker, (o.x*1000+o.z*37)|0).root; if(k==="across") r.traverse(c=>{ if(c.isMesh&&c.material&&c.material.color){ c.material=c.material.clone(); c.material.color.multiplyScalar(0.7); } }); }
       r.position.set(o.x,groundY(o.x,o.z),o.z); r.rotation.y=(o.yaw||0)*D2R; tag(r,o); tag(ring(o,o.start==="hunting"?0xd84040:0xd8b040,0.42),o); tag(arrow(o,0xd84040),o); }
     else if(o.type==="light"){ const m=new THREE.Mesh(new THREE.OctahedronGeometry(0.14,0),new THREE.MeshBasicMaterial({color:hexNum(o.color||"#ffb060")})); m.position.set(o.x,o.y??2.6,o.z); tag(m,o);
@@ -11168,6 +11187,8 @@ function renderSimMenu(result){
     btn("Clear enemies",()=>{ clearEnemies(); log("Enemies cleared","#9a9283"); renderSimMenu(result); }),
     btn("Heal + refill",()=>{ player.hp=CFG.norah.hp; player.rounds=CFG.rev.chambers; player.spare=Math.max(player.spare,CFG.rev.spare); if(player.dead) respawn(); renderSimMenu(result); }),
     btn("Spawn ACROSS",()=>{ spawn("across"); }), btn("Spawn Louis",()=>{ spawn("brute"); }), btn("Spawn dummy",()=>{ spawn("dummy"); }),
+    btn("Spawn Runner",()=>{ spawn("runner"); }), btn("Spawn Tactician",()=>{ spawn("tactician"); }), btn("Spawn Contortionist",()=>{ spawn("contortionist"); }),
+    btn("Spawn Reacher",()=>{ spawn(rng()<0.5?"reacher":"reacher_arm"); }), btn("Spawn split-head",()=>{ spawn("splithead"); }), btn("Spawn the Hob",()=>{ spawn("hob"); }),
     btn("Tuning panel",()=>{ closeSimMenu(); $("panel").classList.remove("hidden"); try{ document.exitPointerLock(); }catch(e){} })]));
   B.appendChild(mh("p",{class:"smHint",text:"Esc or P closes this menu · N restarts · ` opens the tuning panel"}));
 }
