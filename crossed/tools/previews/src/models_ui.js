@@ -22,7 +22,7 @@ function suModels(M){
   if(MS.on===false){ M.appendChild(mh("button",{class:"suBtn",text:"Open the model viewer",onclick:()=>mvOpen()})); return; }
   const opt = test => Object.keys(MODEL_LIB).filter(k=>MODEL_LIB[k].hip && !MODEL_LIB[k].end && test(MODEL_LIB[k],k)).map(k=>[k,mdlName(k)]);
   M.appendChild(suField("Norah",suSelect(MS,"norah",opt(I=>I.g==="cast"),saveSim),"Her model in play. The cast models are all the same build."));
-  M.appendChild(suField("Louis",suSelect(MS,"louis",opt(I=>I.g==="bcross/brute"),saveSim),"Louis turned (2.64 m). The one-armed woman and the club-fist use the same rig and moves, standing in for him."));
+  M.appendChild(suField("Louis",suSelect(MS,"louis",opt((I,k)=>LOUIS_OK.includes(k)),saveSim),"Louis turned (2.64 m). The one-armed woman and the club-fist use the same rig and moves, standing in for him."));
   for(const [v,label] of [["walker","Walker"],["crawler","Crawler"],["matron","Matron"],["mourner","Mourner"]]){
     if(MS.pools[v]==null) MS.pools[v]=MDL_DEFAULT_POOL[v];
     const n=()=>mdlPool(MS.pools[v]).length;

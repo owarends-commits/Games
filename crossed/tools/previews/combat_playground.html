@@ -9901,8 +9901,8 @@ class HobBody{
   constructor(e){ this.e=e; this.K=PVK.hob; this.mod=PV_HOB; this.stage=new THREE.Group(); scene.add(this.stage); this.ready=false; this.hits=[]; this.ctx={}; this.t=0; this.ct=0; this.clipName=null; this.stun=0;
     for(const o of enemies) if(o!==e&&o.pvType==="hob"&&!o.removed){ o.remove(); const i=enemies.indexOf(o); if(i>=0) enemies.splice(i,1); }
     this.yaw=Math.atan2(player.pos.x-e.pos.x,player.pos.z-e.pos.z); this.pos=new THREE.Vector3(e.pos.x,0,e.pos.z); this.place();
-    new THREE.GLTFLoader().load("m/bosses/hob/hob_rigged.json", g=>{ if(e.removed) return; if(typeof meshFixAll==="function") meshFixAll(g.scene); PV_HOB.hobInit(g,this.stage); this.makeHits(); this.ready=true; this.K.start(e,this); },
-      undefined, err=>log(`${e.name}: model failed (${err&&err.message||err})`,"#ff7070")); }
+    hobPreload().then(g0=>{ const g={scene:THREE.SkeletonUtils.clone(g0.scene)}; if(e.removed) return; if(typeof meshFixAll==="function") meshFixAll(g.scene); PV_HOB.hobInit(g,this.stage); this.makeHits(); this.ready=true; this.K.start(e,this); },
+      ).catch(err=>log(`${e.name}: model failed (${err&&err.message||err})`,"#ff7070")); }
   dir(){ return new THREE.Vector3(Math.sin(this.yaw),0,Math.cos(this.yaw)); }
   place(){ this.stage.position.copy(this.pos); this.stage.rotation.set(0,this.yaw-Math.PI/2,0); this.stage.updateMatrixWorld(true); }
   makeHits(){ const H=PV_HOB.H, mat=new THREE.MeshBasicMaterial({color:0xff4040,transparent:true,opacity:0.25,depthWrite:false}); mat.visible=!!CFG.world.showZones;
@@ -9968,6 +9968,8 @@ PVK.hob={ mod:PV_HOB, label:"The Hob", cfg:"hob", radius:1.2, body:HobBody,
     return true; },
   freed(e){ const b=e.pv, c=b.ctx; if(c.got!=null) c.got=b.ct-3.2; },
   failed(e){ const b=e.pv, c=b.ctx; player.hurt(CFG.hob.squeezeDamage*2,e,"crushed"); qteBanner(`CRUSHED −${CFG.hob.squeezeDamage*2}`,"bad"); if(c.got!=null) c.got=b.ct-3.2; return true; } };
+
+let HOB_G=null; function hobPreload(){ return HOB_G||(HOB_G=new Promise((res,rej)=>new THREE.GLTFLoader().load("m/bosses/hob/hob_rigged.json",res,undefined,rej))); }
 // ================================================================ Norah, played by her preview's own code
 // The player body the playground moves (P, its hitboxes, the camera) stays as it is; what you see is Norah posed by the
 // approved player-animation code (PV_NW), stood where the player is and facing her way. Her state each frame (moving,
@@ -10249,6 +10251,24 @@ function spawnBcross(key,x,z,opts={}){ const t=bcrossType(key); if(!t){ log(`No 
 // "type@model" (the editor's per-model entries) names the exact model
 // an unknown kind never turns silently into an ACROSS
 { const sp0=spawn; spawn=function(type,x,z,opts){ if(typeof type==="string"&&type.includes("@")){ const [t,m]=type.split("@"); opts=Object.assign({},opts||{},{mdl:m}); type=t; } if(typeof type==="string"&&!PVK[type]&&!["across","brute","dummy","runner","tactician"].includes(type)&&!/^across/.test(type)){ log(`Unknown enemy "${type}"`,"#ff7070"); return null; } const e=sp0(type,x,z,opts); if(e&&!(opts&&opts.aware==="unaware")){ const L={x:player.pos.x,z:player.pos.z}; if(e.kind==="runner"||e.kind==="tactician") e.lastKnown=e.lastKnown||L; if(e.pvMem&&!e.pvMem.last) e.pvMem.last=L; } return e; }; }   /* a hunting one knows where she is to start with */
+
+// ---------------------------------------------------------------- models: the right body, and never a stand-in
+// Louis can only wear his own body or the two built like him; a saved choice that can't work (say, the legless two-armed
+// brute, from an older version's list) goes back to Louis.
+const LOUIS_OK=["louis_brute","brute_onearm_f01","brute_clubfist_m01"];
+try{ if(SIM&&SIM.models&&SIM.models.louis&&!LOUIS_OK.includes(SIM.models.louis)){ SIM.models.louis="louis_brute"; if(typeof saveSim==="function") saveSim(); } }catch(e){}
+// every creature's model is fetched in the background while the menus are up, a few at a time, so it's there before it spawns
+const PRELOAD={started:false, done:0, total:0};
+function preloadCreatureModels(){ if(PRELOAD.started) return; PRELOAD.started=true;
+  const keys=Object.keys(MODEL_LIB).filter(k=>/^(across|bcross|cast)\//.test(MODEL_LIB[k].g||"")&&!MODEL_LIB[k].end||(MODEL_LIB[k].g||"").startsWith("bcross/")); PRELOAD.total=keys.length+1; let i=0;
+  const next=()=>{ if(i>=keys.length) return; const k=keys[i++]; mdlLoad(k).catch(()=>{}).then(()=>{ PRELOAD.done++; setTimeout(next,30); }); };
+  for(let n=0;n<4;n++) next();
+  if(typeof hobPreload==="function") hobPreload().then(()=>PRELOAD.done++).catch(()=>{}); }
+setTimeout(preloadCreatureModels,1500);
+// a creature whose model hasn't arrived yet stays out of sight and does nothing (no stand-in body, nothing invisible attacking)
+{ const up0=Enemy.prototype.update; Enemy.prototype.update=function(dt){ const waiting= this.kind==="pv" ? !(this.pv&&this.pv.ready) : (this.mdl&&mdlOn()&&this.skin&&!this.skin.model&&!(MDL.failed&&MDL.failed[this.mdl]));
+    if(waiting&&!this.dead){ this.root.visible=false; this.waitT=(this.waitT||0)+dt; if(this.waitT<20) return; }
+    if(this.root.visible===false&&this.kind!=="pv") this.root.visible=true; return up0.call(this,dt); }; }
 // ================================================================ navigation: around walls, furniture, pillars and every other map piece
 // A grid over the map (0.25 m), each cell blocked if a body of 0.32 m radius can't stand there (walls, windows, boxes,
 // pillars; doorways stay open, closed doors are bashed). A* over it; the next waypoint is the furthest point along the
@@ -11442,7 +11462,7 @@ function suModels(M){
   if(MS.on===false){ M.appendChild(mh("button",{class:"suBtn",text:"Open the model viewer",onclick:()=>mvOpen()})); return; }
   const opt = test => Object.keys(MODEL_LIB).filter(k=>MODEL_LIB[k].hip && !MODEL_LIB[k].end && test(MODEL_LIB[k],k)).map(k=>[k,mdlName(k)]);
   M.appendChild(suField("Norah",suSelect(MS,"norah",opt(I=>I.g==="cast"),saveSim),"Her model in play. The cast models are all the same build."));
-  M.appendChild(suField("Louis",suSelect(MS,"louis",opt(I=>I.g==="bcross/brute"),saveSim),"Louis turned (2.64 m). The one-armed woman and the club-fist use the same rig and moves, standing in for him."));
+  M.appendChild(suField("Louis",suSelect(MS,"louis",opt((I,k)=>LOUIS_OK.includes(k)),saveSim),"Louis turned (2.64 m). The one-armed woman and the club-fist use the same rig and moves, standing in for him."));
   for(const [v,label] of [["walker","Walker"],["crawler","Crawler"],["matron","Matron"],["mourner","Mourner"]]){
     if(MS.pools[v]==null) MS.pools[v]=MDL_DEFAULT_POOL[v];
     const n=()=>mdlPool(MS.pools[v]).length;

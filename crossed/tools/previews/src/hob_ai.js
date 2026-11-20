@@ -7,8 +7,8 @@ class HobBody{
   constructor(e){ this.e=e; this.K=PVK.hob; this.mod=PV_HOB; this.stage=new THREE.Group(); scene.add(this.stage); this.ready=false; this.hits=[]; this.ctx={}; this.t=0; this.ct=0; this.clipName=null; this.stun=0;
     for(const o of enemies) if(o!==e&&o.pvType==="hob"&&!o.removed){ o.remove(); const i=enemies.indexOf(o); if(i>=0) enemies.splice(i,1); }
     this.yaw=Math.atan2(player.pos.x-e.pos.x,player.pos.z-e.pos.z); this.pos=new THREE.Vector3(e.pos.x,0,e.pos.z); this.place();
-    new THREE.GLTFLoader().load("m/bosses/hob/hob_rigged.json", g=>{ if(e.removed) return; if(typeof meshFixAll==="function") meshFixAll(g.scene); PV_HOB.hobInit(g,this.stage); this.makeHits(); this.ready=true; this.K.start(e,this); },
-      undefined, err=>log(`${e.name}: model failed (${err&&err.message||err})`,"#ff7070")); }
+    hobPreload().then(g0=>{ const g={scene:THREE.SkeletonUtils.clone(g0.scene)}; if(e.removed) return; if(typeof meshFixAll==="function") meshFixAll(g.scene); PV_HOB.hobInit(g,this.stage); this.makeHits(); this.ready=true; this.K.start(e,this); },
+      ).catch(err=>log(`${e.name}: model failed (${err&&err.message||err})`,"#ff7070")); }
   dir(){ return new THREE.Vector3(Math.sin(this.yaw),0,Math.cos(this.yaw)); }
   place(){ this.stage.position.copy(this.pos); this.stage.rotation.set(0,this.yaw-Math.PI/2,0); this.stage.updateMatrixWorld(true); }
   makeHits(){ const H=PV_HOB.H, mat=new THREE.MeshBasicMaterial({color:0xff4040,transparent:true,opacity:0.25,depthWrite:false}); mat.visible=!!CFG.world.showZones;
@@ -74,3 +74,5 @@ PVK.hob={ mod:PV_HOB, label:"The Hob", cfg:"hob", radius:1.2, body:HobBody,
     return true; },
   freed(e){ const b=e.pv, c=b.ctx; if(c.got!=null) c.got=b.ct-3.2; },
   failed(e){ const b=e.pv, c=b.ctx; player.hurt(CFG.hob.squeezeDamage*2,e,"crushed"); qteBanner(`CRUSHED −${CFG.hob.squeezeDamage*2}`,"bad"); if(c.got!=null) c.got=b.ct-3.2; return true; } };
+
+let HOB_G=null; function hobPreload(){ return HOB_G||(HOB_G=new Promise((res,rej)=>new THREE.GLTFLoader().load("m/bosses/hob/hob_rigged.json",res,undefined,rej))); }

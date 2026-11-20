@@ -22,3 +22,21 @@ function spawnBcross(key,x,z,opts={}){ const t=bcrossType(key); if(!t){ log(`No 
 // "type@model" (the editor's per-model entries) names the exact model
 // an unknown kind never turns silently into an ACROSS
 { const sp0=spawn; spawn=function(type,x,z,opts){ if(typeof type==="string"&&type.includes("@")){ const [t,m]=type.split("@"); opts=Object.assign({},opts||{},{mdl:m}); type=t; } if(typeof type==="string"&&!PVK[type]&&!["across","brute","dummy","runner","tactician"].includes(type)&&!/^across/.test(type)){ log(`Unknown enemy "${type}"`,"#ff7070"); return null; } const e=sp0(type,x,z,opts); if(e&&!(opts&&opts.aware==="unaware")){ const L={x:player.pos.x,z:player.pos.z}; if(e.kind==="runner"||e.kind==="tactician") e.lastKnown=e.lastKnown||L; if(e.pvMem&&!e.pvMem.last) e.pvMem.last=L; } return e; }; }   /* a hunting one knows where she is to start with */
+
+// ---------------------------------------------------------------- models: the right body, and never a stand-in
+// Louis can only wear his own body or the two built like him; a saved choice that can't work (say, the legless two-armed
+// brute, from an older version's list) goes back to Louis.
+const LOUIS_OK=["louis_brute","brute_onearm_f01","brute_clubfist_m01"];
+try{ if(SIM&&SIM.models&&SIM.models.louis&&!LOUIS_OK.includes(SIM.models.louis)){ SIM.models.louis="louis_brute"; if(typeof saveSim==="function") saveSim(); } }catch(e){}
+// every creature's model is fetched in the background while the menus are up, a few at a time, so it's there before it spawns
+const PRELOAD={started:false, done:0, total:0};
+function preloadCreatureModels(){ if(PRELOAD.started) return; PRELOAD.started=true;
+  const keys=Object.keys(MODEL_LIB).filter(k=>/^(across|bcross|cast)\//.test(MODEL_LIB[k].g||"")&&!MODEL_LIB[k].end||(MODEL_LIB[k].g||"").startsWith("bcross/")); PRELOAD.total=keys.length+1; let i=0;
+  const next=()=>{ if(i>=keys.length) return; const k=keys[i++]; mdlLoad(k).catch(()=>{}).then(()=>{ PRELOAD.done++; setTimeout(next,30); }); };
+  for(let n=0;n<4;n++) next();
+  if(typeof hobPreload==="function") hobPreload().then(()=>PRELOAD.done++).catch(()=>{}); }
+setTimeout(preloadCreatureModels,1500);
+// a creature whose model hasn't arrived yet stays out of sight and does nothing (no stand-in body, nothing invisible attacking)
+{ const up0=Enemy.prototype.update; Enemy.prototype.update=function(dt){ const waiting= this.kind==="pv" ? !(this.pv&&this.pv.ready) : (this.mdl&&mdlOn()&&this.skin&&!this.skin.model&&!(MDL.failed&&MDL.failed[this.mdl]));
+    if(waiting&&!this.dead){ this.root.visible=false; this.waitT=(this.waitT||0)+dt; if(this.waitT<20) return; }
+    if(this.root.visible===false&&this.kind!=="pv") this.root.visible=true; return up0.call(this,dt); }; }
