@@ -189,7 +189,7 @@ gen = MD[g0:g1]
 
 out = []
 out.append(rd("shell_head.html"))
-out.append("<style>" + eng_style + "</style>\n")
+out.append("<style>" + eng_style + "\n#dead{animation:deadIn .9s ease 2.4s both} @keyframes deadIn{from{opacity:0}to{opacity:1}}</style>\n")   # YOU DIED waits for her fall
 out.append('<script>document.body.classList.add("build")</script>\n')
 out.append(b)
 out.append(rd("shell_body.html"))

@@ -37,7 +37,12 @@ function plvFrame(dt){ if(!PLV.ready) return; const S=PLV.S, t=PLV.t+dt;
   if(player.downT>0){ if(!S.down||S.down.up!=null) S.down={t}; } else if(S.down&&S.down.up==null) S.down.up=t; if(S.down&&S.down.up!=null&&t-S.down.up>1.25) S.down=null;
   S.grabbed=!!player.grabbed; if(player.dead){ if(S.dead==null) S.dead=t; } else S.dead=null; S.reloadOn=S.reload!=null;
   S.aimAt=plvAimAt(); PLV.ctx.S=S;
-  const h=plvRec(); plvWith(()=>PV_NW.pvStep(h,dt)); PLV.t=h.t;
+  const h=plvRec(); plvWith(()=>PV_NW.pvStep(h,dt)); PLV.t=h.t; plvBleed();
   const pr=PV_NW.LIVE.props(); if(pr.SPOT) pr.SPOT.intensity=0; }
+// dead: a pool of blood spreads out from under her stomach once she's down flat, slowly, the way it would
+function plvBleed(){ const S=PLV.S; if(S.dead==null){ PLV.bleed=null; return; } const k=PLV.t-S.dead; if(k<1.7) return; const B=PLV.bleed||(PLV.bleed={n:0});
+  const at=[1.7,2.3,3.1,4.2]; if(B.n>=at.length||k<at[B.n]) return;
+  if(!B.p){ const a=plvWith(()=>PV_NW.LIVE.abdomen()).applyMatrix4(PLV.stage.matrixWorld); B.p={x:a.x,z:a.z}; }
+  const r=[0.35,0.55,0.75,0.95][B.n], ang=B.n*2.1, off=B.n?0.12+0.06*B.n:0; bloodPool(B.p.x+Math.cos(ang)*off,B.p.z+Math.sin(ang)*off,r); B.n++; }
 function plvReset(){ const S=PLV.S; S.shots.length=0; S.click=S.hurt=S.stagger=S.shove=S.dead=null; S.dodge=S.down=null; PLV.hp=null; PLV.last=null; }
 { const sp0=skinPlayer; skinPlayer=function(){ sp0(); plvInit(); plvReset(); }; }

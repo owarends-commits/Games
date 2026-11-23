@@ -184,4 +184,4 @@ $("edBack").onclick=e=>{ e.currentTarget.blur(); goMenu("setup"); };
 $("toBuildBtn").onclick=e=>{ e.currentTarget.blur(); openSimMenu(); };
 $("help").innerHTML=`<b>READY</b><br>Click the view to take the mouse. <b>Esc</b> opens the menu: pause, restart, combat options.<br>Controls are on the title screen.<div class="btns" style="margin-top:8px"><button id="helpok">Begin</button></div>`;
 $("helpok").onclick=()=>{ audio(); $("help").style.display="none"; try{ const p=canvas.requestPointerLock(); if(p&&p.catch)p.catch(()=>{}); }catch(e){} };
-document.addEventListener("pointerlockchange",()=>{ if(document.pointerLockElement!==canvas && MODE==="play" && !SB.inv && !SB.simMenu && $("help").style.display==="none" && $("panel").classList.contains("hidden") && !replay.on) openSimMenu(); });
+document.addEventListener("pointerlockchange",()=>{ if(document.pointerLockElement!==canvas && MODE==="play" && !player.dead && !SB.inv && !SB.simMenu && $("help").style.display==="none" && $("panel").classList.contains("hidden") && !replay.on) openSimMenu(); });

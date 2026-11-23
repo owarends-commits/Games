@@ -301,7 +301,8 @@ body.play #panel.hidden + #toggle{display:none}
   #touch .tb.on{background:rgba(150,110,40,.7)}
   #stickbase{position:absolute;width:110px;height:110px;border-radius:50%;border:1px solid rgba(200,180,140,.4);display:none}
   #stickknob{position:absolute;width:44px;height:44px;border-radius:50%;background:rgba(200,180,140,.45);display:none}
-</style>
+
+#dead{animation:deadIn .9s ease 2.4s both} @keyframes deadIn{from{opacity:0}to{opacity:1}}</style>
 <script>document.body.classList.add("build")</script>
 <canvas id="view"></canvas>
 <div id="topleft" class="hud">
@@ -1168,7 +1169,7 @@ function endRun(result){
    Damage taken ${row.dmg} (${row.hitsTaken} hits) · Dodges ${row.dodges}, ${row.saves} saved you · Shoves ${row.shoves}<br>
    Grabbed ${run.grabs} times, broke free ${run.escapes} · Spotted ${run.spotted||0} times · Vaults ${run.vaults||0}<br>
    Ammo left ${row.ammoLeft}<br><br><span style="color:#9a9283">N restarts the map · B goes back to the builder · results are in the panel</span>`;
-  R.style.display="block"; if(result!=="DIED") SFX.win(); setTimeout(()=>{ if(MODE==="play"&&run&&run.over) openSimMenu(result); },1600);
+  R.style.display="block"; if(result!=="DIED") SFX.win(); setTimeout(()=>{ if(MODE==="play"&&run&&run.over) openSimMenu(result); },result==="DIED"?4500:1600);
 }
 
 // ================================================================ stealth: noise and light
@@ -9572,10 +9573,18 @@ LIVE.drive={ start(ctx){ nStart(ctx,0); ctx.D={ph:0}; ctx.aimT=1.5; PLVctx=ctx; 
       J=Dn; aim=0; }
     // ---- grabbed: struggling, her forearms braced against it
     let held=0; if(S.grabbed){ const n=s=>noise(t*12,s)*0.12, G=nStand(t,1); G.sp=-0.2+n(1); G.nx=-0.35+n(2); G.ny=0.3; G.lLx=-0.45; G.kL=0.4; G.lRx=0.3; G.kR=0.35; J=G; aim=0; held=1; }
-    // ---- dead: her knees go, the gun drops, she folds onto her side
-    let dead=null; if(S.dead!=null){ const k=t-S.dead, kn=NQknees(t), sl=sm5(k/0.5); J=mix(J,kn,sl); aim=0;
-      if(k>0.8){ const side=P0(); side.hd=HIP0()-0.13; side.hroll=-1.42; side.hp=0.35; side.sp=0.18; side.sroll=-0.1; side.nx=0.15; side.nz=-0.35; side.lLx=-0.85; side.kL=1.15; side.lRx=-0.3; side.kR=0.5; side.fL=side.fR=0.25; side.lLz=0.35;
-        side.aRx=-1.3; side.aRz=0.2; side.eR=0.4; side.aLx=-0.55; side.aLz=0.15; side.eL=0.9; J=mix(kn,side,Math.pow(sat((k-0.8)/0.6),2)); }
+    // ---- dead: her knees go and she drops onto them, sways there a moment, then keels forward and lies flat on her face
+    let dead=null; if(S.dead!=null){ const k=t-S.dead, kn=NQknees(t), sl=sm5(k/0.45); aim=0;
+      const kw=P0(), sw=sm5((k-0.45)/0.6);    /* on both knees, shins flat behind her, slumping */
+      kw.hd=HIP0()-0.5; kw.hz=-0.04; kw.lLx=kw.lRx=-0.02; kw.lLz=0.06; kw.lRz=-0.06; kw.kL=kw.kR=1.62; kw.fL=kw.fR=0.95;
+      kw.sp=0.22+0.14*sw+0.03*Math.sin(k*5); kw.nx=0.55+0.4*sw; kw.hroll=0.03*Math.sin(k*3.3);
+      kw.aLx=kw.aRx=-0.08; kw.aLz=0.12; kw.aRz=0.1; kw.eL=kw.eR=0.15;
+      J=mix(J,kw,sl);
+      if(k>1.15){ const pr=P0(); pr.hd=HIP0()-0.1; pr.hz=0.42; pr.hp=1.66; pr.sp=0.05; pr.nx=0.3; pr.lLx=pr.lRx=-0.1; pr.ny=1.15; pr.nz=0.25;     /* face down, cheek to the floor */
+        pr.lLz=0.1; pr.kL=0.04; pr.kR=0.1; pr.fL=pr.fR=0.9; pr.lLz=0.1; pr.lRz=-0.12;
+        pr.aLx=0.15; pr.aRx=0.05; pr.aLz=0.35; pr.aRz=0.28; pr.eL=0.35; pr.eR=0.2;
+        const u=Math.pow(sat((k-1.15)/0.5),2), b=k>1.65?0.05*Math.exp(-(k-1.65)*9)*Math.sin((k-1.65)*30):0;   /* falls like a dead weight; one small bounce as she lands */
+        J=mix(kw,pr,u); J.hd-=b; J.hp+=b*0.6; }
       dead={gun:k>0.45?"gone":"hand",light:k>0.75?"gone":"hand"}; }
     // ---- any weapon but the revolver: its own approved clips (the hold, the shot, the load, the swing), legs from above
     if(S.wpn&&S.wpn!=="revolver"&&S.dead==null&&!S.grabbed&&!S.down){ const wr=weaponPose(t,dt,ctx,S,D,J,mv,aim0); if(wr) return wr; }
@@ -9597,6 +9606,8 @@ LIVE.drive={ start(ctx){ nStart(ctx,0); ctx.D={ph:0}; ctx.aimT=1.5; PLVctx=ctx; 
     ctx.phase= dead?"dead": S.down?"down": held?"grabbed": aim>0.5?"on the aim": mv>0.5?(rn>0.5?"runs":"walks"):"idle";
     return fin(J); } };
 LIVE.muzzle=()=>muzzleAt();
+// her abdomen, in her stage (where the blood comes from when she lies dead)
+LIVE.abdomen=()=>{ runner.group.updateMatrixWorld(true); const h=runner.B.hips.getWorldPosition(new V3()), c=runner.B.chest.getWorldPosition(new V3()); return h.lerp(c,0.35); };
 LIVE.props=()=>({GUN,LIGHT,SPOT});
 
 // ---------------------------------------------------------------- the other weapons
@@ -12497,8 +12508,13 @@ function plvFrame(dt){ if(!PLV.ready) return; const S=PLV.S, t=PLV.t+dt;
   if(player.downT>0){ if(!S.down||S.down.up!=null) S.down={t}; } else if(S.down&&S.down.up==null) S.down.up=t; if(S.down&&S.down.up!=null&&t-S.down.up>1.25) S.down=null;
   S.grabbed=!!player.grabbed; if(player.dead){ if(S.dead==null) S.dead=t; } else S.dead=null; S.reloadOn=S.reload!=null;
   S.aimAt=plvAimAt(); PLV.ctx.S=S;
-  const h=plvRec(); plvWith(()=>PV_NW.pvStep(h,dt)); PLV.t=h.t;
+  const h=plvRec(); plvWith(()=>PV_NW.pvStep(h,dt)); PLV.t=h.t; plvBleed();
   const pr=PV_NW.LIVE.props(); if(pr.SPOT) pr.SPOT.intensity=0; }
+// dead: a pool of blood spreads out from under her stomach once she's down flat, slowly, the way it would
+function plvBleed(){ const S=PLV.S; if(S.dead==null){ PLV.bleed=null; return; } const k=PLV.t-S.dead; if(k<1.7) return; const B=PLV.bleed||(PLV.bleed={n:0});
+  const at=[1.7,2.3,3.1,4.2]; if(B.n>=at.length||k<at[B.n]) return;
+  if(!B.p){ const a=plvWith(()=>PV_NW.LIVE.abdomen()).applyMatrix4(PLV.stage.matrixWorld); B.p={x:a.x,z:a.z}; }
+  const r=[0.35,0.55,0.75,0.95][B.n], ang=B.n*2.1, off=B.n?0.12+0.06*B.n:0; bloodPool(B.p.x+Math.cos(ang)*off,B.p.z+Math.sin(ang)*off,r); B.n++; }
 function plvReset(){ const S=PLV.S; S.shots.length=0; S.click=S.hurt=S.stagger=S.shove=S.dead=null; S.dodge=S.down=null; PLV.hp=null; PLV.last=null; }
 { const sp0=skinPlayer; skinPlayer=function(){ sp0(); plvInit(); plvReset(); }; }
 function aimPointOf(tg){ const P=tg.P, h=player.aimHeight||0; let m=null; if(P&&!tg.pv) m= h>0? P.headMesh : h<0&&tg.lost? (tg.lost.legL?(tg.lost.legR?P.torsoMesh:P.legRLo):P.legLLo) : P.torsoMesh;
@@ -13925,7 +13941,7 @@ $("edBack").onclick=e=>{ e.currentTarget.blur(); goMenu("setup"); };
 $("toBuildBtn").onclick=e=>{ e.currentTarget.blur(); openSimMenu(); };
 $("help").innerHTML=`<b>READY</b><br>Click the view to take the mouse. <b>Esc</b> opens the menu: pause, restart, combat options.<br>Controls are on the title screen.<div class="btns" style="margin-top:8px"><button id="helpok">Begin</button></div>`;
 $("helpok").onclick=()=>{ audio(); $("help").style.display="none"; try{ const p=canvas.requestPointerLock(); if(p&&p.catch)p.catch(()=>{}); }catch(e){} };
-document.addEventListener("pointerlockchange",()=>{ if(document.pointerLockElement!==canvas && MODE==="play" && !SB.inv && !SB.simMenu && $("help").style.display==="none" && $("panel").classList.contains("hidden") && !replay.on) openSimMenu(); });
+document.addEventListener("pointerlockchange",()=>{ if(document.pointerLockElement!==canvas && MODE==="play" && !player.dead && !SB.inv && !SB.simMenu && $("help").style.display==="none" && $("panel").classList.contains("hidden") && !replay.on) openSimMenu(); });
 // ---------------------------------------------------------------- models: setup section and the model viewer
 const MDL_GROUPS = [
   ["cast","Cast","Kenneth, Norah, Louis (human), the Stranger and Rachel."],

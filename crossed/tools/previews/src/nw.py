@@ -27,3 +27,5 @@ j = rep(j, "  hurt(dmg, from, how){\n    if(this.dead) return;\n", "  hurt(dmg, 
 j = rep(j, 'if(win.broken) return; win.broken=true; for(const sg of win.segs){ const i=world.segs.indexOf(sg); if(i>=0) world.segs.splice(i,1); }', 'if(win.broken) return; win.broken=true; for(const sg of win.segs){ if(!sg.glass) continue; const i=world.segs.indexOf(sg); if(i>=0) world.segs.splice(i,1); }')
 j = rep(j, '  const targets = world.blockers.concat(enemyMeshes());', '  const targets = world.blockers.concat(enemyMeshes(), windowGlass());')
 j = rep(j, '  if(!h){ log("Miss","#7d7668"); return; }', '  if(!h){ log("Miss","#7d7668"); return; }\n  if(h.object.userData.winGlass){ smashWindow(h.object.userData.winGlass,{name:"Norah"}); return; }')
+# when she dies the menu waits until she has fallen and the blood has spread (it freezes the world)
+j = rep(j, 'setTimeout(()=>{ if(MODE==="play"&&run&&run.over) openSimMenu(result); },1600);', 'setTimeout(()=>{ if(MODE==="play"&&run&&run.over) openSimMenu(result); },result==="DIED"?4500:1600);')

@@ -48,10 +48,18 @@ LIVE.drive={ start(ctx){ nStart(ctx,0); ctx.D={ph:0}; ctx.aimT=1.5; PLVctx=ctx; 
       J=Dn; aim=0; }
     // ---- grabbed: struggling, her forearms braced against it
     let held=0; if(S.grabbed){ const n=s=>noise(t*12,s)*0.12, G=nStand(t,1); G.sp=-0.2+n(1); G.nx=-0.35+n(2); G.ny=0.3; G.lLx=-0.45; G.kL=0.4; G.lRx=0.3; G.kR=0.35; J=G; aim=0; held=1; }
-    // ---- dead: her knees go, the gun drops, she folds onto her side
-    let dead=null; if(S.dead!=null){ const k=t-S.dead, kn=NQknees(t), sl=sm5(k/0.5); J=mix(J,kn,sl); aim=0;
-      if(k>0.8){ const side=P0(); side.hd=HIP0()-0.13; side.hroll=-1.42; side.hp=0.35; side.sp=0.18; side.sroll=-0.1; side.nx=0.15; side.nz=-0.35; side.lLx=-0.85; side.kL=1.15; side.lRx=-0.3; side.kR=0.5; side.fL=side.fR=0.25; side.lLz=0.35;
-        side.aRx=-1.3; side.aRz=0.2; side.eR=0.4; side.aLx=-0.55; side.aLz=0.15; side.eL=0.9; J=mix(kn,side,Math.pow(sat((k-0.8)/0.6),2)); }
+    // ---- dead: her knees go and she drops onto them, sways there a moment, then keels forward and lies flat on her face
+    let dead=null; if(S.dead!=null){ const k=t-S.dead, kn=NQknees(t), sl=sm5(k/0.45); aim=0;
+      const kw=P0(), sw=sm5((k-0.45)/0.6);    /* on both knees, shins flat behind her, slumping */
+      kw.hd=HIP0()-0.5; kw.hz=-0.04; kw.lLx=kw.lRx=-0.02; kw.lLz=0.06; kw.lRz=-0.06; kw.kL=kw.kR=1.62; kw.fL=kw.fR=0.95;
+      kw.sp=0.22+0.14*sw+0.03*Math.sin(k*5); kw.nx=0.55+0.4*sw; kw.hroll=0.03*Math.sin(k*3.3);
+      kw.aLx=kw.aRx=-0.08; kw.aLz=0.12; kw.aRz=0.1; kw.eL=kw.eR=0.15;
+      J=mix(J,kw,sl);
+      if(k>1.15){ const pr=P0(); pr.hd=HIP0()-0.1; pr.hz=0.42; pr.hp=1.66; pr.sp=0.05; pr.nx=0.3; pr.lLx=pr.lRx=-0.1; pr.ny=1.15; pr.nz=0.25;     /* face down, cheek to the floor */
+        pr.lLz=0.1; pr.kL=0.04; pr.kR=0.1; pr.fL=pr.fR=0.9; pr.lLz=0.1; pr.lRz=-0.12;
+        pr.aLx=0.15; pr.aRx=0.05; pr.aLz=0.35; pr.aRz=0.28; pr.eL=0.35; pr.eR=0.2;
+        const u=Math.pow(sat((k-1.15)/0.5),2), b=k>1.65?0.05*Math.exp(-(k-1.65)*9)*Math.sin((k-1.65)*30):0;   /* falls like a dead weight; one small bounce as she lands */
+        J=mix(kw,pr,u); J.hd-=b; J.hp+=b*0.6; }
       dead={gun:k>0.45?"gone":"hand",light:k>0.75?"gone":"hand"}; }
     // ---- any weapon but the revolver: its own approved clips (the hold, the shot, the load, the swing), legs from above
     if(S.wpn&&S.wpn!=="revolver"&&S.dead==null&&!S.grabbed&&!S.down){ const wr=weaponPose(t,dt,ctx,S,D,J,mv,aim0); if(wr) return wr; }
@@ -73,6 +81,8 @@ LIVE.drive={ start(ctx){ nStart(ctx,0); ctx.D={ph:0}; ctx.aimT=1.5; PLVctx=ctx; 
     ctx.phase= dead?"dead": S.down?"down": held?"grabbed": aim>0.5?"on the aim": mv>0.5?(rn>0.5?"runs":"walks"):"idle";
     return fin(J); } };
 LIVE.muzzle=()=>muzzleAt();
+// her abdomen, in her stage (where the blood comes from when she lies dead)
+LIVE.abdomen=()=>{ runner.group.updateMatrixWorld(true); const h=runner.B.hips.getWorldPosition(new V3()), c=runner.B.chest.getWorldPosition(new V3()); return h.lerp(c,0.35); };
 LIVE.props=()=>({GUN,LIGHT,SPOT});
 
 // ---------------------------------------------------------------- the other weapons
