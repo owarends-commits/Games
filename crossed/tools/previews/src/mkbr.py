@@ -23,6 +23,10 @@ rep('ctx.out!=="b" && pull>=0.999', 'ctx.out==="a" && pull>=0.999')
 # the sideways sway is an unstable pendulum that its stump placement can't always catch (it runs away after a few seconds):
 # keep the body within 0.45 m of the middle of its stance
 rep('g.zp=zp; g.vz+=wl*wl*(g.z-zp)*dt; g.z+=g.vz*dt;', 'g.zp=zp; g.vz+=wl*wl*(g.z-zp)*dt; g.z+=g.vz*dt; { const zm=(fz("L")+fz("R"))/2; if(g.z>zm+0.45){ g.z=zm+0.45; if(g.vz>0) g.vz=0; } if(g.z<zm-0.45){ g.z=zm-0.45; if(g.vz<0) g.vz=0; } }')
+# live: the balance guard may shift the body to keep it over its support, but never runs away with it. Once a stump lifts as a
+# fist it can decide the body is falling and carry it off at whatever speed the swinging stump gave its centre of mass (in the
+# sweep, the punch, the lunge): the body slid 0.2 m a frame, sank up to 1.5 m into the floor, then snapped back metres in one frame.
+rep('m.updateMatrixWorld(true); bruteGuard(st,dt,planted,slack);', 'm.updateMatrixWorld(true); bruteGuard(st,dt,planted,slack); { const lim=0.03, c0=PS.hx, c1=PS.hz; PS.hx=clamp(hx0+clamp(PS.hx-hx0,-lim,lim),-0.6,0.6); PS.hz=clamp(hz0+clamp(PS.hz-hz0,-lim,lim),-0.6,0.6); if(PS.e<-0.4) PS.e=-0.4; if(PS.e>e0+0.06) PS.e=e0+0.06; if(Math.abs(c0-PS.hx)>1e-4||Math.abs(c1-PS.hz)>1e-4){ PS.vx=0; PS.vz=0; PS.hinit=false; } }')
 tail = open('br_tail.js').read(); lv = open('br_live.js').read()
 mod = f"""// ================================================================ PV_BR: brute-preview.html wrapped for the playground (made by mkbr.py)
 const PV_BR=(function(){{

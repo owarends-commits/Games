@@ -2893,7 +2893,8 @@ let last = performance.now(), gameTime=0, frameNo=0;
 
 function step(dt, rdt){
   updatePlayer(dt);
-  for(const e of enemies) e.update(dt); pvFxAll(dt); wpnStep(dt); plvFrame(dt);
+  for(const e of enemies.slice()){ try{ e.update(dt); }catch(err){ reportCrash(err,e.name||e.type); if(!e._errN) e._errN=0; if(++e._errN>30){ try{ e.remove(); }catch(x){} const i=enemies.indexOf(e); if(i>=0) enemies.splice(i,1); log(`${e.name} kept failing and was removed`,"#ff5050"); } } }
+  try{ pvFxAll(dt); }catch(err){ reportCrash(err,"creature effects"); } try{ wpnStep(dt); }catch(err){ reportCrash(err,"weapons"); } try{ plvFrame(dt); }catch(err){ reportCrash(err,"Norah"); }
   updateDoors(dt);
   for(const d of debris){ if(d.rest) continue; d.v.y-=9.8*dt; d.o.position.addScaledVector(d.v,dt); d.cut.rotation.x+=d.spin.x*dt; d.cut.rotation.z+=d.spin.z*dt;
     const wp=new THREE.Vector3(); d.cut.getWorldPosition(wp); if(wp.y<groundY(wp.x,wp.z)+0.12 && d.v.y<0){ d.rest=true; d.cut.rotation.x=Math.PI/2; bloodPool(wp.x,wp.z,0.35); } }
@@ -2906,7 +2907,11 @@ function step(dt, rdt){
   if(run && !run.over && !player.dead) run.t += dt;
   if(dt>0){ gameTime+=dt; record(gameTime); }
 }
-function frame(now){
+const CRASHES={};
+function reportCrash(err,where){ const k=(where||"")+String(err&&err.message||err); console.error(where||"frame",err); if(CRASHES[k]) { CRASHES[k]++; return; } CRASHES[k]=1;
+  try{ log(`⚠ Error${where?" in "+where:""}: ${err&&err.message||err} (the game carries on)`,"#ff5050"); }catch(e){} }
+function frame(now){ try{ frame0(now); }catch(err){ reportCrash(err); requestAnimationFrame(frame); } }
+function frame0(now){
   frameNo++;
   const rdt = Math.min(0.05,(now-last)/1000); last=now;
   if(MODE!=="play"){ edFrame(rdt); requestAnimationFrame(frame); return; }
@@ -4547,7 +4552,38 @@ function meshFix(mesh){ const g=mesh.geometry; if(!g||g.userData.mfDone||!g.attr
 function meshFixAll(root){ const out=[]; root.traverse(o=>{ if(o.isMesh&&o.geometry){ const r=meshFix(o); if(r) out.push(r); } }); return out; }
 // when models load: fixed at once, unless the creature's own code adds joints first (the Reachers' long necks and arms,
 // the split head): those are fixed after it has (PVBody, after pvPrep)
-{ const ml0=mdlLoad; mdlLoad=function(key){ return ml0(key).then(g=>{ const grp=(MODEL_LIB[key]||{}).g||""; if(!g.userData.mfDone&&grp!=="bcross/reacher"){ g.userData.mfDone=true; meshFixAll(g.scene); } return g; }); }; }
+{ const ml0=mdlLoad; mdlLoad=function(key){ return ml0(key).then(g=>{ const grp=(MODEL_LIB[key]||{}).g||""; if(!g.userData.mfDone&&grp!=="bcross/reacher"&&!(window.__noMF&&/twoarm/.test(key))){ g.userData.mfDone=true; meshFixAll(g.scene); } return g; }); }; }
+// ================================================================ smooth, solid bodies (every creature worn as a skinned model)
+// 1. No pops: the procedural body under a model can switch pose in one frame (a Runner going from sprint to skid, an ACROSS
+//    changing gait), which threw a foot a metre or a head through the floor for a frame. Each bone may turn at most POP.turn
+//    radians a frame and the hips move at most POP.move m relative to the body, so a switch eases in over a few frames instead.
+//    Fast moves the creature really makes (a strike, a lunge) stay well inside that.
+// 2. Solid floor: an arm or leg that would reach through the floor is swung up at the shoulder or hip until its hand or foot rests
+//    on it (limbs that have come off are left alone).
+const POP={turn:0.32, move:0.14, on:true};
+const _apq=new THREE.Quaternion(), _apv=new THREE.Vector3(), _apw=new THREE.Vector3(), _apu=new THREE.Vector3(), _apq2=new THREE.Quaternion();
+function apChains(S){ if(S.apCh) return S.apCh; const B=S.B, ch=[]; for(const s of ["L","R"]){ if(B["upperarm_"+s]&&B["hand_"+s]) ch.push({root:"upperarm_"+s,tip:"hand_"+s,lift:0.03}); if(B["thigh_"+s]&&B["foot_"+s]) ch.push({root:"thigh_"+s,tip:"foot_"+s,lift:0.02}); } return S.apCh=ch; }
+{ const ss0=skinSync; skinSync=function(S){ ss0(S); if(!S.model||!POP.on) return; const o=S.owner; if(!o||o===player||!enemies.includes(o)) return;
+    const F=S.ap||(S.ap={q:{},h:null,f:-9}), fresh=frameNo-F.f>2||o.removed; F.f=frameNo; const B=S.B;
+    // 1. ease any pose switch
+    if(!fresh&&!o.dead){ for(const n in B){ const bn=B[n]; if(!bn.isBone||S.collapsed[n]) continue; const q0=F.q[n]; if(q0){ const ang=q0.angleTo(bn.quaternion); if(ang>POP.turn){ _apq.copy(q0).rotateTowards(bn.quaternion,POP.turn); bn.quaternion.copy(_apq); } } }
+      if(F.h&&B.hips){ const d=B.hips.position.distanceTo(F.h); if(d>POP.move) B.hips.position.copy(F.h).lerp(B.hips.position,POP.move/d); } }
+    for(const n in B){ const bn=B[n]; if(!bn.isBone) continue; (F.q[n]||(F.q[n]=new THREE.Quaternion())).copy(bn.quaternion); } if(B.hips) F.h=(F.h||new THREE.Vector3()).copy(B.hips.position);
+    S.model.updateMatrixWorld(true);
+    // 2. limbs on the floor, not through it
+    for(const c of apChains(S)){ if(S.collapsed[c.root]||S.collapsed[c.tip]) continue; const r=B[c.root], tp=B[c.tip]; tp.getWorldPosition(_apw); const gy=groundY(_apw.x,_apw.z)+c.lift; if(_apw.y>=gy) continue;
+      r.getWorldPosition(_apv); if(_apv.y<=gy+0.05) continue;   /* the shoulder or hip itself is down there: nothing to swing */
+      _apu.subVectors(_apw,_apv); const L=_apu.length(), h=gy-_apv.y; if(L<1e-4) continue; const horiz=Math.sqrt(Math.max(0,L*L-h*h)), hv=new THREE.Vector3(_apu.x,0,_apu.z); if(hv.lengthSq()<1e-8) hv.set(1,0,0); hv.setLength(horiz); const want=hv.add(new THREE.Vector3(0,h,0));
+      _apq.setFromUnitVectors(_apu.normalize(),want.normalize());   // the world rotation that lifts the tip onto the floor
+      r.parent.getWorldQuaternion(_apq2); const pinv=_apq2.clone().invert(); r.getWorldQuaternion(_apq2); _apq2.premultiply(_apq); r.quaternion.copy(pinv.multiply(_apq2)); r.updateMatrixWorld(true);
+      (F.q[c.root]||(F.q[c.root]=new THREE.Quaternion())).copy(r.quaternion); } }; }
+
+// the same for creatures run by their preview's code (the Contortionist, the Reachers, the split head, the club-fist and one-arm Brutes):
+// a clip that switches a limb to a new target in one frame (a hand taking hold of the wall) eases there instead
+function pvNoPop(b){ if(!POP.on||!b.C||!b.C.model||b.K.noPop) return; const F=b.ap||(b.ap={q:new Map(),f:-9}), fresh=frameNo-F.f>2; F.f=frameNo; if(b.e.dead) { F.q.clear(); return; }
+  b.C.model.traverse(o=>{ if(!o.isBone) return; const q0=F.q.get(o); if(q0&&!fresh){ const ang=q0.angleTo(o.quaternion); if(ang>POP.turnPV){ _apq.copy(q0).rotateTowards(o.quaternion,POP.turnPV); o.quaternion.copy(_apq); } } if(q0) q0.copy(o.quaternion); else F.q.set(o,o.quaternion.clone()); });
+  b.C.model.updateMatrixWorld(true); }
+POP.turnPV=0.45;
 // ================================================================ PV_CN: contortionist-preview.html wrapped for the playground (made by mkpv.py)
 const PV_CN=(function(){
 let scene=null, runner=null, norah=null, t=0, ctx={events:[]}, cur=null; const PVHOOK={};
@@ -9625,7 +9661,7 @@ function hideWeapons(){ if(typeof W!=="undefined") for(const q in W) if(W[q]&&W[
 function subStart(c,ctx,place){ const keep={x:ctx.x,z:ctx.z,yaw:ctx.yaw,ph:ctx.ph,look:ctx.look,D:ctx.D,S:ctx.S,aimT:ctx.aimT,T:ctx.T}; A[c].start(ctx); if(place){ keep.x=ctx.x; keep.z=ctx.z; keep.yaw=ctx.yaw; } const st={}; for(const q of ["shots","out","mash","s0","yaw0"]) if(ctx[q]!==undefined) st[q]=ctx[q]; Object.assign(ctx,keep); return st; }
 function runSub(c,tc,dt,ctx,T,st,place){ const keep={x:ctx.x,z:ctx.z,yaw:ctx.yaw,ph:ctx.ph,look:ctx.look,D:ctx.D,S:ctx.S}; const T0=ctx.T; ctx.T=T; if(st) Object.assign(ctx,st); const J=A[c].step(tc,dt,ctx); ctx.T=T0; if(place){ keep.x=ctx.x; keep.z=ctx.z; keep.yaw=ctx.yaw; } Object.assign(ctx,keep); return J; }
 function weaponPose(t,dt,ctx,S,D,Jb,mv,aimK){ const k=S.wpn, Wd=WPN[k]; if(!Wd) return null;
-  if(D.wk!==k){ const keep={look:ctx.look,D:ctx.D,S:ctx.S,aimT:ctx.aimT}; wStart(ctx,k); Object.assign(ctx,keep); D.wk=k; D.sub=null; D.lastAct=null; D.hc=null; }
+  if(D.wk!==k){ const keep={look:ctx.look,D:ctx.D,S:ctx.S,aimT:ctx.aimT}; wStart(ctx,k); Object.assign(ctx,keep); D.wk=k; D.sub=null; D.lastAct=S.act?S.act.id:null;   /* a new weapon does not replay the last one's action */ D.hc=null; }
   // a new action from the host: start its clip
   const act=S.act; if(act&&act.id!==D.lastAct){ D.lastAct=act.id; if(act.kind==="cancel"){ D.sub=null; } const c=Wd[act.kind]; if(c){ const place=act.kind==="pry"; D.sub={c:c[0],from:c[1],to:c[2],t0:t,T:{},kind:act.kind,dur:act.dur,place,st:subStart(c[0],ctx,place)}; if(place){ D.pryX=ctx.x; D.pryZ=ctx.z; D.pryYaw=ctx.yaw; } if(act.kind==="fire"&&k==="flare") D.sub.T.cap=1; } }
   let J=null, sub=D.sub;
@@ -9637,6 +9673,7 @@ function weaponPose(t,dt,ctx,S,D,Jb,mv,aimK){ const k=S.wpn, Wd=WPN[k]; if(!Wd) 
   // the legs keep walking under it
   if(mv>0.05) for(const q of ["lLx","lRx","lLz","lRz","kL","kR","fL","fR","hd"]) J[q]=Jb[q];
   ctx.phase=(sub?sub.kind:"holds")+" · "+k; return J; }
+LIVE.wvis=()=>{ const o={}; for(const q in W) o[q]=!!(W[q]&&W[q].obj&&W[q].obj.visible); o.revolver=!!(GUN&&GUN.visible); return o; };
 LIVE.wmuzzle=k=>{ const o=W[k]; if(!o) return null; o.obj.updateMatrixWorld(true); return o.obj.localToWorld((o.pts.muzzle||o.pts.tip||new V3()).clone()); };
 LIVE.wtip=k=>{ const o=W[k]; if(!o) return null; o.obj.updateMatrixWorld(true); return o.obj.localToWorld((o.pts.tip||o.pts.muzzle||new V3()).clone()); };
 LIVE.pryState=()=>{ const D=PLVctx&&PLVctx.D; return D&&D.pryX!=null?{x:D.pryX,z:D.pryZ,yaw:D.pryYaw,door:D.doorAng||0,on:!!(D.sub&&D.sub.kind==="pry")}:null; };
@@ -11345,7 +11382,7 @@ function bruteFrame(st,dt){ const R=BR, m=R.mesh;
   for(const o of (R.organs||[])){ if(o.burst!=null){ o.burst+=dt; o.b.scale.setScalar(o.burst<0.05?1+o.burst*8:0.001); } }
   // bursting lumps
   for(const l of R.lumps){ if(l.burst!=null){ l.burst+=dt; l.b.scale.setScalar(Math.max(0.001,1+2*l.burst*(l.burst<0.04?1:0)-(l.burst>=0.04?1:0))); } }
-  m.updateMatrixWorld(true); bruteGuard(st,dt,planted,slack);
+  m.updateMatrixWorld(true); bruteGuard(st,dt,planted,slack); { const lim=0.03, c0=PS.hx, c1=PS.hz; PS.hx=clamp(hx0+clamp(PS.hx-hx0,-lim,lim),-0.6,0.6); PS.hz=clamp(hz0+clamp(PS.hz-hz0,-lim,lim),-0.6,0.6); if(PS.e<-0.4) PS.e=-0.4; if(PS.e>e0+0.06) PS.e=e0+0.06; if(Math.abs(c0-PS.hx)>1e-4||Math.abs(c1-PS.hz)>1e-4){ PS.vx=0; PS.vz=0; PS.hinit=false; } }
   // apply the guard's answer in this same frame (no one-frame lag): shift the body, re-solve the stumps to their planted spots
   if(Math.abs(PS.e-e0)>1e-4||Math.abs(PS.hx-hx0)>1e-4||Math.abs(PS.hz-hz0)>1e-4){ root.position.y+=PS.e-e0; m.position.x+=PS.hx-hx0; m.position.z+=PS.hz-hz0; m.updateMatrixWorld(true); limbs(2); m.updateMatrixWorld(true);
     // airborne, nothing touches: the re-solved limbs moved the mass a little, so put the centre of mass exactly back on its arc (a rigid shift)
@@ -11902,12 +11939,17 @@ function nextClip(){ for(let k=1;k<=ORDER.length;k++){ const c=ORDER[(ORDER.inde
 let nora=null, gameT=0, PV_KEY=""; const pvNoraCache=new WeakMap();
 function pvNora(n){ if(!n) return null; let o=pvNoraCache.get(n); if(!o){ o={B:n.c.B, group:n.c.group, shadow:n.c.shadow, gun:null, model:null}; pvNoraCache.set(n,o); } return o; }
 function pvPrep(g,h){ PV_KEY=h.key; }
-function pvMakeChar(g){ const key=PV_KEY; const R=autoRig(g,{armor:key.includes("armored")}); R.uid=key; R.legless=key.includes("legless"); scene.add(R.mesh);
-  const C={group:R.mesh, model:R.mesh, B:R.B, R, bs:{limp:{L:false,R:false}}, shadow:null}; return C; }
+function pvMakeChar(g){ const key=PV_KEY; const R=autoRig(g,{armor:key.includes("armored")}); R.uid=key; R.legless=key.includes("legless"); scene.add(R.mesh); if(R.armor&&R.armor.length) armorReset(R);   /* its loose-armour list, as the preview's clip start sets up */
+  const C={group:R.mesh, model:R.mesh, B:R.B, R, bs:{limp:{L:false,R:false},lastRoot:null,lastV:null,ps:null,pf:null,al:null,cah:null,alp:null,ns:null,wasAir:false}, shadow:null}; return C; }
 function pvBind(h){ ctx=h.ctx; scene=h.stage; t=h.t; nora=pvNora(h.norah); if(h.C){ BR=h.C.R; BS=h.C.bs; } }
 function pvSetup(C){ BR=C.R; BS=C.bs; C.hgt=BR.H; C.hip0=BR.shoulderY; return C; }
 function pvStep(h,dt){ pvBind(h); h.t+=dt; t=h.t; gameT+=dt; ctx.qte=null; ctx.events=[];
-  const st=h.clip.step(t,dt,ctx); ctx.lastSt=st; bruteFrame(st,dt); BR.mesh.updateMatrixWorld(true); return ctx.events; }
+  const st=h.clip.step(t,dt,ctx); ctx.lastSt=st;
+  // a stump never jumps more than 0.35 m in one frame (at a charge's speed the gait's swing target can leap a metre): it gets there a frame or two later
+  { const F=ctx.fPrev||(ctx.fPrev={}); for(const s of ["L","R"]){ const f=st.feet&&st.feet[s]; if(!f||!f.isVector3) continue; const q=F[s]; if(q&&!ctx.fNoCap){ const d=f.distanceTo(q); if(d>0.35){ f.copy(q.clone().lerp(f,0.35/d)); } } F[s]=f.clone(); } ctx.fNoCap=false; }
+  bruteFrame(st,dt); if(BS.ps&&BS.ps.e<-0.4) BS.ps.e=-0.4;   /* never sunk more than 0.4 m below its stance */
+  // and its body never jolts up or down more than 10 cm in a frame (the flight physics at a charge's speed can): eased over a few frames
+  { const rt=BR.B.root; if(rt){ const y=rt.position.y; if(ctx.rootY!=null&&!ctx.fNoCap){ const dy=y-ctx.rootY; if(Math.abs(dy)>0.1){ rt.position.y=ctx.rootY+Math.sign(dy)*0.1; BR.mesh.updateMatrixWorld(true); } } ctx.rootY=rt.position.y; } } BR.mesh.updateMatrixWorld(true); return ctx.events; }
 function pvFx(dt){ stepFx(dt); stepGore(dt); const s=shake; shake=0; return s; }
 
 // ---------------------------------------------------------------- the two-armed Brutes, live (playground)
@@ -11980,7 +12022,7 @@ class PVBody{
   constructor(e,type,key){ this.e=e; this.type=type; this.K=PVK[type]; this.mod=this.K.mod; this.key=key; this.stage=new THREE.Group(); scene.add(this.stage);
     this.M=new THREE.Matrix4(); this.Mi=new THREE.Matrix4(); this.a=0; this.ctx={events:[],x:0,z:0,yaw:Math.PI/2,v:0,live:true,T:{}}; this.t=0; this.ct=0; this.C=null; this.ready=false; this.hits=[];
     this.norah=this.makeNorah(); this.clip=null; this.clipName=null;
-    mdlLoad(key).then(g=>{ if(e.removed) return; this.withStage(()=>{ this.mod.pvBind(this.rec()); if(this.mod.pvPrep) this.mod.pvPrep(g,this); if(!g.userData.mfDone2&&typeof meshFixAll==="function"){ g.userData.mfDone2=true; meshFixAll(g.scene); } this.C=this.mod.makeChar(g); if(this.mod.pvPost) this.mod.pvPost(this.C,this); this.mod.pvSetup(this.C); }); this.makeHits(); this.ready=true; if(this.K.start) this.K.start(e,this); })
+    mdlLoad(key).then(g=>{ if(e.removed) return; this.withStage(()=>{ this.mod.pvBind(this.rec()); if(this.mod.pvPrep) this.mod.pvPrep(g,this); if(!g.userData.mfDone2&&typeof meshFixAll==="function"&&!(window.__noMF&&/twoarm/.test(key))){ g.userData.mfDone2=true; meshFixAll(g.scene); } this.C=this.mod.makeChar(g); if(this.mod.pvPost) this.mod.pvPost(this.C,this); this.mod.pvSetup(this.C); }); this.makeHits(); this.ready=true; if(this.K.start) this.K.start(e,this); })
       .catch(err=>{ log(`${e.name}: model failed (${err&&err.message||err})`,"#ff7070"); }); }
   // the stage: world = M · stage. Posing runs with the stage at the origin, so its world is the preview's world
   anchor(worldPos,worldDir,stageX=0,stageZ=0){ const a=Math.atan2(-worldDir.z,worldDir.x)+Math.PI/2, M0=this.M.clone(); this.a=a; const R=new THREE.Matrix4().makeRotationY(a-Math.PI/2);
@@ -12019,10 +12061,10 @@ class PVBody{
     else { this.clip=clip; this.clipName=name; this.ct=0; if(o.reset) this.t=0; if(o.outSel) this.ctx.outSel=o.outSel; if(clip.start) this.withStage(()=>{ this.mod.pvBind(this.rec()); clip.start(this.ctx); }); }
     this.ctx.live=true; this.ctx.clipT0=this.t; e.pvClipT=0; }
   rec(){ return {C:this.C, ctx:this.ctx, t:this.t, stage:this.stage, norah:this.norah, clip:this.clip, mir:this.mir, nx:this.nx}; }
-  step(dt){ if(!this.ready||!this.clip) return []; const h=this.rec();
+  step(dt){ if(!this.ready||!this.clip||!(dt>0)) return []; const h=this.rec();   /* a paused frame (dt 0) moves nothing: the physics divides by dt */
     // where she is, along the stage's line: the preview's "NX"
     h.nx=this.toStage(player.pos).x; this.nx=h.nx;
-    const ev=this.withStage(()=>this.mod.pvStep(h,dt)); this.t=h.t; this.ct+=dt; this.e.pvClipT=this.ct; return ev||[]; }
+    const ev=this.withStage(()=>this.mod.pvStep(h,dt)); this.t=h.t; if(typeof pvNoPop==='function') pvNoPop(this); this.ct+=dt; this.e.pvClipT=this.ct; return ev||[]; }
   // its feet on the map: walls stop it, and the stage follows
   sync(){ const e=this.e, c=this.ctx, w=this.toWorld(new THREE.Vector3(c.x,0,c.z||0)); const p=w.clone(); if(!(this.K.noCollide&&this.K.noCollide(this))) collide(p,e.radius*0.8);
     if(p.distanceToSquared(w)>1e-8){ const s=this.toStage(p); c.x=s.x; c.z=s.z; }
@@ -12256,7 +12298,7 @@ class HobBody{
     for(const s of ["L","R"]){ const e0=H.B["elbow_"+s], h0=H.B["hand_"+s]; if(!e0||!h0) continue; for(const u of [0.33,0.66]){ const m=new THREE.Mesh(new THREE.SphereGeometry(0.3,8,6),mat); m.position.copy(h0.position).multiplyScalar(u); e0.add(m); m.userData={enemy:this.e,zone:"torso",limb:"forearm_"+s,pv:true,hitbox:true}; this.hits.push(m); } } }
   holding(){ const c=this.ctx; return (this.clipName==="grabL"||this.clipName==="grabR")&&c.got!=null&&this.ct-c.got<3.2; }
   play(name){ this.clipName=name; this.ct=0; const I=this.ctx.I; this.ctx={I}; PV_HOB.hobStart(name,this.ctx); }
-  step(dt){ if(!this.ready||!this.clipName) return []; const c=this.ctx; if(this.stun>0){ this.stun-=dt; dt*=0.12; }
+  step(dt){ if(!this.ready||!this.clipName||!(dt>0)) return []; const c=this.ctx; if(this.stun>0){ this.stun-=dt; dt*=0.12; }
     c.herW=new THREE.Vector3(player.pos.x,1.0+(player.posY||0),player.pos.z); this.t+=dt; this.ct+=dt;
     const X=PV_HOB.hobStep(this.clipName,this.ct,dt,c);
     if(X){ this.pos.addScaledVector(this.dir(),X); collide(this.pos,1.0); }
@@ -12281,6 +12323,7 @@ PVK.hob={ mod:PV_HOB, label:"The Hob", cfg:"hob", radius:1.2, body:HobBody,
       if(sq>=3.2&&player.grabbed&&player.grabbed.by===e){ player.grabbed=null; log("It lets her drop","#9ed08a"); }
       if(sq>5.2){ b.play("crawl"); m.cool=3; } return; }
     if(name==="throne"){
+      if(c.caught==null&&c.missed==null&&c.s2==null&&b.ct>7.5){ b.play("crawl"); m.cool=4; log("It crashed down short of her","#9ed08a"); return; }   /* a lunge that never lands on her or the floor near her still ends */
       if(c.missed!=null){ if(b.ct>c.missed+3.0){ b.play("crawl"); m.cool=4; log("It crashed down short of her","#9ed08a"); } return; }
       if(c.caught!=null&&c.s2==null){ hobPin(e,PV_HOB.hobHerAt(c)); if(!m.caughtLog){ m.caughtLog=1; shake=Math.max(shake,0.5); player.hurt(C.throneDamage,e,"throne grab"); log("It crashes down on her and both hands close · SHOOT THE CROSS ON ITS RIGHT ARM, OR ITS EYES (2 shots)","#ff7070"); qteBanner("SHOOT THE CROSS OR ITS EYES","bad"); }
         if(b.ct>9.6&&!c.bit){ c.bit=1; player.bite(e,"bite",C.throneBiteDamage); qteBanner(`BITTEN −${C.throneBiteDamage}`,"bad"); c.s1=c.s1??b.ct; c.s2=b.ct; } return; }
@@ -12494,7 +12537,7 @@ function plvAimAt(){ let p;
 function plvShot(){ PLV.S.shots.push(PLV.t); if(PLV.S.shots.length>8) PLV.S.shots.shift(); PLV.S.shotN++; }
 function plvClick(){ PLV.S.click=PLV.t; }
 function plvMuzzle(){ const m=plvWith(()=>PV_NW.LIVE.muzzle()); return m.applyMatrix4(PLV.stage.matrixWorld); }
-function plvFrame(dt){ if(!PLV.ready) return; const S=PLV.S, t=PLV.t+dt;
+function plvFrame(dt){ if(!PLV.ready||!(dt>0)) return; const S=PLV.S, t=PLV.t+dt;
   if(player.skin&&player.skin.model) player.skin.model.visible=false; if(player.P.gun) player.P.gun.visible=false;
   // her own frame's velocity, from how far she really moved
   const p=player.pos, L=PLV.last||(PLV.last=p.clone()), dx=(p.x-L.x)/Math.max(dt,1e-4), dz=(p.z-L.z)/Math.max(dt,1e-4); L.copy(p);
@@ -12875,9 +12918,9 @@ const PRESETS=[
     d.start={hp:"",rounds:2,spare:0,items:[IT("flashlight")],flashOn:false}; d.objects.find(o=>o.type==="spawn");
     const exitWall=d.objects.find(o=>o.type==="wall"&&o.a[1]===-12&&o.b[1]===-12); const door=exitWall.openings.find(op=>op.kind==="door"); door.closed=true; door.locked=true; door.key="Clinic key";
     propify(d,"cabinet",-8.7,-0.5,90,[IT("key",1,"Clinic key"),IT("note",1,"Duty roster","NIGHT SHIFT\nBack door key stays in the office cabinet.\nDo NOT prop the ward door open.")]);
-    propify(d,"desk",-5,3.2,180,[IT("pills")]);
-    propify(d,"crate",8.4,0.2,0,[IT("ammo",3)]); propify(d,"crate",4.6,-0.6,0,[]);
-    propify(d,"shelf",4,4.2,180,[IT("batteries")]); propify(d,"shelf",7.4,4.2,180,[]);
+    propify(d,"desk",-5,3.2,180,[IT("pills"),IT("knife")]);
+    propify(d,"crate",8.4,0.2,0,[IT("ammo",3)]); propify(d,"crate",4.6,-0.6,0,[IT("crowbar")]);
+    propify(d,"shelf",4,4.2,180,[IT("batteries")]); propify(d,"shelf",7.4,4.2,180,[IT("road_flare",2)]);
     d.objects.push({id:sbUid("i"),type:"item",x:-3.4,z:-7.4,item:"bandage",qty:1,name:"",text:""});
     addEnemies(d,[["across:walker",0.3,-1.6,{aware:"unaware",idle:"playdead"}],["across:crawler",-7.2,-8.2,{aware:"unaware",idle:"lurk",yaw:Math.PI/2}],["across:matron",-5,1,{aware:"unaware",idle:"wander"}],["across:mourner",5.6,-6.6,{aware:"unaware",idle:"feed",yaw:Math.PI}],["across:walker",6,-3.4,{aware:"unaware",idle:"wander"}]]);
     d.note="Reach the green exit at the north end. Its door is locked: the key is in the office (west side, near the entrance). Crouch (Q) in the dark and don't run. The flashlight (L) helps you see but makes you easier to spot. Two bullets. That body in the hall may not be dead.";
@@ -12885,40 +12928,40 @@ const PRESETS=[
   {key:"house", name:"Norah's house: Louis in the bedroom", desc:"Chapter One's fight. Five loaded, seven spare. The wardrobe and the bookshelf can be searched.", make(){
     const d=arenaDoc("house","Norah's house"); d.win="kill"; setSpawn(d,-0.4,-1.2,Math.PI); d.start.rounds=5; d.start.spare=7;
     propify(d,"bed",-1.4,-3.4,0); propify(d,"couch",-1.8,2.6,90); propify(d,"coffee table",1.2,2.8,0);
-    propify(d,"wardrobe",1.9,-4.15,0,[IT("pills")]); propify(d,"bookshelf",3.6,0.7,0,[IT("ammo",3),IT("photo")]);
+    propify(d,"wardrobe",1.9,-4.15,0,[IT("pills"),IT("hatchet")]); propify(d,"bookshelf",3.6,0.7,0,[IT("ammo",3),IT("photo")]);
     addEnemies(d,[["brute",1.2,-3.7]]); return d; }},
   {key:"houseDoor", name:"Hold the door: Louis outside the bedroom", desc:"Slam the bedroom door (E) and push the wardrobe in front of it.", make(){
     const d=arenaDoc("house","Hold the door"); d.win="kill"; setSpawn(d,-0.5,-2.5,0); d.start.rounds=5; d.start.spare=7;
-    propify(d,"bed",-1.4,-3.4,0); propify(d,"couch",-1.8,2.6,90); propify(d,"coffee table",1.2,2.8,0); propify(d,"wardrobe",1.9,-4.15,0,[IT("bandage")]); propify(d,"bookshelf",3.6,0.7,0);
+    propify(d,"bed",-1.4,-3.4,0); propify(d,"couch",-1.8,2.6,90); propify(d,"coffee table",1.2,2.8,0); propify(d,"wardrobe",1.9,-4.15,0,[IT("bandage"),IT("crowbar")]); propify(d,"bookshelf",3.6,0.7,0,[IT("knife")]);
     addEnemies(d,[["brute",1.3,2.2]]); d.note="Slam the bedroom door (E) and push the wardrobe."; return d; }},
   {key:"corridor", name:"Corridor: 3 ACROSS", desc:"A hallway with side rooms. The desk and the cabinet have supplies.", make(){
-    const d=arenaDoc("corridor","Corridor"); d.win="kill"; propify(d,"desk",-3.5,-2,90,[IT("ammo",5),IT("bandage")]); propify(d,"cabinet",3.4,-11,0,[IT("flashlight")]);
+    const d=arenaDoc("corridor","Corridor"); d.win="kill"; propify(d,"desk",-3.5,-2,90,[IT("ammo",5),IT("bandage"),IT("pistol"),IT("nine_mm",12)]); propify(d,"cabinet",3.4,-11,0,[IT("flashlight"),IT("shotgun"),IT("shells",4)]);
     addEnemies(d,[["across",0,-13.2],["across",-0.4,-12.2],["across",0.4,-11.3]]); return d; }},
   {key:"noAmmo", name:"No bullets: shove and run", desc:"Get past it and close a door behind you.", make(){
-    const d=arenaDoc("corridor","No bullets"); d.win="none"; setSpawn(d,0,-3,Math.PI); d.start.rounds=0; d.start.spare=0; propify(d,"desk",-3.5,-2,90,[IT("ammo",2)]); propify(d,"cabinet",3.4,-11,0);
+    const d=arenaDoc("corridor","No bullets"); d.win="none"; setSpawn(d,0,-3,Math.PI); d.start.rounds=0; d.start.spare=0; propify(d,"desk",-3.5,-2,90,[IT("ammo",2),IT("hatchet")]); propify(d,"cabinet",3.4,-11,0,[IT("road_flare",1)]);
     addEnemies(d,[["across",0,-9]]); d.note="Get past it and close a door behind you. The desk in the west room might have something."; return d; }},
   {key:"open", name:"Open arena: Louis", desc:"The basic test. Pillars, cover, a corridor with a door, two crates to search.", make(){
-    const d=arenaDoc("open","Open arena"); d.win="kill"; propify(d,"crate",-8,0,0,[IT("firstaid")]); propify(d,"crate",8,1,0,[IT("ammo",10)]);
+    const d=arenaDoc("open","Open arena"); d.win="kill"; propify(d,"crate",-8,0,0,[IT("firstaid"),IT("rifle"),IT("rifle_rounds",5)]); propify(d,"crate",8,1,0,[IT("ammo",10),IT("flaregun"),IT("flare_shells",2),IT("road_flare",2)]);
     addEnemies(d,[["brute",0,0]]); return d; }},
   {key:"runner", name:"Open arena: the Runner", desc:"One Runner. Watch it curl in before it charges, then sidestep. Two crates to search.", make(){
-    const d=arenaDoc("open","The Runner"); d.win="kill"; d.start.rounds=5; d.start.spare=20; propify(d,"crate",-8,0,0,[IT("firstaid")]); propify(d,"crate",8,1,0,[IT("ammo",10)]);
+    const d=arenaDoc("open","The Runner"); d.win="kill"; d.start.rounds=5; d.start.spare=20; propify(d,"crate",-8,0,0,[IT("firstaid"),IT("shotgun"),IT("shells",8)]); propify(d,"crate",8,1,0,[IT("ammo",10)]);
     addEnemies(d,[["runner",0,-4]]); return d; }},
   {key:"tactician", name:"Corridor: a Tactician and two Walkers", desc:"Bold while the Walkers live. Kill them and watch it lose its nerve: it scurries out of sight and waits at a doorway or a turn to ambush her.", make(){
-    const d=arenaDoc("corridor","The Tactician"); d.win="kill"; d.start.rounds=6; d.start.spare=24; propify(d,"desk",-3.5,-2,90,[IT("ammo",6),IT("bandage")]);
+    const d=arenaDoc("corridor","The Tactician"); d.win="kill"; d.start.rounds=6; d.start.spare=24; propify(d,"desk",-3.5,-2,90,[IT("ammo",6),IT("bandage"),IT("pistol"),IT("nine_mm",12)]);
     addEnemies(d,[["tactician",0,-12.4],["across:walker",-0.6,-11.2],["across:walker",0.6,-10.6]]); return d; }},
   {key:"variety", name:"Open arena: one of each ACROSS", desc:"All four subclasses: Walker, Crawler, Matron and a kneeling Mourner (don't wake it).", make(){
-    const d=arenaDoc("open","One of each"); d.win="kill"; setSpawn(d,0,9,Math.PI); d.start.rounds=5; d.start.spare=30; propify(d,"crate",-8,0,0,[IT("firstaid")]); propify(d,"crate",8,1,0,[IT("ammo",10)]);
+    const d=arenaDoc("open","One of each"); d.win="kill"; setSpawn(d,0,9,Math.PI); d.start.rounds=5; d.start.spare=30; propify(d,"crate",-8,0,0,[IT("firstaid"),IT("shotgun"),IT("shells",8)]); propify(d,"crate",8,1,0,[IT("ammo",10),IT("knife")]);
     addEnemies(d,[["across:walker",-6,-6],["across:crawler",-2,-3],["across:matron",3,-6],["across:mourner",7,-8,{aware:"unaware",idle:"feed",yaw:Math.PI}]]); return d; }},
   {key:"pack", name:"Open arena: ACROSS pack of 6", desc:"Only a few attack at once; the rest circle.", make(){
-    const d=arenaDoc("open","ACROSS pack"); d.win="kill"; d.start.rounds=5; d.start.spare=15; propify(d,"crate",-8,0,0); propify(d,"crate",8,1,0,[IT("ammo",6)]);
+    const d=arenaDoc("open","ACROSS pack"); d.win="kill"; d.start.rounds=5; d.start.spare=15; propify(d,"crate",-8,0,0,[IT("rifle"),IT("rifle_rounds",10)]); propify(d,"crate",8,1,0,[IT("ammo",6)]);
     addEnemies(d,[["across",-4,-2],["across",-2,-3],["across",0,-3.5],["across",2,-3],["across",4,-2],["across:crawler",0,-5]]); return d; }},
   {key:"crippled", name:"Legless crawlers (grab test)", desc:"They grab ankles. Hit the prompts in time to push them off.", make(){
-    const d=arenaDoc("open","Legless crawlers"); d.win="kill"; setSpawn(d,0,4,Math.PI); d.start.rounds=5; d.start.spare=10; propify(d,"crate",-8,0,0); propify(d,"crate",8,1,0);
+    const d=arenaDoc("open","Legless crawlers"); d.win="kill"; setSpawn(d,0,4,Math.PI); d.start.rounds=5; d.start.spare=10; propify(d,"crate",-8,0,0,[IT("hatchet")]); propify(d,"crate",8,1,0,[IT("pistol"),IT("nine_mm",12)]);
     addEnemies(d,[["across_legless",-1,1],["across_legless",1.2,0.5]]); return d; }},
   {key:"chapel", name:"Chapel: 5 ACROSS", desc:"Pews to vault, pillars, the altar holds something.", make(){
     const d=arenaDoc("chapel","Chapel"); d.win="kill"; d.start.rounds=5; d.start.spare=15;
     for(const o of d.objects.filter(o=>o.type==="block"&&o.name==="pew")) d.objects[d.objects.indexOf(o)]=blockToProp(o,0);
-    propify(d,"altar",0,-10.3,0,[IT("rosary"),IT("ammo",5)]);
+    propify(d,"altar",0,-10.3,0,[IT("rosary"),IT("ammo",5),IT("flaregun"),IT("flare_shells",3)]);
     addEnemies(d,[["across",-1.5,-7.8],["across",1.5,-7.8],["across",0,-6.5],["across",-0.6,-4],["across",0.7,-2.5]]); return d; }},
   {key:"hillside", name:"Hillside cabin (terrain)", desc:"Rolling ground, woods, a cabin and a car. Find the car keys and drive out. Shows terrain, paths and outdoor props.", make(){ return hillsideDoc(); }},
   {key:"blankIn", name:"New: empty room", desc:"A 12 × 12 m room with one light, Norah and nothing else.", make(){

@@ -31,3 +31,13 @@ j = rep(j, '  if(!h){ log("Miss","#7d7668"); return; }', '  if(!h){ log("Miss","
 j = rep(j, 'setTimeout(()=>{ if(MODE==="play"&&run&&run.over) openSimMenu(result); },1600);', 'setTimeout(()=>{ if(MODE==="play"&&run&&run.over) openSimMenu(result); },result==="DIED"?4500:1600);')
 # ...and the results box waits for her to fall too
 j = rep(j, 'R.style.display="block"; if(result!=="DIED") SFX.win();', 'if(result==="DIED") setTimeout(()=>{ if(run&&run.over&&player.dead) R.style.display="block"; },2400); else R.style.display="block"; if(result!=="DIED") SFX.win();')
+# an error in one frame never stops the game: the frame loop carries on and the error is shown (once per kind)
+j = rep(j, "function frame(now){\n  frameNo++;", """const CRASHES={};
+function reportCrash(err,where){ const k=(where||"")+String(err&&err.message||err); console.error(where||"frame",err); if(CRASHES[k]) { CRASHES[k]++; return; } CRASHES[k]=1;
+  try{ log(`⚠ Error${where?" in "+where:""}: ${err&&err.message||err} (the game carries on)`,"#ff5050"); }catch(e){} }
+function frame(now){ try{ frame0(now); }catch(err){ reportCrash(err); requestAnimationFrame(frame); } }
+function frame0(now){
+  frameNo++;""")
+# one creature going wrong takes only itself out
+j = rep(j, "  for(const e of enemies) e.update(dt); pvFxAll(dt); wpnStep(dt); plvFrame(dt);", """  for(const e of enemies.slice()){ try{ e.update(dt); }catch(err){ reportCrash(err,e.name||e.type); if(!e._errN) e._errN=0; if(++e._errN>30){ try{ e.remove(); }catch(x){} const i=enemies.indexOf(e); if(i>=0) enemies.splice(i,1); log(`${e.name} kept failing and was removed`,"#ff5050"); } } }
+  try{ pvFxAll(dt); }catch(err){ reportCrash(err,"creature effects"); } try{ wpnStep(dt); }catch(err){ reportCrash(err,"weapons"); } try{ plvFrame(dt); }catch(err){ reportCrash(err,"Norah"); }""")

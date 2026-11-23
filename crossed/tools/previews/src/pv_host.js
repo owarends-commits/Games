@@ -11,7 +11,7 @@ class PVBody{
   constructor(e,type,key){ this.e=e; this.type=type; this.K=PVK[type]; this.mod=this.K.mod; this.key=key; this.stage=new THREE.Group(); scene.add(this.stage);
     this.M=new THREE.Matrix4(); this.Mi=new THREE.Matrix4(); this.a=0; this.ctx={events:[],x:0,z:0,yaw:Math.PI/2,v:0,live:true,T:{}}; this.t=0; this.ct=0; this.C=null; this.ready=false; this.hits=[];
     this.norah=this.makeNorah(); this.clip=null; this.clipName=null;
-    mdlLoad(key).then(g=>{ if(e.removed) return; this.withStage(()=>{ this.mod.pvBind(this.rec()); if(this.mod.pvPrep) this.mod.pvPrep(g,this); if(!g.userData.mfDone2&&typeof meshFixAll==="function"){ g.userData.mfDone2=true; meshFixAll(g.scene); } this.C=this.mod.makeChar(g); if(this.mod.pvPost) this.mod.pvPost(this.C,this); this.mod.pvSetup(this.C); }); this.makeHits(); this.ready=true; if(this.K.start) this.K.start(e,this); })
+    mdlLoad(key).then(g=>{ if(e.removed) return; this.withStage(()=>{ this.mod.pvBind(this.rec()); if(this.mod.pvPrep) this.mod.pvPrep(g,this); if(!g.userData.mfDone2&&typeof meshFixAll==="function"&&!(window.__noMF&&/twoarm/.test(key))){ g.userData.mfDone2=true; meshFixAll(g.scene); } this.C=this.mod.makeChar(g); if(this.mod.pvPost) this.mod.pvPost(this.C,this); this.mod.pvSetup(this.C); }); this.makeHits(); this.ready=true; if(this.K.start) this.K.start(e,this); })
       .catch(err=>{ log(`${e.name}: model failed (${err&&err.message||err})`,"#ff7070"); }); }
   // the stage: world = M · stage. Posing runs with the stage at the origin, so its world is the preview's world
   anchor(worldPos,worldDir,stageX=0,stageZ=0){ const a=Math.atan2(-worldDir.z,worldDir.x)+Math.PI/2, M0=this.M.clone(); this.a=a; const R=new THREE.Matrix4().makeRotationY(a-Math.PI/2);
@@ -50,10 +50,10 @@ class PVBody{
     else { this.clip=clip; this.clipName=name; this.ct=0; if(o.reset) this.t=0; if(o.outSel) this.ctx.outSel=o.outSel; if(clip.start) this.withStage(()=>{ this.mod.pvBind(this.rec()); clip.start(this.ctx); }); }
     this.ctx.live=true; this.ctx.clipT0=this.t; e.pvClipT=0; }
   rec(){ return {C:this.C, ctx:this.ctx, t:this.t, stage:this.stage, norah:this.norah, clip:this.clip, mir:this.mir, nx:this.nx}; }
-  step(dt){ if(!this.ready||!this.clip) return []; const h=this.rec();
+  step(dt){ if(!this.ready||!this.clip||!(dt>0)) return []; const h=this.rec();   /* a paused frame (dt 0) moves nothing: the physics divides by dt */
     // where she is, along the stage's line: the preview's "NX"
     h.nx=this.toStage(player.pos).x; this.nx=h.nx;
-    const ev=this.withStage(()=>this.mod.pvStep(h,dt)); this.t=h.t; this.ct+=dt; this.e.pvClipT=this.ct; return ev||[]; }
+    const ev=this.withStage(()=>this.mod.pvStep(h,dt)); this.t=h.t; if(typeof pvNoPop==='function') pvNoPop(this); this.ct+=dt; this.e.pvClipT=this.ct; return ev||[]; }
   // its feet on the map: walls stop it, and the stage follows
   sync(){ const e=this.e, c=this.ctx, w=this.toWorld(new THREE.Vector3(c.x,0,c.z||0)); const p=w.clone(); if(!(this.K.noCollide&&this.K.noCollide(this))) collide(p,e.radius*0.8);
     if(p.distanceToSquared(w)>1e-8){ const s=this.toStage(p); c.x=s.x; c.z=s.z; }

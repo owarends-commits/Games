@@ -44,9 +44,9 @@ const PRESETS=[
     d.start={hp:"",rounds:2,spare:0,items:[IT("flashlight")],flashOn:false}; d.objects.find(o=>o.type==="spawn");
     const exitWall=d.objects.find(o=>o.type==="wall"&&o.a[1]===-12&&o.b[1]===-12); const door=exitWall.openings.find(op=>op.kind==="door"); door.closed=true; door.locked=true; door.key="Clinic key";
     propify(d,"cabinet",-8.7,-0.5,90,[IT("key",1,"Clinic key"),IT("note",1,"Duty roster","NIGHT SHIFT\nBack door key stays in the office cabinet.\nDo NOT prop the ward door open.")]);
-    propify(d,"desk",-5,3.2,180,[IT("pills")]);
-    propify(d,"crate",8.4,0.2,0,[IT("ammo",3)]); propify(d,"crate",4.6,-0.6,0,[]);
-    propify(d,"shelf",4,4.2,180,[IT("batteries")]); propify(d,"shelf",7.4,4.2,180,[]);
+    propify(d,"desk",-5,3.2,180,[IT("pills"),IT("knife")]);
+    propify(d,"crate",8.4,0.2,0,[IT("ammo",3)]); propify(d,"crate",4.6,-0.6,0,[IT("crowbar")]);
+    propify(d,"shelf",4,4.2,180,[IT("batteries")]); propify(d,"shelf",7.4,4.2,180,[IT("road_flare",2)]);
     d.objects.push({id:sbUid("i"),type:"item",x:-3.4,z:-7.4,item:"bandage",qty:1,name:"",text:""});
     addEnemies(d,[["across:walker",0.3,-1.6,{aware:"unaware",idle:"playdead"}],["across:crawler",-7.2,-8.2,{aware:"unaware",idle:"lurk",yaw:Math.PI/2}],["across:matron",-5,1,{aware:"unaware",idle:"wander"}],["across:mourner",5.6,-6.6,{aware:"unaware",idle:"feed",yaw:Math.PI}],["across:walker",6,-3.4,{aware:"unaware",idle:"wander"}]]);
     d.note="Reach the green exit at the north end. Its door is locked: the key is in the office (west side, near the entrance). Crouch (Q) in the dark and don't run. The flashlight (L) helps you see but makes you easier to spot. Two bullets. That body in the hall may not be dead.";
@@ -54,40 +54,40 @@ const PRESETS=[
   {key:"house", name:"Norah's house: Louis in the bedroom", desc:"Chapter One's fight. Five loaded, seven spare. The wardrobe and the bookshelf can be searched.", make(){
     const d=arenaDoc("house","Norah's house"); d.win="kill"; setSpawn(d,-0.4,-1.2,Math.PI); d.start.rounds=5; d.start.spare=7;
     propify(d,"bed",-1.4,-3.4,0); propify(d,"couch",-1.8,2.6,90); propify(d,"coffee table",1.2,2.8,0);
-    propify(d,"wardrobe",1.9,-4.15,0,[IT("pills")]); propify(d,"bookshelf",3.6,0.7,0,[IT("ammo",3),IT("photo")]);
+    propify(d,"wardrobe",1.9,-4.15,0,[IT("pills"),IT("hatchet")]); propify(d,"bookshelf",3.6,0.7,0,[IT("ammo",3),IT("photo")]);
     addEnemies(d,[["brute",1.2,-3.7]]); return d; }},
   {key:"houseDoor", name:"Hold the door: Louis outside the bedroom", desc:"Slam the bedroom door (E) and push the wardrobe in front of it.", make(){
     const d=arenaDoc("house","Hold the door"); d.win="kill"; setSpawn(d,-0.5,-2.5,0); d.start.rounds=5; d.start.spare=7;
-    propify(d,"bed",-1.4,-3.4,0); propify(d,"couch",-1.8,2.6,90); propify(d,"coffee table",1.2,2.8,0); propify(d,"wardrobe",1.9,-4.15,0,[IT("bandage")]); propify(d,"bookshelf",3.6,0.7,0);
+    propify(d,"bed",-1.4,-3.4,0); propify(d,"couch",-1.8,2.6,90); propify(d,"coffee table",1.2,2.8,0); propify(d,"wardrobe",1.9,-4.15,0,[IT("bandage"),IT("crowbar")]); propify(d,"bookshelf",3.6,0.7,0,[IT("knife")]);
     addEnemies(d,[["brute",1.3,2.2]]); d.note="Slam the bedroom door (E) and push the wardrobe."; return d; }},
   {key:"corridor", name:"Corridor: 3 ACROSS", desc:"A hallway with side rooms. The desk and the cabinet have supplies.", make(){
-    const d=arenaDoc("corridor","Corridor"); d.win="kill"; propify(d,"desk",-3.5,-2,90,[IT("ammo",5),IT("bandage")]); propify(d,"cabinet",3.4,-11,0,[IT("flashlight")]);
+    const d=arenaDoc("corridor","Corridor"); d.win="kill"; propify(d,"desk",-3.5,-2,90,[IT("ammo",5),IT("bandage"),IT("pistol"),IT("nine_mm",12)]); propify(d,"cabinet",3.4,-11,0,[IT("flashlight"),IT("shotgun"),IT("shells",4)]);
     addEnemies(d,[["across",0,-13.2],["across",-0.4,-12.2],["across",0.4,-11.3]]); return d; }},
   {key:"noAmmo", name:"No bullets: shove and run", desc:"Get past it and close a door behind you.", make(){
-    const d=arenaDoc("corridor","No bullets"); d.win="none"; setSpawn(d,0,-3,Math.PI); d.start.rounds=0; d.start.spare=0; propify(d,"desk",-3.5,-2,90,[IT("ammo",2)]); propify(d,"cabinet",3.4,-11,0);
+    const d=arenaDoc("corridor","No bullets"); d.win="none"; setSpawn(d,0,-3,Math.PI); d.start.rounds=0; d.start.spare=0; propify(d,"desk",-3.5,-2,90,[IT("ammo",2),IT("hatchet")]); propify(d,"cabinet",3.4,-11,0,[IT("road_flare",1)]);
     addEnemies(d,[["across",0,-9]]); d.note="Get past it and close a door behind you. The desk in the west room might have something."; return d; }},
   {key:"open", name:"Open arena: Louis", desc:"The basic test. Pillars, cover, a corridor with a door, two crates to search.", make(){
-    const d=arenaDoc("open","Open arena"); d.win="kill"; propify(d,"crate",-8,0,0,[IT("firstaid")]); propify(d,"crate",8,1,0,[IT("ammo",10)]);
+    const d=arenaDoc("open","Open arena"); d.win="kill"; propify(d,"crate",-8,0,0,[IT("firstaid"),IT("rifle"),IT("rifle_rounds",5)]); propify(d,"crate",8,1,0,[IT("ammo",10),IT("flaregun"),IT("flare_shells",2),IT("road_flare",2)]);
     addEnemies(d,[["brute",0,0]]); return d; }},
   {key:"runner", name:"Open arena: the Runner", desc:"One Runner. Watch it curl in before it charges, then sidestep. Two crates to search.", make(){
-    const d=arenaDoc("open","The Runner"); d.win="kill"; d.start.rounds=5; d.start.spare=20; propify(d,"crate",-8,0,0,[IT("firstaid")]); propify(d,"crate",8,1,0,[IT("ammo",10)]);
+    const d=arenaDoc("open","The Runner"); d.win="kill"; d.start.rounds=5; d.start.spare=20; propify(d,"crate",-8,0,0,[IT("firstaid"),IT("shotgun"),IT("shells",8)]); propify(d,"crate",8,1,0,[IT("ammo",10)]);
     addEnemies(d,[["runner",0,-4]]); return d; }},
   {key:"tactician", name:"Corridor: a Tactician and two Walkers", desc:"Bold while the Walkers live. Kill them and watch it lose its nerve: it scurries out of sight and waits at a doorway or a turn to ambush her.", make(){
-    const d=arenaDoc("corridor","The Tactician"); d.win="kill"; d.start.rounds=6; d.start.spare=24; propify(d,"desk",-3.5,-2,90,[IT("ammo",6),IT("bandage")]);
+    const d=arenaDoc("corridor","The Tactician"); d.win="kill"; d.start.rounds=6; d.start.spare=24; propify(d,"desk",-3.5,-2,90,[IT("ammo",6),IT("bandage"),IT("pistol"),IT("nine_mm",12)]);
     addEnemies(d,[["tactician",0,-12.4],["across:walker",-0.6,-11.2],["across:walker",0.6,-10.6]]); return d; }},
   {key:"variety", name:"Open arena: one of each ACROSS", desc:"All four subclasses: Walker, Crawler, Matron and a kneeling Mourner (don't wake it).", make(){
-    const d=arenaDoc("open","One of each"); d.win="kill"; setSpawn(d,0,9,Math.PI); d.start.rounds=5; d.start.spare=30; propify(d,"crate",-8,0,0,[IT("firstaid")]); propify(d,"crate",8,1,0,[IT("ammo",10)]);
+    const d=arenaDoc("open","One of each"); d.win="kill"; setSpawn(d,0,9,Math.PI); d.start.rounds=5; d.start.spare=30; propify(d,"crate",-8,0,0,[IT("firstaid"),IT("shotgun"),IT("shells",8)]); propify(d,"crate",8,1,0,[IT("ammo",10),IT("knife")]);
     addEnemies(d,[["across:walker",-6,-6],["across:crawler",-2,-3],["across:matron",3,-6],["across:mourner",7,-8,{aware:"unaware",idle:"feed",yaw:Math.PI}]]); return d; }},
   {key:"pack", name:"Open arena: ACROSS pack of 6", desc:"Only a few attack at once; the rest circle.", make(){
-    const d=arenaDoc("open","ACROSS pack"); d.win="kill"; d.start.rounds=5; d.start.spare=15; propify(d,"crate",-8,0,0); propify(d,"crate",8,1,0,[IT("ammo",6)]);
+    const d=arenaDoc("open","ACROSS pack"); d.win="kill"; d.start.rounds=5; d.start.spare=15; propify(d,"crate",-8,0,0,[IT("rifle"),IT("rifle_rounds",10)]); propify(d,"crate",8,1,0,[IT("ammo",6)]);
     addEnemies(d,[["across",-4,-2],["across",-2,-3],["across",0,-3.5],["across",2,-3],["across",4,-2],["across:crawler",0,-5]]); return d; }},
   {key:"crippled", name:"Legless crawlers (grab test)", desc:"They grab ankles. Hit the prompts in time to push them off.", make(){
-    const d=arenaDoc("open","Legless crawlers"); d.win="kill"; setSpawn(d,0,4,Math.PI); d.start.rounds=5; d.start.spare=10; propify(d,"crate",-8,0,0); propify(d,"crate",8,1,0);
+    const d=arenaDoc("open","Legless crawlers"); d.win="kill"; setSpawn(d,0,4,Math.PI); d.start.rounds=5; d.start.spare=10; propify(d,"crate",-8,0,0,[IT("hatchet")]); propify(d,"crate",8,1,0,[IT("pistol"),IT("nine_mm",12)]);
     addEnemies(d,[["across_legless",-1,1],["across_legless",1.2,0.5]]); return d; }},
   {key:"chapel", name:"Chapel: 5 ACROSS", desc:"Pews to vault, pillars, the altar holds something.", make(){
     const d=arenaDoc("chapel","Chapel"); d.win="kill"; d.start.rounds=5; d.start.spare=15;
     for(const o of d.objects.filter(o=>o.type==="block"&&o.name==="pew")) d.objects[d.objects.indexOf(o)]=blockToProp(o,0);
-    propify(d,"altar",0,-10.3,0,[IT("rosary"),IT("ammo",5)]);
+    propify(d,"altar",0,-10.3,0,[IT("rosary"),IT("ammo",5),IT("flaregun"),IT("flare_shells",3)]);
     addEnemies(d,[["across",-1.5,-7.8],["across",1.5,-7.8],["across",0,-6.5],["across",-0.6,-4],["across",0.7,-2.5]]); return d; }},
   {key:"hillside", name:"Hillside cabin (terrain)", desc:"Rolling ground, woods, a cabin and a car. Find the car keys and drive out. Shows terrain, paths and outdoor props.", make(){ return hillsideDoc(); }},
   {key:"blankIn", name:"New: empty room", desc:"A 12 × 12 m room with one light, Norah and nothing else.", make(){

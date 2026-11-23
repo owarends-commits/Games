@@ -18,7 +18,7 @@ class HobBody{
     for(const s of ["L","R"]){ const e0=H.B["elbow_"+s], h0=H.B["hand_"+s]; if(!e0||!h0) continue; for(const u of [0.33,0.66]){ const m=new THREE.Mesh(new THREE.SphereGeometry(0.3,8,6),mat); m.position.copy(h0.position).multiplyScalar(u); e0.add(m); m.userData={enemy:this.e,zone:"torso",limb:"forearm_"+s,pv:true,hitbox:true}; this.hits.push(m); } } }
   holding(){ const c=this.ctx; return (this.clipName==="grabL"||this.clipName==="grabR")&&c.got!=null&&this.ct-c.got<3.2; }
   play(name){ this.clipName=name; this.ct=0; const I=this.ctx.I; this.ctx={I}; PV_HOB.hobStart(name,this.ctx); }
-  step(dt){ if(!this.ready||!this.clipName) return []; const c=this.ctx; if(this.stun>0){ this.stun-=dt; dt*=0.12; }
+  step(dt){ if(!this.ready||!this.clipName||!(dt>0)) return []; const c=this.ctx; if(this.stun>0){ this.stun-=dt; dt*=0.12; }
     c.herW=new THREE.Vector3(player.pos.x,1.0+(player.posY||0),player.pos.z); this.t+=dt; this.ct+=dt;
     const X=PV_HOB.hobStep(this.clipName,this.ct,dt,c);
     if(X){ this.pos.addScaledVector(this.dir(),X); collide(this.pos,1.0); }
@@ -43,6 +43,7 @@ PVK.hob={ mod:PV_HOB, label:"The Hob", cfg:"hob", radius:1.2, body:HobBody,
       if(sq>=3.2&&player.grabbed&&player.grabbed.by===e){ player.grabbed=null; log("It lets her drop","#9ed08a"); }
       if(sq>5.2){ b.play("crawl"); m.cool=3; } return; }
     if(name==="throne"){
+      if(c.caught==null&&c.missed==null&&c.s2==null&&b.ct>7.5){ b.play("crawl"); m.cool=4; log("It crashed down short of her","#9ed08a"); return; }   /* a lunge that never lands on her or the floor near her still ends */
       if(c.missed!=null){ if(b.ct>c.missed+3.0){ b.play("crawl"); m.cool=4; log("It crashed down short of her","#9ed08a"); } return; }
       if(c.caught!=null&&c.s2==null){ hobPin(e,PV_HOB.hobHerAt(c)); if(!m.caughtLog){ m.caughtLog=1; shake=Math.max(shake,0.5); player.hurt(C.throneDamage,e,"throne grab"); log("It crashes down on her and both hands close · SHOOT THE CROSS ON ITS RIGHT ARM, OR ITS EYES (2 shots)","#ff7070"); qteBanner("SHOOT THE CROSS OR ITS EYES","bad"); }
         if(b.ct>9.6&&!c.bit){ c.bit=1; player.bite(e,"bite",C.throneBiteDamage); qteBanner(`BITTEN −${C.throneBiteDamage}`,"bad"); c.s1=c.s1??b.ct; c.s2=b.ct; } return; }

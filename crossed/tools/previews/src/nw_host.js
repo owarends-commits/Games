@@ -21,7 +21,7 @@ function plvAimAt(){ let p;
 function plvShot(){ PLV.S.shots.push(PLV.t); if(PLV.S.shots.length>8) PLV.S.shots.shift(); PLV.S.shotN++; }
 function plvClick(){ PLV.S.click=PLV.t; }
 function plvMuzzle(){ const m=plvWith(()=>PV_NW.LIVE.muzzle()); return m.applyMatrix4(PLV.stage.matrixWorld); }
-function plvFrame(dt){ if(!PLV.ready) return; const S=PLV.S, t=PLV.t+dt;
+function plvFrame(dt){ if(!PLV.ready||!(dt>0)) return; const S=PLV.S, t=PLV.t+dt;
   if(player.skin&&player.skin.model) player.skin.model.visible=false; if(player.P.gun) player.P.gun.visible=false;
   // her own frame's velocity, from how far she really moved
   const p=player.pos, L=PLV.last||(PLV.last=p.clone()), dx=(p.x-L.x)/Math.max(dt,1e-4), dz=(p.z-L.z)/Math.max(dt,1e-4); L.copy(p);

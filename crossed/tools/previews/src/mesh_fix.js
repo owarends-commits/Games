@@ -48,4 +48,4 @@ function meshFix(mesh){ const g=mesh.geometry; if(!g||g.userData.mfDone||!g.attr
 function meshFixAll(root){ const out=[]; root.traverse(o=>{ if(o.isMesh&&o.geometry){ const r=meshFix(o); if(r) out.push(r); } }); return out; }
 // when models load: fixed at once, unless the creature's own code adds joints first (the Reachers' long necks and arms,
 // the split head): those are fixed after it has (PVBody, after pvPrep)
-{ const ml0=mdlLoad; mdlLoad=function(key){ return ml0(key).then(g=>{ const grp=(MODEL_LIB[key]||{}).g||""; if(!g.userData.mfDone&&grp!=="bcross/reacher"){ g.userData.mfDone=true; meshFixAll(g.scene); } return g; }); }; }
+{ const ml0=mdlLoad; mdlLoad=function(key){ return ml0(key).then(g=>{ const grp=(MODEL_LIB[key]||{}).g||""; if(!g.userData.mfDone&&grp!=="bcross/reacher"&&!(window.__noMF&&/twoarm/.test(key))){ g.userData.mfDone=true; meshFixAll(g.scene); } return g; }); }; }
