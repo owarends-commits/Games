@@ -4560,7 +4560,7 @@ function meshFixAll(root){ const out=[]; root.traverse(o=>{ if(o.isMesh&&o.geome
 //    Fast moves the creature really makes (a strike, a lunge) stay well inside that.
 // 2. Solid floor: an arm or leg that would reach through the floor is swung up at the shoulder or hip until its hand or foot rests
 //    on it (limbs that have come off are left alone).
-const POP={turn:0.32, move:0.14, on:true};
+const POP={turn:0.25, move:0.14, on:true};
 const _apq=new THREE.Quaternion(), _apv=new THREE.Vector3(), _apw=new THREE.Vector3(), _apu=new THREE.Vector3(), _apq2=new THREE.Quaternion();
 function apChains(S){ if(S.apCh) return S.apCh; const B=S.B, ch=[]; for(const s of ["L","R"]){ if(B["upperarm_"+s]&&B["hand_"+s]) ch.push({root:"upperarm_"+s,tip:"hand_"+s,lift:0.03}); if(B["thigh_"+s]&&B["foot_"+s]) ch.push({root:"thigh_"+s,tip:"foot_"+s,lift:0.02}); } return S.apCh=ch; }
 { const ss0=skinSync; skinSync=function(S){ ss0(S); if(!S.model||!POP.on) return; const o=S.owner; if(!o||o===player||!enemies.includes(o)) return;
@@ -4584,6 +4584,18 @@ function pvNoPop(b){ if(!POP.on||!b.C||!b.C.model||b.K.noPop) return; const F=b.
   b.C.model.traverse(o=>{ if(!o.isBone) return; const q0=F.q.get(o); if(q0&&!fresh){ const ang=q0.angleTo(o.quaternion); if(ang>POP.turnPV){ _apq.copy(q0).rotateTowards(o.quaternion,POP.turnPV); o.quaternion.copy(_apq); } } if(q0) q0.copy(o.quaternion); else F.q.set(o,o.quaternion.clone()); });
   b.C.model.updateMatrixWorld(true); }
 POP.turnPV=0.45;
+
+// a new clip starts from the pose it is in, not from its own first frame: bones and the body's place blend over a quarter second
+// (a creature going from its walk into an attack, or back, used to snap there in one frame)
+function pvSnapPose(b){ if(!b.ready||!b.C||!b.C.group||!b.posed){ b.pvSnap=null; return; }   /* never from its unposed rest shape */ const g=b.C.group, root=b.C.model||g, bones=new Map(); g.updateMatrixWorld(true);
+  root.traverse(o=>{ if(o.isBone) bones.set(o,{q:o.quaternion.clone(),p:o.position.clone()}); });
+  b.pvSnap={bones, gw:g.getWorldPosition(new THREE.Vector3()), gq:g.getWorldQuaternion(new THREE.Quaternion())}; b.pvBlend=0; }
+function pvBlendPose(b,dt){ const S=b.pvSnap; b.pvBlend=Math.min(1,b.pvBlend+dt/0.25); const k=b.pvBlend*b.pvBlend*(3-2*b.pvBlend), g=b.C.group;
+  for(const [o,s] of S.bones){ o.quaternion.copy(_apq.copy(s.q).slerp(o.quaternion,k)); o.position.lerp(s.p,1-k); }
+  g.updateMatrixWorld(true); const wNow=g.getWorldPosition(new THREE.Vector3()), qNow=g.getWorldQuaternion(new THREE.Quaternion());
+  const w=S.gw.clone().lerp(wNow,k), q=S.gq.clone().slerp(qNow,k); const par=g.parent; par.updateMatrixWorld(true);
+  g.position.copy(par.worldToLocal(w)); g.quaternion.copy(par.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(q)); g.updateMatrixWorld(true);
+  if(b.pvBlend>=1) b.pvSnap=null; }
 // ================================================================ PV_CN: contortionist-preview.html wrapped for the playground (made by mkpv.py)
 const PV_CN=(function(){
 let scene=null, runner=null, norah=null, t=0, ctx={events:[]}, cur=null; const PVHOOK={};
@@ -8129,7 +8141,7 @@ function setupHob(g){ const group=new THREE.Group(); group.rotation.y=Math.PI/2;
 // so the Hob can turn as it crawls. ctx.herW: her waist, in the world (the grabs aim at it).
 let LT=0;
 const LIVE={
-  crawl:{ start(ctx){ ctx.x0=0; ctx.heart=1.0; }, step(t,dt,ctx){ const I=ctx.I||0; H.group.position.x=crawl(t,dt,ctx,2.8-1.8*I,I); ctx.frantic=I>0.5; ctx.heart=1+0.9*I; ctx.lumpK=1+0.4*I; } },
+  crawl:{ start(ctx){ ctx.x0=0; ctx.heart=1.0; ctx.cyc=0; }, step(t,dt,ctx){ const I=ctx.I||0, T=2.8-1.8*I; ctx.cyc=(ctx.cyc||0)+dt/(T/2); /* the stroke cycle advances by phase, so a change of pace never jumps it */ H.group.position.x=crawl(ctx.cyc*T/2,dt,ctx,T,I); ctx.frantic=I>0.5; ctx.heart=1+0.9*I; ctx.lumpK=1+0.4*I; } },
   screech:A.screech,
   grabL:{ start(ctx){ ctx.x0=0; ctx.heart=1.3; }, step(t,dt,ctx){ chaseGrab(t,dt,ctx,"L",{side:-1.6,catchZ:1.6,lead:1.3,catchAt:3.4,tSign:-1}); } },
   grabR:{ start(ctx){ ctx.x0=0; ctx.heart=1.3; }, step(t,dt,ctx){ chaseGrab(t,dt,ctx,"R",{side:1.45,catchZ:2.0,lead:1.3,catchAt:3.4,tSign:1}); } },
@@ -11949,6 +11961,9 @@ function pvStep(h,dt){ pvBind(h); h.t+=dt; t=h.t; gameT+=dt; ctx.qte=null; ctx.e
   { const F=ctx.fPrev||(ctx.fPrev={}); for(const s of ["L","R"]){ const f=st.feet&&st.feet[s]; if(!f||!f.isVector3) continue; const q=F[s]; if(q&&!ctx.fNoCap){ const d=f.distanceTo(q); if(d>0.35){ f.copy(q.clone().lerp(f,0.35/d)); } } F[s]=f.clone(); } ctx.fNoCap=false; }
   bruteFrame(st,dt); if(BS.ps&&BS.ps.e<-0.4) BS.ps.e=-0.4;   /* never sunk more than 0.4 m below its stance */
   // and its body never jolts up or down more than 10 cm in a frame (the flight physics at a charge's speed can): eased over a few frames
+  // the body never jumps more than 0.25 m a frame beyond how far the creature itself moved (a clip handing its place from the gait
+  // to a scripted path, as the charge does when it ploughs on past her): it eases across instead
+  { const mp=BR.mesh.position; if(ctx.mPrev&&!ctx.fNoCap){ const d=mp.distanceTo(ctx.mPrev), lim=0.25+Math.abs(ctx.x-(ctx.xPrev??ctx.x)); if(d>lim){ mp.copy(ctx.mPrev.clone().lerp(mp,lim/d)); BR.mesh.updateMatrixWorld(true); } } ctx.mPrev=mp.clone(); ctx.xPrev=ctx.x; }
   { const rt=BR.B.root; if(rt){ const y=rt.position.y; if(ctx.rootY!=null&&!ctx.fNoCap){ const dy=y-ctx.rootY; if(Math.abs(dy)>0.1){ rt.position.y=ctx.rootY+Math.sign(dy)*0.1; BR.mesh.updateMatrixWorld(true); } } ctx.rootY=rt.position.y; } } BR.mesh.updateMatrixWorld(true); return ctx.events; }
 function pvFx(dt){ stepFx(dt); stepGore(dt); const s=shake; shake=0; return s; }
 
@@ -12052,7 +12067,7 @@ class PVBody{
     if(this.K.hits) this.K.hits(this,seg,mat); }
   // play a clip. anchor: "face" (stage +x toward her from where it stands now), "keep" (same stage)
   holding(){ return (this.K.holds||["wrap","coil","snatch","engulf","grab","throne","oneHand"]).includes(this.clipName); }
-  play(name,o={}){ const clip=this.K.clips[name]; if(!clip){ log(`no clip ${name}`,"#ff7070"); return; }
+  play(name,o={}){ const clip=this.K.clips[name]; if(!clip){ log(`no clip ${name}`,"#ff7070"); return; } if(typeof pvSnapPose==='function') pvSnapPose(this);
     const e=this.e, prev=this.ctx, here=new THREE.Vector3(e.pos.x,0,e.pos.z);
     if(o.anchor!=="keep"){ const to=new THREE.Vector3(player.pos.x-e.pos.x,0,player.pos.z-e.pos.z); if(to.lengthSq()<1e-4) to.set(Math.sin(e.yaw),0,Math.cos(e.yaw)); to.normalize();
       const dir=o.dir||to; this.ctx={events:[],x:0,z:0,yaw:Math.PI/2,v:0,live:true,T:{},outSel:o.outSel||{}}; this.clip=clip; this.clipName=name; this.ct=0; this.t=0;
@@ -12064,7 +12079,7 @@ class PVBody{
   step(dt){ if(!this.ready||!this.clip||!(dt>0)) return []; const h=this.rec();   /* a paused frame (dt 0) moves nothing: the physics divides by dt */
     // where she is, along the stage's line: the preview's "NX"
     h.nx=this.toStage(player.pos).x; this.nx=h.nx;
-    const ev=this.withStage(()=>this.mod.pvStep(h,dt)); this.t=h.t; if(typeof pvNoPop==='function') pvNoPop(this); this.ct+=dt; this.e.pvClipT=this.ct; return ev||[]; }
+    const ev=this.withStage(()=>this.mod.pvStep(h,dt)); this.t=h.t; this.posed=true; if(typeof pvNoPop==='function') pvNoPop(this); if(this.pvSnap&&typeof pvBlendPose==='function') pvBlendPose(this,dt); this.ct+=dt; this.e.pvClipT=this.ct; return ev||[]; }
   // its feet on the map: walls stop it, and the stage follows
   sync(){ const e=this.e, c=this.ctx, w=this.toWorld(new THREE.Vector3(c.x,0,c.z||0)); const p=w.clone(); if(!(this.K.noCollide&&this.K.noCollide(this))) collide(p,e.radius*0.8);
     if(p.distanceToSquared(w)>1e-8){ const s=this.toStage(p); c.x=s.x; c.z=s.z; }
@@ -12297,10 +12312,21 @@ class HobBody{
     // the forearms are long: a few more along each, so the cross on the right one can be hit
     for(const s of ["L","R"]){ const e0=H.B["elbow_"+s], h0=H.B["hand_"+s]; if(!e0||!h0) continue; for(const u of [0.33,0.66]){ const m=new THREE.Mesh(new THREE.SphereGeometry(0.3,8,6),mat); m.position.copy(h0.position).multiplyScalar(u); e0.add(m); m.userData={enemy:this.e,zone:"torso",limb:"forearm_"+s,pv:true,hitbox:true}; this.hits.push(m); } } }
   holding(){ const c=this.ctx; return (this.clipName==="grabL"||this.clipName==="grabR")&&c.got!=null&&this.ct-c.got<3.2; }
-  play(name){ this.clipName=name; this.ct=0; const I=this.ctx.I; this.ctx={I}; PV_HOB.hobStart(name,this.ctx); }
+  play(name){ this.snap=this.hobPose(); this.blendK=0; this.clipName=name; this.ct=0; const I=this.ctx.I; this.ctx={I}; PV_HOB.hobStart(name,this.ctx); }
+  // its pose as it stands (every bone), to blend the next clip in from instead of snapping to it
+  // its curled fingers press into the floor but not through it: a joint below the floor bends its parent joint back up onto it
+  fingersOnFloor(){ const H=PV_HOB.H; if(!H) return; H.group.updateMatrixWorld(true); const V=THREE.Vector3, Q=THREE.Quaternion;
+    if(!this.fing){ this.fing=[]; H.group.traverse(o=>{ if(o.isBone&&/^finger_/.test(o.name)&&o.parent&&o.parent.isBone) this.fing.push(o); }); this.fing.sort((a,b)=>a.name.localeCompare(b.name)); }
+    for(const bn of this.fing){ const w=bn.getWorldPosition(new V()), gy=groundY(w.x,w.z)+0.02; if(w.y>=gy) continue; const par=bn.parent, pw=par.getWorldPosition(new V()); if(pw.y<=gy) continue;
+      const u=w.clone().sub(pw), L=u.length(), hh=gy-pw.y; if(L<1e-4) continue; const hz=new V(u.x,0,u.z); if(hz.lengthSq()<1e-8) hz.set(1,0,0); hz.setLength(Math.sqrt(Math.max(0,L*L-hh*hh))); const want=hz.add(new V(0,hh,0));
+      const r=new Q().setFromUnitVectors(u.normalize(),want.normalize()), pq=par.parent.getWorldQuaternion(new Q()).invert(), wq=par.getWorldQuaternion(new Q()).premultiply(r); par.quaternion.copy(pq.multiply(wq)); par.updateMatrixWorld(true); } }
+  hobPose(){ const H=PV_HOB.H; if(!H||!this.ready) return null; const m=new Map(); H.group.traverse(o=>{ if(o.isBone) m.set(o,{q:o.quaternion.clone(),p:o.position.clone()}); }); return m; }
+  blendIn(dt){ if(!this.snap) return; this.blendK=Math.min(1,(this.blendK||0)+dt/0.28); const k=this.blendK*this.blendK*(3-2*this.blendK);
+    for(const [o,s] of this.snap){ o.quaternion.copy(s.q.clone().slerp(o.quaternion,k)); o.position.copy(s.p.clone().lerp(o.position,k)); }
+    PV_HOB.H.group.updateMatrixWorld(true); if(this.blendK>=1) this.snap=null; }
   step(dt){ if(!this.ready||!this.clipName||!(dt>0)) return []; const c=this.ctx; if(this.stun>0){ this.stun-=dt; dt*=0.12; }
     c.herW=new THREE.Vector3(player.pos.x,1.0+(player.posY||0),player.pos.z); this.t+=dt; this.ct+=dt;
-    const X=PV_HOB.hobStep(this.clipName,this.ct,dt,c);
+    const X=PV_HOB.hobStep(this.clipName,this.ct,dt,c); this.blendIn(dt); this.fingersOnFloor();
     if(X){ this.pos.addScaledVector(this.dir(),X); collide(this.pos,1.0); }
     this.place(); const h=PV_HOB.hobHold(); if(h>0) hitstop=Math.max(hitstop,Math.min(0.08,h)); return []; }
   sync(){ this.e.pos.set(this.pos.x,0,this.pos.z); this.e.yaw=this.yaw; }
@@ -12331,7 +12357,7 @@ PVK.hob={ mod:PV_HOB, label:"The Hob", cfg:"hob", radius:1.2, body:HobBody,
       if(c.s2!=null&&b.ct>c.s2+3.2){ b.play("crawl"); m.cool=5; m.caughtLog=0; } return; }
     if(name==="screech"){ if(b.ct>1.1&&!m.scrHit){ m.scrHit=1; if(dist<10){ player.stumble=Math.max(player.stumble||0,0.6); shake=Math.max(shake,0.3); log("The screech knocks the breath out of her","#ff7070"); } } if(b.ct>6){ b.play("crawl"); m.scrHit=0; } return; }
     // crawling: toward her, faster when it has her in sight; it turns as it drags itself
-    c.I= sees&&dist>3.5? 1 : sees? 0.3 : 0;
+    { const tgt= sees&&dist>3.5? 1 : sees? 0.3 : 0; c.I=(c.I??tgt)+(tgt-(c.I??tgt))*Math.min(1,dt*1.5); }   /* its pace eases between slow and frantic */
     const want=Math.atan2(player.pos.x-e.pos.x,player.pos.z-e.pos.z); b.yaw+=clamp(wrapA(want-b.yaw),-(0.45+0.5*c.I)*dt,(0.45+0.5*c.I)*dt);
     if(!sees||player.dead||player.grabbed) return;
     if(m.scr<=0&&dist>5&&dist<14&&rng()<dt*0.5){ b.play("screech"); m.scr=C.screechCool; return; }

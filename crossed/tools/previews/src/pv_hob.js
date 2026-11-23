@@ -797,7 +797,7 @@ function setupHob(g){ const group=new THREE.Group(); group.rotation.y=Math.PI/2;
 // so the Hob can turn as it crawls. ctx.herW: her waist, in the world (the grabs aim at it).
 let LT=0;
 const LIVE={
-  crawl:{ start(ctx){ ctx.x0=0; ctx.heart=1.0; }, step(t,dt,ctx){ const I=ctx.I||0; H.group.position.x=crawl(t,dt,ctx,2.8-1.8*I,I); ctx.frantic=I>0.5; ctx.heart=1+0.9*I; ctx.lumpK=1+0.4*I; } },
+  crawl:{ start(ctx){ ctx.x0=0; ctx.heart=1.0; ctx.cyc=0; }, step(t,dt,ctx){ const I=ctx.I||0, T=2.8-1.8*I; ctx.cyc=(ctx.cyc||0)+dt/(T/2); /* the stroke cycle advances by phase, so a change of pace never jumps it */ H.group.position.x=crawl(ctx.cyc*T/2,dt,ctx,T,I); ctx.frantic=I>0.5; ctx.heart=1+0.9*I; ctx.lumpK=1+0.4*I; } },
   screech:A.screech,
   grabL:{ start(ctx){ ctx.x0=0; ctx.heart=1.3; }, step(t,dt,ctx){ chaseGrab(t,dt,ctx,"L",{side:-1.6,catchZ:1.6,lead:1.3,catchAt:3.4,tSign:-1}); } },
   grabR:{ start(ctx){ ctx.x0=0; ctx.heart=1.3; }, step(t,dt,ctx){ chaseGrab(t,dt,ctx,"R",{side:1.45,catchZ:2.0,lead:1.3,catchAt:3.4,tSign:1}); } },

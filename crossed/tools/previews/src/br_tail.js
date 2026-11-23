@@ -13,5 +13,8 @@ function pvStep(h,dt){ pvBind(h); h.t+=dt; t=h.t; gameT+=dt; ctx.qte=null; ctx.e
   { const F=ctx.fPrev||(ctx.fPrev={}); for(const s of ["L","R"]){ const f=st.feet&&st.feet[s]; if(!f||!f.isVector3) continue; const q=F[s]; if(q&&!ctx.fNoCap){ const d=f.distanceTo(q); if(d>0.35){ f.copy(q.clone().lerp(f,0.35/d)); } } F[s]=f.clone(); } ctx.fNoCap=false; }
   bruteFrame(st,dt); if(BS.ps&&BS.ps.e<-0.4) BS.ps.e=-0.4;   /* never sunk more than 0.4 m below its stance */
   // and its body never jolts up or down more than 10 cm in a frame (the flight physics at a charge's speed can): eased over a few frames
+  // the body never jumps more than 0.25 m a frame beyond how far the creature itself moved (a clip handing its place from the gait
+  // to a scripted path, as the charge does when it ploughs on past her): it eases across instead
+  { const mp=BR.mesh.position; if(ctx.mPrev&&!ctx.fNoCap){ const d=mp.distanceTo(ctx.mPrev), lim=0.25+Math.abs(ctx.x-(ctx.xPrev??ctx.x)); if(d>lim){ mp.copy(ctx.mPrev.clone().lerp(mp,lim/d)); BR.mesh.updateMatrixWorld(true); } } ctx.mPrev=mp.clone(); ctx.xPrev=ctx.x; }
   { const rt=BR.B.root; if(rt){ const y=rt.position.y; if(ctx.rootY!=null&&!ctx.fNoCap){ const dy=y-ctx.rootY; if(Math.abs(dy)>0.1){ rt.position.y=ctx.rootY+Math.sign(dy)*0.1; BR.mesh.updateMatrixWorld(true); } } ctx.rootY=rt.position.y; } } BR.mesh.updateMatrixWorld(true); return ctx.events; }
 function pvFx(dt){ stepFx(dt); stepGore(dt); const s=shake; shake=0; return s; }

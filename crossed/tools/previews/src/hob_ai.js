@@ -17,10 +17,21 @@ class HobBody{
     // the forearms are long: a few more along each, so the cross on the right one can be hit
     for(const s of ["L","R"]){ const e0=H.B["elbow_"+s], h0=H.B["hand_"+s]; if(!e0||!h0) continue; for(const u of [0.33,0.66]){ const m=new THREE.Mesh(new THREE.SphereGeometry(0.3,8,6),mat); m.position.copy(h0.position).multiplyScalar(u); e0.add(m); m.userData={enemy:this.e,zone:"torso",limb:"forearm_"+s,pv:true,hitbox:true}; this.hits.push(m); } } }
   holding(){ const c=this.ctx; return (this.clipName==="grabL"||this.clipName==="grabR")&&c.got!=null&&this.ct-c.got<3.2; }
-  play(name){ this.clipName=name; this.ct=0; const I=this.ctx.I; this.ctx={I}; PV_HOB.hobStart(name,this.ctx); }
+  play(name){ this.snap=this.hobPose(); this.blendK=0; this.clipName=name; this.ct=0; const I=this.ctx.I; this.ctx={I}; PV_HOB.hobStart(name,this.ctx); }
+  // its pose as it stands (every bone), to blend the next clip in from instead of snapping to it
+  // its curled fingers press into the floor but not through it: a joint below the floor bends its parent joint back up onto it
+  fingersOnFloor(){ const H=PV_HOB.H; if(!H) return; H.group.updateMatrixWorld(true); const V=THREE.Vector3, Q=THREE.Quaternion;
+    if(!this.fing){ this.fing=[]; H.group.traverse(o=>{ if(o.isBone&&/^finger_/.test(o.name)&&o.parent&&o.parent.isBone) this.fing.push(o); }); this.fing.sort((a,b)=>a.name.localeCompare(b.name)); }
+    for(const bn of this.fing){ const w=bn.getWorldPosition(new V()), gy=groundY(w.x,w.z)+0.02; if(w.y>=gy) continue; const par=bn.parent, pw=par.getWorldPosition(new V()); if(pw.y<=gy) continue;
+      const u=w.clone().sub(pw), L=u.length(), hh=gy-pw.y; if(L<1e-4) continue; const hz=new V(u.x,0,u.z); if(hz.lengthSq()<1e-8) hz.set(1,0,0); hz.setLength(Math.sqrt(Math.max(0,L*L-hh*hh))); const want=hz.add(new V(0,hh,0));
+      const r=new Q().setFromUnitVectors(u.normalize(),want.normalize()), pq=par.parent.getWorldQuaternion(new Q()).invert(), wq=par.getWorldQuaternion(new Q()).premultiply(r); par.quaternion.copy(pq.multiply(wq)); par.updateMatrixWorld(true); } }
+  hobPose(){ const H=PV_HOB.H; if(!H||!this.ready) return null; const m=new Map(); H.group.traverse(o=>{ if(o.isBone) m.set(o,{q:o.quaternion.clone(),p:o.position.clone()}); }); return m; }
+  blendIn(dt){ if(!this.snap) return; this.blendK=Math.min(1,(this.blendK||0)+dt/0.28); const k=this.blendK*this.blendK*(3-2*this.blendK);
+    for(const [o,s] of this.snap){ o.quaternion.copy(s.q.clone().slerp(o.quaternion,k)); o.position.copy(s.p.clone().lerp(o.position,k)); }
+    PV_HOB.H.group.updateMatrixWorld(true); if(this.blendK>=1) this.snap=null; }
   step(dt){ if(!this.ready||!this.clipName||!(dt>0)) return []; const c=this.ctx; if(this.stun>0){ this.stun-=dt; dt*=0.12; }
     c.herW=new THREE.Vector3(player.pos.x,1.0+(player.posY||0),player.pos.z); this.t+=dt; this.ct+=dt;
-    const X=PV_HOB.hobStep(this.clipName,this.ct,dt,c);
+    const X=PV_HOB.hobStep(this.clipName,this.ct,dt,c); this.blendIn(dt); this.fingersOnFloor();
     if(X){ this.pos.addScaledVector(this.dir(),X); collide(this.pos,1.0); }
     this.place(); const h=PV_HOB.hobHold(); if(h>0) hitstop=Math.max(hitstop,Math.min(0.08,h)); return []; }
   sync(){ this.e.pos.set(this.pos.x,0,this.pos.z); this.e.yaw=this.yaw; }
@@ -51,7 +62,7 @@ PVK.hob={ mod:PV_HOB, label:"The Hob", cfg:"hob", radius:1.2, body:HobBody,
       if(c.s2!=null&&b.ct>c.s2+3.2){ b.play("crawl"); m.cool=5; m.caughtLog=0; } return; }
     if(name==="screech"){ if(b.ct>1.1&&!m.scrHit){ m.scrHit=1; if(dist<10){ player.stumble=Math.max(player.stumble||0,0.6); shake=Math.max(shake,0.3); log("The screech knocks the breath out of her","#ff7070"); } } if(b.ct>6){ b.play("crawl"); m.scrHit=0; } return; }
     // crawling: toward her, faster when it has her in sight; it turns as it drags itself
-    c.I= sees&&dist>3.5? 1 : sees? 0.3 : 0;
+    { const tgt= sees&&dist>3.5? 1 : sees? 0.3 : 0; c.I=(c.I??tgt)+(tgt-(c.I??tgt))*Math.min(1,dt*1.5); }   /* its pace eases between slow and frantic */
     const want=Math.atan2(player.pos.x-e.pos.x,player.pos.z-e.pos.z); b.yaw+=clamp(wrapA(want-b.yaw),-(0.45+0.5*c.I)*dt,(0.45+0.5*c.I)*dt);
     if(!sees||player.dead||player.grabbed) return;
     if(m.scr<=0&&dist>5&&dist<14&&rng()<dt*0.5){ b.play("screech"); m.scr=C.screechCool; return; }

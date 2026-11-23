@@ -5,7 +5,7 @@
 //    Fast moves the creature really makes (a strike, a lunge) stay well inside that.
 // 2. Solid floor: an arm or leg that would reach through the floor is swung up at the shoulder or hip until its hand or foot rests
 //    on it (limbs that have come off are left alone).
-const POP={turn:0.32, move:0.14, on:true};
+const POP={turn:0.25, move:0.14, on:true};
 const _apq=new THREE.Quaternion(), _apv=new THREE.Vector3(), _apw=new THREE.Vector3(), _apu=new THREE.Vector3(), _apq2=new THREE.Quaternion();
 function apChains(S){ if(S.apCh) return S.apCh; const B=S.B, ch=[]; for(const s of ["L","R"]){ if(B["upperarm_"+s]&&B["hand_"+s]) ch.push({root:"upperarm_"+s,tip:"hand_"+s,lift:0.03}); if(B["thigh_"+s]&&B["foot_"+s]) ch.push({root:"thigh_"+s,tip:"foot_"+s,lift:0.02}); } return S.apCh=ch; }
 { const ss0=skinSync; skinSync=function(S){ ss0(S); if(!S.model||!POP.on) return; const o=S.owner; if(!o||o===player||!enemies.includes(o)) return;
@@ -29,3 +29,15 @@ function pvNoPop(b){ if(!POP.on||!b.C||!b.C.model||b.K.noPop) return; const F=b.
   b.C.model.traverse(o=>{ if(!o.isBone) return; const q0=F.q.get(o); if(q0&&!fresh){ const ang=q0.angleTo(o.quaternion); if(ang>POP.turnPV){ _apq.copy(q0).rotateTowards(o.quaternion,POP.turnPV); o.quaternion.copy(_apq); } } if(q0) q0.copy(o.quaternion); else F.q.set(o,o.quaternion.clone()); });
   b.C.model.updateMatrixWorld(true); }
 POP.turnPV=0.45;
+
+// a new clip starts from the pose it is in, not from its own first frame: bones and the body's place blend over a quarter second
+// (a creature going from its walk into an attack, or back, used to snap there in one frame)
+function pvSnapPose(b){ if(!b.ready||!b.C||!b.C.group||!b.posed){ b.pvSnap=null; return; }   /* never from its unposed rest shape */ const g=b.C.group, root=b.C.model||g, bones=new Map(); g.updateMatrixWorld(true);
+  root.traverse(o=>{ if(o.isBone) bones.set(o,{q:o.quaternion.clone(),p:o.position.clone()}); });
+  b.pvSnap={bones, gw:g.getWorldPosition(new THREE.Vector3()), gq:g.getWorldQuaternion(new THREE.Quaternion())}; b.pvBlend=0; }
+function pvBlendPose(b,dt){ const S=b.pvSnap; b.pvBlend=Math.min(1,b.pvBlend+dt/0.25); const k=b.pvBlend*b.pvBlend*(3-2*b.pvBlend), g=b.C.group;
+  for(const [o,s] of S.bones){ o.quaternion.copy(_apq.copy(s.q).slerp(o.quaternion,k)); o.position.lerp(s.p,1-k); }
+  g.updateMatrixWorld(true); const wNow=g.getWorldPosition(new THREE.Vector3()), qNow=g.getWorldQuaternion(new THREE.Quaternion());
+  const w=S.gw.clone().lerp(wNow,k), q=S.gq.clone().slerp(qNow,k); const par=g.parent; par.updateMatrixWorld(true);
+  g.position.copy(par.worldToLocal(w)); g.quaternion.copy(par.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(q)); g.updateMatrixWorld(true);
+  if(b.pvBlend>=1) b.pvSnap=null; }

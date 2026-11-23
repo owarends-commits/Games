@@ -41,7 +41,7 @@ class PVBody{
     if(this.K.hits) this.K.hits(this,seg,mat); }
   // play a clip. anchor: "face" (stage +x toward her from where it stands now), "keep" (same stage)
   holding(){ return (this.K.holds||["wrap","coil","snatch","engulf","grab","throne","oneHand"]).includes(this.clipName); }
-  play(name,o={}){ const clip=this.K.clips[name]; if(!clip){ log(`no clip ${name}`,"#ff7070"); return; }
+  play(name,o={}){ const clip=this.K.clips[name]; if(!clip){ log(`no clip ${name}`,"#ff7070"); return; } if(typeof pvSnapPose==='function') pvSnapPose(this);
     const e=this.e, prev=this.ctx, here=new THREE.Vector3(e.pos.x,0,e.pos.z);
     if(o.anchor!=="keep"){ const to=new THREE.Vector3(player.pos.x-e.pos.x,0,player.pos.z-e.pos.z); if(to.lengthSq()<1e-4) to.set(Math.sin(e.yaw),0,Math.cos(e.yaw)); to.normalize();
       const dir=o.dir||to; this.ctx={events:[],x:0,z:0,yaw:Math.PI/2,v:0,live:true,T:{},outSel:o.outSel||{}}; this.clip=clip; this.clipName=name; this.ct=0; this.t=0;
@@ -53,7 +53,7 @@ class PVBody{
   step(dt){ if(!this.ready||!this.clip||!(dt>0)) return []; const h=this.rec();   /* a paused frame (dt 0) moves nothing: the physics divides by dt */
     // where she is, along the stage's line: the preview's "NX"
     h.nx=this.toStage(player.pos).x; this.nx=h.nx;
-    const ev=this.withStage(()=>this.mod.pvStep(h,dt)); this.t=h.t; if(typeof pvNoPop==='function') pvNoPop(this); this.ct+=dt; this.e.pvClipT=this.ct; return ev||[]; }
+    const ev=this.withStage(()=>this.mod.pvStep(h,dt)); this.t=h.t; this.posed=true; if(typeof pvNoPop==='function') pvNoPop(this); if(this.pvSnap&&typeof pvBlendPose==='function') pvBlendPose(this,dt); this.ct+=dt; this.e.pvClipT=this.ct; return ev||[]; }
   // its feet on the map: walls stop it, and the stage follows
   sync(){ const e=this.e, c=this.ctx, w=this.toWorld(new THREE.Vector3(c.x,0,c.z||0)); const p=w.clone(); if(!(this.K.noCollide&&this.K.noCollide(this))) collide(p,e.radius*0.8);
     if(p.distanceToSquared(w)>1e-8){ const s=this.toStage(p); c.x=s.x; c.z=s.z; }
