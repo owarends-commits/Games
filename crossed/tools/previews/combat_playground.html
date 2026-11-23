@@ -1169,7 +1169,7 @@ function endRun(result){
    Damage taken ${row.dmg} (${row.hitsTaken} hits) · Dodges ${row.dodges}, ${row.saves} saved you · Shoves ${row.shoves}<br>
    Grabbed ${run.grabs} times, broke free ${run.escapes} · Spotted ${run.spotted||0} times · Vaults ${run.vaults||0}<br>
    Ammo left ${row.ammoLeft}<br><br><span style="color:#9a9283">N restarts the map · B goes back to the builder · results are in the panel</span>`;
-  R.style.display="block"; if(result!=="DIED") SFX.win(); setTimeout(()=>{ if(MODE==="play"&&run&&run.over) openSimMenu(result); },result==="DIED"?4500:1600);
+  if(result==="DIED") setTimeout(()=>{ if(run&&run.over&&player.dead) R.style.display="block"; },2400); else R.style.display="block"; if(result!=="DIED") SFX.win(); setTimeout(()=>{ if(MODE==="play"&&run&&run.over) openSimMenu(result); },result==="DIED"?4500:1600);
 }
 
 // ================================================================ stealth: noise and light
@@ -9580,7 +9580,7 @@ LIVE.drive={ start(ctx){ nStart(ctx,0); ctx.D={ph:0}; ctx.aimT=1.5; PLVctx=ctx; 
       kw.sp=0.22+0.14*sw+0.03*Math.sin(k*5); kw.nx=0.55+0.4*sw; kw.hroll=0.03*Math.sin(k*3.3);
       kw.aLx=kw.aRx=-0.08; kw.aLz=0.12; kw.aRz=0.1; kw.eL=kw.eR=0.15;
       J=mix(J,kw,sl);
-      if(k>1.15){ const pr=P0(); pr.hd=HIP0()-0.1; pr.hz=0.42; pr.hp=1.66; pr.sp=0.05; pr.nx=0.3; pr.lLx=pr.lRx=-0.1; pr.ny=1.15; pr.nz=0.25;     /* face down, cheek to the floor */
+      if(k>1.15){ const pr=P0(); pr.hd=HIP0()-0.1; pr.hz=0.42; pr.hp=1.66; pr.sp=0.22; pr.nx=-0.3; pr.lLx=pr.lRx=-0.1; pr.ny=1.5; pr.nz=0;   /* flat: chest, hips and legs on the floor, cheek down */     /* face down, cheek to the floor */
         pr.lLz=0.1; pr.kL=0.04; pr.kR=0.1; pr.fL=pr.fR=0.9; pr.lLz=0.1; pr.lRz=-0.12;
         pr.aLx=0.15; pr.aRx=0.05; pr.aLz=0.35; pr.aRz=0.28; pr.eL=0.35; pr.eR=0.2;
         const u=Math.pow(sat((k-1.15)/0.5),2), b=k>1.65?0.05*Math.exp(-(k-1.65)*9)*Math.sin((k-1.65)*30):0;   /* falls like a dead weight; one small bounce as she lands */
@@ -9643,6 +9643,8 @@ LIVE.pryState=()=>{ const D=PLVctx&&PLVctx.D; return D&&D.pryX!=null?{x:D.pryX,z
 LIVE.itemModel=k=>{ const key=WX[k]?"w_"+k:k; if(!ITEMS[key]) return null; const g=buildItem(key); if(g.parent) g.parent.remove(g); return g; };
 LIVE.loose=()=>({pieces:PIECES, blood:BLOOD, flares:FLARES});
 LIVE.flareStep=dt=>{ if(typeof flareStep==="function") flareStep(dt); };
+// for tests: how high each of her bones is off the floor (stage), and the lowest point of her mesh
+LIVE.boneY=()=>{ runner.group.updateMatrixWorld(true); const o={}; for(const n of ["head","neck","chest","hips","hand_L","hand_R","thigh_L","shin_L","foot_L","shin_R","foot_R"]) if(runner.B[n]) o[n]=+runner.B[n].getWorldPosition(new V3()).y.toFixed(3); return o; };
 
 return { A, LIVE, makeChar, pvPrep:(typeof pvPrep==="function"?pvPrep:null), pvPost:(typeof pvPost==="function"?pvPost:null), pvSetup, pvBind, pvStep, pvFx, PHYS, P0, mix, PVHOOK, get NX(){ return NX; } };
 })();
@@ -12517,6 +12519,13 @@ function plvBleed(){ const S=PLV.S; if(S.dead==null){ PLV.bleed=null; return; } 
   const r=[0.35,0.55,0.75,0.95][B.n], ang=B.n*2.1, off=B.n?0.12+0.06*B.n:0; bloodPool(B.p.x+Math.cos(ang)*off,B.p.z+Math.sin(ang)*off,r); B.n++; }
 function plvReset(){ const S=PLV.S; S.shots.length=0; S.click=S.hurt=S.stagger=S.shove=S.dead=null; S.dodge=S.down=null; PLV.hp=null; PLV.last=null; }
 { const sp0=skinPlayer; skinPlayer=function(){ sp0(); plvInit(); plvReset(); }; }
+// dead: the follow camera rises and tips down to keep her in shot as she falls and lies there (fixed room cameras stay as they are)
+{ const uc0=updateCamera; updateCamera=function(rdt){ uc0(rdt);
+  if(!player.dead||isFixed()||!PLV.ready||PLV.S.dead==null){ PLV.dcam=null; return; }
+  const k=PLV.t-PLV.S.dead, a=plvWith(()=>PV_NW.LIVE.abdomen()).applyMatrix4(PLV.stage.matrixWorld), w=Math.min(1,k/1.6), e=w*w*(3-2*w);
+  const D=PLV.dcam||(PLV.dcam={from:camera.position.clone()}), back=new THREE.Vector3(-Math.sin(camYaw),0,-Math.cos(camYaw)), right=new THREE.Vector3(-Math.cos(camYaw),0,Math.sin(camYaw));
+  const want=a.clone().addScaledVector(back,2.4).addScaledVector(right,0.9); want.y=groundY(a.x,a.z)+2.1+0.15*e;
+  camera.position.copy(D.from).lerp(want,e); const look=new THREE.Vector3(player.pos.x,1.2+groundY(a.x,a.z),player.pos.z).lerp(a.clone().add(new THREE.Vector3(0,1.05,0)),e); camera.lookAt(look); }; }   /* she sits in the lower part of the shot, under the results box */
 function aimPointOf(tg){ const P=tg.P, h=player.aimHeight||0; let m=null; if(P&&!tg.pv) m= h>0? P.headMesh : h<0&&tg.lost? (tg.lost.legL?(tg.lost.legR?P.torsoMesh:P.legRLo):P.legLLo) : P.torsoMesh;
   if(m){ const v=new THREE.Vector3(); (m.parent?m:P.torsoMesh).getWorldPosition(v); return v; } return new THREE.Vector3(tg.pos.x,groundY(tg.pos.x,tg.pos.z)+1.2+0.45*h,tg.pos.z); }
 // ================================================================ the weapons she finds

@@ -29,3 +29,5 @@ j = rep(j, '  const targets = world.blockers.concat(enemyMeshes());', '  const t
 j = rep(j, '  if(!h){ log("Miss","#7d7668"); return; }', '  if(!h){ log("Miss","#7d7668"); return; }\n  if(h.object.userData.winGlass){ smashWindow(h.object.userData.winGlass,{name:"Norah"}); return; }')
 # when she dies the menu waits until she has fallen and the blood has spread (it freezes the world)
 j = rep(j, 'setTimeout(()=>{ if(MODE==="play"&&run&&run.over) openSimMenu(result); },1600);', 'setTimeout(()=>{ if(MODE==="play"&&run&&run.over) openSimMenu(result); },result==="DIED"?4500:1600);')
+# ...and the results box waits for her to fall too
+j = rep(j, 'R.style.display="block"; if(result!=="DIED") SFX.win();', 'if(result==="DIED") setTimeout(()=>{ if(run&&run.over&&player.dead) R.style.display="block"; },2400); else R.style.display="block"; if(result!=="DIED") SFX.win();')

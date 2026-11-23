@@ -46,3 +46,10 @@ function plvBleed(){ const S=PLV.S; if(S.dead==null){ PLV.bleed=null; return; } 
   const r=[0.35,0.55,0.75,0.95][B.n], ang=B.n*2.1, off=B.n?0.12+0.06*B.n:0; bloodPool(B.p.x+Math.cos(ang)*off,B.p.z+Math.sin(ang)*off,r); B.n++; }
 function plvReset(){ const S=PLV.S; S.shots.length=0; S.click=S.hurt=S.stagger=S.shove=S.dead=null; S.dodge=S.down=null; PLV.hp=null; PLV.last=null; }
 { const sp0=skinPlayer; skinPlayer=function(){ sp0(); plvInit(); plvReset(); }; }
+// dead: the follow camera rises and tips down to keep her in shot as she falls and lies there (fixed room cameras stay as they are)
+{ const uc0=updateCamera; updateCamera=function(rdt){ uc0(rdt);
+  if(!player.dead||isFixed()||!PLV.ready||PLV.S.dead==null){ PLV.dcam=null; return; }
+  const k=PLV.t-PLV.S.dead, a=plvWith(()=>PV_NW.LIVE.abdomen()).applyMatrix4(PLV.stage.matrixWorld), w=Math.min(1,k/1.6), e=w*w*(3-2*w);
+  const D=PLV.dcam||(PLV.dcam={from:camera.position.clone()}), back=new THREE.Vector3(-Math.sin(camYaw),0,-Math.cos(camYaw)), right=new THREE.Vector3(-Math.cos(camYaw),0,Math.sin(camYaw));
+  const want=a.clone().addScaledVector(back,2.4).addScaledVector(right,0.9); want.y=groundY(a.x,a.z)+2.1+0.15*e;
+  camera.position.copy(D.from).lerp(want,e); const look=new THREE.Vector3(player.pos.x,1.2+groundY(a.x,a.z),player.pos.z).lerp(a.clone().add(new THREE.Vector3(0,1.05,0)),e); camera.lookAt(look); }; }   /* she sits in the lower part of the shot, under the results box */

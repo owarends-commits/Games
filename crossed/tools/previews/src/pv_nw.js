@@ -1462,7 +1462,7 @@ LIVE.drive={ start(ctx){ nStart(ctx,0); ctx.D={ph:0}; ctx.aimT=1.5; PLVctx=ctx; 
       kw.sp=0.22+0.14*sw+0.03*Math.sin(k*5); kw.nx=0.55+0.4*sw; kw.hroll=0.03*Math.sin(k*3.3);
       kw.aLx=kw.aRx=-0.08; kw.aLz=0.12; kw.aRz=0.1; kw.eL=kw.eR=0.15;
       J=mix(J,kw,sl);
-      if(k>1.15){ const pr=P0(); pr.hd=HIP0()-0.1; pr.hz=0.42; pr.hp=1.66; pr.sp=0.05; pr.nx=0.3; pr.lLx=pr.lRx=-0.1; pr.ny=1.15; pr.nz=0.25;     /* face down, cheek to the floor */
+      if(k>1.15){ const pr=P0(); pr.hd=HIP0()-0.1; pr.hz=0.42; pr.hp=1.66; pr.sp=0.22; pr.nx=-0.3; pr.lLx=pr.lRx=-0.1; pr.ny=1.5; pr.nz=0;   /* flat: chest, hips and legs on the floor, cheek down */     /* face down, cheek to the floor */
         pr.lLz=0.1; pr.kL=0.04; pr.kR=0.1; pr.fL=pr.fR=0.9; pr.lLz=0.1; pr.lRz=-0.12;
         pr.aLx=0.15; pr.aRx=0.05; pr.aLz=0.35; pr.aRz=0.28; pr.eL=0.35; pr.eR=0.2;
         const u=Math.pow(sat((k-1.15)/0.5),2), b=k>1.65?0.05*Math.exp(-(k-1.65)*9)*Math.sin((k-1.65)*30):0;   /* falls like a dead weight; one small bounce as she lands */
@@ -1525,6 +1525,8 @@ LIVE.pryState=()=>{ const D=PLVctx&&PLVctx.D; return D&&D.pryX!=null?{x:D.pryX,z
 LIVE.itemModel=k=>{ const key=WX[k]?"w_"+k:k; if(!ITEMS[key]) return null; const g=buildItem(key); if(g.parent) g.parent.remove(g); return g; };
 LIVE.loose=()=>({pieces:PIECES, blood:BLOOD, flares:FLARES});
 LIVE.flareStep=dt=>{ if(typeof flareStep==="function") flareStep(dt); };
+// for tests: how high each of her bones is off the floor (stage), and the lowest point of her mesh
+LIVE.boneY=()=>{ runner.group.updateMatrixWorld(true); const o={}; for(const n of ["head","neck","chest","hips","hand_L","hand_R","thigh_L","shin_L","foot_L","shin_R","foot_R"]) if(runner.B[n]) o[n]=+runner.B[n].getWorldPosition(new V3()).y.toFixed(3); return o; };
 
 return { A, LIVE, makeChar, pvPrep:(typeof pvPrep==="function"?pvPrep:null), pvPost:(typeof pvPost==="function"?pvPost:null), pvSetup, pvBind, pvStep, pvFx, PHYS, P0, mix, PVHOOK, get NX(){ return NX; } };
 })();
