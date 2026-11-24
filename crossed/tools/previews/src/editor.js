@@ -2,7 +2,7 @@
 const ED = {doc:null, sel:null, selOp:null, tool:"select", view:"3d", snap:0.25, draft:null, drag:null, undo:[], redo:[], cursor:{x:0,z:0,ok:false},
   pan:{x:0,z:0}, zoom:30, orbit:{tx:0,ty:0,tz:0,yaw:0.75,pitch:0.85,dist:26}, planDirty:true, terrainImg:null, terrainDirty:true,
   helpers:new THREE.Group(), selBox:null, rebuildT:0, saveT:0, tab:"inspect", assetQ:"", assetCat:"all", thumbs:{}, preview:null, lastPick:0,
-  opts:{ wall:{height:2.8,thick:0.2,color:"#5e594f",tex:""}, floor:{tex:"",colA:"#2e2a26",colB:"#36322c"}, door:{width:1,closed:false,locked:false,key:""}, window:{width:1.2,sill:0.9,top:2.1}, gap:{width:1.2},
+  opts:{ roof:{height:3.2,color:"#3a3630",tex:""}, room:{roof:true}, wall:{height:3.2,thick:0.2,color:"#5e594f",tex:""}, floor:{tex:"",colA:"#2e2a26",colB:"#36322c"}, door:{width:1,closed:false,locked:false,key:""}, window:{width:1.2,sill:0.9,top:2.1}, gap:{width:1.2},
     block:{h:1,color:"#5b4128",tex:"",push:true,name:"crate",search:false}, pillar:{r:0.35,h:3,color:"#5a5246"}, prop:{asset:"wardrobe",rot:0,scale:1},
     terrain:{mode:"raise",radius:3,strength:0.5,paint:1}, enemy:{kind:"across",start:"hunting"}, item:{item:"ammo",qty:6,name:"",text:""}, exit:{r:0.9,needs:""},
     light:{color:"#ffb060",intensity:1,dist:8,height:2.6}, camera:{height:2.8,fov:60,track:true}, path:{width:1.6,tex:"",color:"#6a665e"}, spawn:{}, corpse:{} } };
@@ -13,17 +13,17 @@ const planCv=$("edPlan"), planG=planCv.getContext("2d");
 
 const IC = {
   select:'<path d="M5 3l12 8-5 1 3 6-2 1-3-6-4 4z"/>', wall:'<path d="M3 17h18M3 13h18M7 13v4M15 13v4M11 9v4M3 9h18M19 9v4M5 9V5h14v4"/>', room:'<rect x="4" y="5" width="16" height="14"/><path d="M4 9h16"/>',
-  floor:'<path d="M3 16l9-5 9 5-9 5z"/>', door:'<path d="M6 21V3h10v18M6 21h12M13 12h1"/>', window:'<rect x="5" y="5" width="14" height="14"/><path d="M12 5v14M5 12h14"/>', gap:'<path d="M3 12h6M15 12h6M9 8v8M15 8v8"/>',
+  floor:'<path d="M3 16l9-5 9 5-9 5z"/>', roof:'<path d="M2 11l10-7 10 7M5 9v11h14V9"/>', door:'<path d="M6 21V3h10v18M6 21h12M13 12h1"/>', window:'<rect x="5" y="5" width="14" height="14"/><path d="M12 5v14M5 12h14"/>', gap:'<path d="M3 12h6M15 12h6M9 8v8M15 8v8"/>',
   block:'<path d="M4 8l8-4 8 4v8l-8 4-8-4zM4 8l8 4 8-4M12 12v8"/>', pillar:'<ellipse cx="12" cy="5" rx="5" ry="2"/><path d="M7 5v14M17 5v14"/><ellipse cx="12" cy="19" rx="5" ry="2"/>',
   prop:'<path d="M6 20V9h12v11M4 9h16M9 9V5h6v4M9 14h6"/>', terrain:'<path d="M2 19l6-9 4 5 3-4 7 8z"/>', spawn:'<circle cx="12" cy="6" r="3"/><path d="M12 9v7M8 12h8M12 16l-3 5M12 16l3 5"/>',
   enemy:'<circle cx="12" cy="7" r="3"/><path d="M12 10l-2 6M10 16l-3 5M10 16l4 5M11 12l-5 2M11 12l6-1"/>', item:'<path d="M12 3l7 9-7 9-7-9z"/>', exit:'<circle cx="12" cy="12" r="8"/><path d="M9 12h7M13 9l3 3-3 3"/>',
   light:'<circle cx="12" cy="10" r="5"/><path d="M10 17h4M10 20h4"/>', camera:'<rect x="3" y="8" width="13" height="9"/><path d="M16 11l5-3v9l-5-3"/>', corpse:'<path d="M3 16h16M5 13h6l3 3M17 13a2 2 0 1 0 0 .1"/>',
   path:'<path d="M5 21c2-6 10-4 12-10S17 4 19 3"/><path d="M8 21c2-5 9-4 11-9"/>'
 };
-const TOOLS=[["select","Select","V"],["wall","Wall","W"],["room","Room","R"],["floor","Floor","F"],["door","Door","D"],["window","Window","N"],["gap","Opening","G"],["block","Block","B"],["pillar","Pillar","O"],
+const TOOLS=[["select","Select","V"],["wall","Wall","W"],["room","Room","R"],["floor","Floor","F"],["roof","Roof","U"],["door","Door","D"],["window","Window","N"],["gap","Opening","G"],["block","Block","B"],["pillar","Pillar","O"],
   ["prop","Furniture","A"],["terrain","Terrain","T"],["path","Path","P"],["spawn","Norah","S"],["enemy","Enemy","Z"],["item","Item","I"],["exit","Exit","X"],["light","Light","L"],["camera","Camera","C"],["corpse","Body","K"]];
 const HINTS={select:"Click to select · drag to move · Q/E turn · Del deletes · Ctrl+D duplicates · arrows nudge",
-  wall:"Click, click, click to chain walls · double-click, right-click or Esc ends the chain", room:"Drag a rectangle: floor and four walls", floor:"Drag a rectangle of floor",
+  wall:"Click, click, click to chain walls · double-click, right-click or Esc ends the chain", room:"Drag a rectangle: floor and four walls", floor:"Drag a rectangle of floor", roof:"Click inside a room to roof it (fitted to its walls), or drag a rectangle",
   door:"Click on a wall to cut a door into it", window:"Click on a wall to add a window", gap:"Click on a wall to cut an open doorway", block:"Drag a rectangle: a crate, a stage, a counter. Low ones can be vaulted",
   pillar:"Click to place a pillar", prop:"Click to place the chosen furniture (ASSETS tab) · Q/E turn it before placing", terrain:"Drag to sculpt. Pick raise, lower, smooth, flatten or paint in INSPECT",
   path:"Click points along a road or trail · double-click or Esc finishes", spawn:"Click where Norah starts, drag to face her", enemy:"Click to place, drag to face it", item:"Click to drop an item on the floor",
@@ -91,13 +91,30 @@ function edPlacePoint(tool, p, ev){
   }
 }
 function edMakeRect(tool,a,b){
-  const x0=Math.min(a.x,b.x), z0=Math.min(a.z,b.z), w=Math.abs(b.x-a.x), d=Math.abs(b.z-a.z); if(w<0.2||d<0.2) return null;
+  const x0=Math.min(a.x,b.x), z0=Math.min(a.z,b.z), w=Math.abs(b.x-a.x), d=Math.abs(b.z-a.z);
+  if(tool==="roof"){ if(w<0.2||d<0.2){ const r=edRoofFor(a.x,a.z); if(!r){ edStatusMsg("Click inside a room (on its floor) to roof it"); return null; } return edAdd(r); }
+    return edAdd(edRoofFit({type:"roof",x:x0,z:z0,w,d,y:null,color:ED.opts.roof.color,tex:ED.opts.roof.tex})); }
+  if(w<0.2||d<0.2) return null;
   const O=ED.opts, y=+(ED.doc.terrain&&ED.doc.terrain.on ? tSample(ED.doc.terrain,x0+w/2,z0+d/2) : 0).toFixed(2);
   if(tool==="block") return edAdd({type:"block",x:x0+w/2,z:z0+d/2,w,d,h:O.block.h,color:O.block.color,tex:O.block.tex,push:O.block.push,name:O.block.name,search:O.block.search,items:[]});
   const f=edAdd({type:"floor",x:x0,z:z0,w,d,tex:O.floor.tex,colA:O.floor.colA,colB:O.floor.colB,y});
-  if(tool==="room"){ const c=[[x0,z0],[x0+w,z0],[x0+w,z0+d],[x0,z0+d]]; for(let i=0;i<4;i++) ED.doc.objects.push({id:sbUid("w"),type:"wall",a:c[i],b:c[(i+1)%4],height:O.wall.height,thick:O.wall.thick,color:O.wall.color,tex:O.wall.tex,openings:[]}); ED.sel=f.id; }
+  if(tool==="room"){ const c=[[x0,z0],[x0+w,z0],[x0+w,z0+d],[x0,z0+d]]; for(let i=0;i<4;i++) ED.doc.objects.push({id:sbUid("w"),type:"wall",a:c[i],b:c[(i+1)%4],height:O.wall.height,thick:O.wall.thick,color:O.wall.color,tex:O.wall.tex,openings:[]});
+    if(O.room.roof){ const r=edRoofFor(x0+w/2,z0+d/2); if(r) ED.doc.objects.push(Object.assign(r,{id:sbUid("r")})); } ED.sel=f.id; }
   return f;
 }
+// a roof that meets the room's walls: out to the walls' outer faces, at the height of their tops
+function edRoofFit(r){ const os=ED.doc.objects, ws=os.filter(o=>o.type==="wall"), pad=0.6; let x0=r.x, z0=r.z, x1=r.x+r.w, z1=r.z+r.d, top=0, fy=0, n=0;
+  for(const o of ws){ const ax=Math.min(o.a[0],o.b[0]), bx=Math.max(o.a[0],o.b[0]), az=Math.min(o.a[1],o.b[1]), bz=Math.max(o.a[1],o.b[1]); const t=(+o.thick||0.2)/2;
+    if(bx<x0-pad||ax>x1+pad||bz<z0-pad||az>z1+pad) continue;   /* not one of this room's walls */
+    const vert=Math.abs(o.a[0]-o.b[0])<0.01, horz=Math.abs(o.a[1]-o.b[1])<0.01; if(!vert&&!horz) continue;
+    if(vert){ if(Math.abs(ax-x0)<pad) x0=Math.min(x0,ax-t); if(Math.abs(ax-x1)<pad) x1=Math.max(x1,ax+t); }
+    if(horz){ if(Math.abs(az-z0)<pad) z0=Math.min(z0,az-t); if(Math.abs(az-z1)<pad) z1=Math.max(z1,az+t); }
+    top=Math.max(top,+o.height||2.8); n++; }
+  for(const f of os) if(f.type==="floor"&&r.x+r.w/2>=f.x&&r.x+r.w/2<=f.x+f.w&&r.z+r.d/2>=f.z&&r.z+r.d/2<=f.z+f.d) fy=Math.max(fy,+f.y||0);
+  r.x=+x0.toFixed(3); r.z=+z0.toFixed(3); r.w=+(x1-x0).toFixed(3); r.d=+(z1-z0).toFixed(3); if(r.y==null) r.y=+(fy+(n?top:ED.opts.roof.height)).toFixed(2); return r; }
+// the roof for the room around a point: its floor, fitted to the walls round it
+function edRoofFor(x,z){ let best=null, ba=1e9; for(const f of ED.doc.objects) if(f.type==="floor"&&x>=f.x&&x<=f.x+f.w&&z>=f.z&&z<=f.z+f.d){ const a=f.w*f.d; if(a<ba){ ba=a; best=f; } }
+  if(!best) return null; return edRoofFit({type:"roof",x:best.x,z:best.z,w:best.w,d:best.d,y:null,color:ED.opts.roof.color,tex:ED.opts.roof.tex}); }
 function edAddOpening(tool,p){
   const nw=edNearestWall(p); if(!nw){ edStatusMsg("Click on (or next to) a wall"); return; }
   const O=ED.opts[tool], L=nw.L, wdt=Math.min(O.width,L-0.1); const at=clamp(snapV(nw.t*L),wdt/2+0.02,L-wdt/2-0.02);
@@ -137,7 +154,7 @@ function edToolDown(p, ev, pickId, from3d){
   }
   if(t==="wall"){ const s=snapP(p,ev); if(!ED.draft||ED.draft.kind!=="wall") ED.draft={kind:"wall",a:s,b:s}; else { if(Math.hypot(s.x-ED.draft.a.x,s.z-ED.draft.a.z)>0.05){ edSnapshot(); const O=ED.opts.wall; const w=edAdd({type:"wall",a:[ED.draft.a.x,ED.draft.a.z],b:[s.x,s.z],height:O.height,thick:O.thick,color:O.color,tex:O.tex,openings:[]}); ED.draft={kind:"wall",a:s,b:s}; edChanged({inspector:true}); } } ED.planDirty=true; return true; }
   if(t==="path"){ const s=snapP(p,ev); if(!ED.draft||ED.draft.kind!=="path") ED.draft={kind:"path",pts:[[s.x,s.z]],b:s}; else ED.draft.pts.push([s.x,s.z]); ED.planDirty=true; return true; }
-  if(t==="room"||t==="floor"||t==="block"){ const s=snapP(p,ev); ED.draft={kind:"rect",tool:t,a:s,b:s}; ED.drag={kind:"rect"}; return true; }
+  if(t==="room"||t==="floor"||t==="block"||t==="roof"){ const s=snapP(p,ev); ED.draft={kind:"rect",tool:t,a:s,b:s}; ED.drag={kind:"rect"}; return true; }
   if(t==="door"||t==="window"||t==="gap"){ edAddOpening(t,p); return true; }
   if(t==="terrain"){ edSnapshot(); edEnsureTerrain(); edBrush(p,true); ED.drag={kind:"terrain",last:0}; return true; }
   if(["spawn","enemy","camera"].includes(t)){ edSnapshot(); const o=edPlacePoint(t,p,ev); ED.drag={kind:"aim",o,start:p}; edChanged({inspector:true}); return true; }
@@ -193,6 +210,7 @@ function planHit(p){
   for(const o of os){ if(o.type==="block"&&Math.abs(p.x-o.x)<=o.w/2&&Math.abs(p.z-o.z)<=o.d/2){ const a=o.w*o.d; if(a<ba){ ba=a; best=o.id; } } }
   if(best) return best;
   for(const o of os){ if(o.type!=="path") continue; const P=o.points||[]; for(let i=0;i<P.length-1;i++){ const [ax,az]=P[i],[bx,bz]=P[i+1], dx=bx-ax, dz=bz-az, L2=dx*dx+dz*dz||1, t=clamp(((p.x-ax)*dx+(p.z-az)*dz)/L2,0,1); if(Math.hypot(ax+dx*t-p.x,az+dz*t-p.z)<(+o.width||1.6)/2) return o.id; } }
+  for(const o of os){ if(o.type!=="roof") continue; const ins=p.x>=o.x&&p.x<=o.x+o.w&&p.z>=o.z&&p.z<=o.z+o.d, edge=Math.min(Math.abs(p.x-o.x),Math.abs(p.x-o.x-o.w),Math.abs(p.z-o.z),Math.abs(p.z-o.z-o.d)); if(ins&&(edge<Math.max(0.3,tol)||ED.tool==="roof")) return o.id; }
   for(const o of os){ if(o.type==="floor"&&p.x>=o.x&&p.x<=o.x+o.w&&p.z>=o.z&&p.z<=o.z+o.d){ const a=o.w*o.d; if(a<ba){ ba=a; best=o.id; } } }
   return best;
 }
@@ -220,6 +238,8 @@ function drawPlan(){
   const selCol="#ff9a50";
   for(const o of os) if(o.type==="floor"){ const [x,z]=S(o.x,o.z); g.fillStyle=sbTexAvg(o.tex,o.colA||"#2e2a26"); g.globalAlpha=0.9; g.fillRect(x,z,o.w*Z,o.d*Z); g.globalAlpha=1; g.strokeStyle=o.id===sel?selCol:"rgba(0,0,0,.4)"; g.lineWidth=o.id===sel?2:1; g.strokeRect(x,z,o.w*Z,o.d*Z); }
   for(const o of os) if(o.type==="path"){ g.strokeStyle=o.id===sel?selCol:sbTexAvg(o.tex,o.color||"#6a665e"); g.lineWidth=Math.max(2,(+o.width||1.6)*Z); g.lineCap="round"; g.lineJoin="round"; g.globalAlpha=0.85; g.beginPath(); (o.points||[]).forEach((q,i)=>{ const [x,z]=S(q[0],q[1]); i?g.lineTo(x,z):g.moveTo(x,z); }); g.stroke(); g.globalAlpha=1; g.lineCap="butt"; }
+  for(const o of os) if(o.type==="roof"){ const [x,z]=S(o.x,o.z); g.save(); g.setLineDash([6,4]); g.strokeStyle=o.id===sel?selCol:"rgba(220,190,120,.55)"; g.lineWidth=o.id===sel?2:1.2; g.strokeRect(x+1,z+1,o.w*Z-2,o.d*Z-2); g.setLineDash([]);
+    if(o.w*Z>60){ g.fillStyle="rgba(220,190,120,.6)"; g.font="10px monospace"; g.fillText(`roof ${(+o.y).toFixed(1)} m`,x+5,z+12); } g.restore(); }
   for(const o of os){
     if(o.type==="block"){ const [x,z]=S(o.x-o.w/2,o.z-o.d/2); g.fillStyle=sbTexAvg(o.tex,o.color||"#5b4128"); g.fillRect(x,z,o.w*Z,o.d*Z); g.strokeStyle=o.id===sel?selCol:"#1a1410"; g.lineWidth=o.id===sel?2:1; g.strokeRect(x,z,o.w*Z,o.d*Z); if(o.search) edBadge(g,x+o.w*Z,z,(o.items||[]).length); if(Z>26&&o.name){ g.fillStyle="#e8dfc8"; g.font="10px 'IBM Plex Mono',monospace"; g.fillText(o.name,x+3,z+11); } }
     else if(o.type==="pillar"){ const [x,z]=S(o.x,o.z); g.fillStyle=hexStr(o.color||"#5a5246"); g.beginPath(); g.arc(x,z,Math.max(3,(+o.r||0.4)*Z),0,7); g.fill(); g.strokeStyle=o.id===sel?selCol:"#111"; g.lineWidth=o.id===sel?2:1; g.stroke(); }
@@ -428,6 +448,10 @@ function edRenderInspector(){
         box.appendChild(fBtns([["Remove",()=>{ edSnapshot(); o.openings=o.openings.filter(x=>x!==op); ED.selOp=null; edChanged({inspector:true}); },"danger"]]));
         P.appendChild(box); }
       break; }
+    case "roof": P.appendChild(fRow("Width",fNum(o,"w",{step:0.25,min:0.2}))); P.appendChild(fRow("Depth",fNum(o,"d",{step:0.25,min:0.2})));
+      P.appendChild(fRow("Height (m)",fNum(o,"y",{step:0.05}),"Where it sits: on top of the walls. The shoulder camera stays under it; from above it's see-through."));
+      P.appendChild(fRow("Colour",fColor(o,"color"))); P.appendChild(fRow("Texture",fSelect(o,"tex",sbTexOptions())));
+      P.appendChild(fBtns([["Fit to the walls",()=>{ edSnapshot(); o.y=null; edRoofFit(o); edChanged({inspector:true}); }],["Remove",()=>{ edSnapshot(); ED.doc.objects=ED.doc.objects.filter(x=>x!==o); ED.sel=null; edChanged({inspector:true}); },"danger"]])); break;
     case "floor": pos(); P.appendChild(fRow("Width",fNum(o,"w",{step:0.25,min:0.2}))); P.appendChild(fRow("Depth",fNum(o,"d",{step:0.25,min:0.2})));
       P.appendChild(fRow("Height (m)",fNum(o,"y",{step:0.05}),"Characters stand at this height anywhere on this floor."));
       P.appendChild(fBtns([["Match the ground under it",()=>{ if(!ED.doc.terrain||!ED.doc.terrain.on) return; edSnapshot(); o.y=+tSample(ED.doc.terrain,o.x+o.w/2,o.z+o.d/2).toFixed(2); edChanged({inspector:true}); }],["Flatten the ground to it",()=>{ const T=ED.doc.terrain; if(!T||!T.on) return; edSnapshot(); tEach(T,o.x+o.w/2,o.z+o.d/2,Math.hypot(o.w,o.d)/2+2,(k,d,x,z)=>{ const inside=x>=o.x-1&&x<=o.x+o.w+1&&z>=o.z-1&&z<=o.z+o.d+1; if(inside) T.h[k]=+o.y||0; }); edChanged({terrain:true}); }]]));
@@ -490,7 +514,8 @@ function edToolOptions(P){
   switch(t){
     case "select": P.appendChild(H("p",{class:"muted",html:"Nothing selected. Click something in the plan or the 3D view.<br><br><b>Plan:</b> drag empty space or right-drag to pan, wheel to zoom.<br><b>3D:</b> drag empty space or right-drag to orbit, middle-drag (or Shift+right-drag) to pan, wheel to zoom.<br><b>Tab</b> switches views · <b>Enter</b> plays from Norah's start · <b>Shift+Enter</b> plays from the cursor · <b>H</b> centres on the selection."})); break;
     case "wall": case "room": P.appendChild(fRow("Wall height",fNum(ED.opts.wall,"height",{step:0.1,on:nop}))); P.appendChild(fRow("Thickness",fNum(ED.opts.wall,"thick",{step:0.02,on:nop}))); P.appendChild(fRow("Colour",fColor(ED.opts.wall,"color",{on:nop}))); P.appendChild(fRow("Texture",fSelect(ED.opts.wall,"tex",sbTexOptions(),{on:nop})));
-      if(t==="room") P.appendChild(fRow("Floor texture",fSelect(ED.opts.floor,"tex",sbTexOptions("(two-tone check)"),{on:nop}))); break;
+      if(t==="room"){ P.appendChild(fRow("Floor texture",fSelect(ED.opts.floor,"tex",sbTexOptions("(two-tone check)"),{on:nop}))); P.appendChild(fCheck(ED.opts.room,"roof","With a roof",{on:nop})); } break;
+    case "roof": P.appendChild(fRow("Height if no walls",fNum(O,"height",{step:0.1,on:nop}))); P.appendChild(fRow("Colour",fColor(O,"color",{on:nop}))); P.appendChild(fRow("Texture",fSelect(O,"tex",sbTexOptions(),{on:nop}))); P.appendChild(H("p",{class:"muted",text:"Click a room's floor: the roof meets its walls at their tops. Keep walls 3 m or more so the shoulder camera has room."})); break;
     case "floor": P.appendChild(fRow("Texture",fSelect(O,"tex",sbTexOptions("(two-tone check)"),{on:nop}))); P.appendChild(fRow("Colours",H("div",{class:"pair"},[fColor(O,"colA",{on:nop}),fColor(O,"colB",{on:nop})]))); break;
     case "door": P.appendChild(fRow("Width",fNum(O,"width",{step:0.05,on:nop}))); P.appendChild(fCheck(O,"closed","Starts closed",{on:nop})); P.appendChild(fCheck(O,"locked","Locked",{on:re})); if(O.locked) P.appendChild(fRow("Key name",fText(O,"key",{ph:"e.g. Clinic key",list:"keyNames",on:nop}))); break;
     case "window": P.appendChild(fRow("Width",fNum(O,"width",{step:0.05,on:nop}))); P.appendChild(fRow("Sill",fNum(O,"sill",{step:0.05,on:nop}))); P.appendChild(fRow("Top",fNum(O,"top",{step:0.05,on:nop}))); P.appendChild(H("p",{class:"muted",text:"ACROSS that are hunting smash through windows."})); break;

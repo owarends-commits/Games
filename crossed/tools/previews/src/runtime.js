@@ -205,10 +205,17 @@ function sbBuildObj(o){
     case "item": sbBuildPickup(o); break;
     case "exit": sbBuildExit(o); break;
     case "path": sbBuildPath(o); break;
+    case "roof": sbBuildRoof(o); break;
     case "spawn": world.spawn={x:o.x,z:o.z,yaw:(o.yaw||0)*D2R}; break;
     case "enemy": world.enemySpawns.push({x:o.x,z:o.z,type:o.kind||"across",o}); break;
   }
 }
+// a roof (or ceiling): a lid over a room, resting on its wall tops. Drawn only from below, so the shoulder camera, the builder's
+// top view and high fixed cameras see straight through it from above; the shoulder camera is kept under it (sims.js)
+function sbBuildRoof(o){ const w=+o.w||4, d=+o.d||4, y=+o.y||3.2;
+  const mat=(o.tex&&SBTEX[o.tex]&&SBTEX[o.tex].ready)?texMat(o.tex,w/(+o.scale||1),d/(+o.scale||1),o.color||"#3a3630"):new THREE.MeshLambertMaterial({color:hexNum(o.color||"#3a3630")});
+  mat.side=THREE.FrontSide; const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),mat); m.rotation.x=Math.PI/2; m.position.set(o.x+w/2,y,o.z+d/2); world.group.add(m);
+  (world.roofs||(world.roofs=[])).push({x0:o.x,z0:o.z,x1:o.x+w,z1:o.z+d,y}); }
 function sbBuildProp(o){
   const F=sbPropFoot(o), a=F.a; const s=+o.scale||1;
   const pushPre=(o.push===undefined||o.push==="auto")?(PUSH_RE.test((o.asset||"")+" "+String(o.name||(a?a.name:"")).toLowerCase())&&F.h<2.3):!!o.push;

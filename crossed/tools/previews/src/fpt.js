@@ -1,0 +1,17 @@
+const { chromium } = require('playwright'); const fs=require('fs');
+(async()=>{ const b=await chromium.launch({args:['--use-gl=swiftshader']}); const p=await b.newPage({viewport:{width:800,height:500}});
+  const errs=[]; p.on('pageerror',e=>errs.push('PAGEERR '+e.message+' | '+(e.stack||'').split('\n').slice(1,3).join(' | ')));
+  for(const [re,f] of [[/three\.min\.js/,'three.min.js'],[/GLTFLoader\.js/,'GLTFLoader.js'],[/SkeletonUtils\.js/,'SkeletonUtils.js']]) await p.route(re, r=>r.fulfill({body:fs.readFileSync(f),contentType:'application/javascript'}));
+  await p.route(/fonts\./, r=>r.abort()); await p.goto('http://127.0.0.1:8765/test.html'); await p.waitForTimeout(2500);
+  await p.click('#mmSimsBtn'); await p.waitForTimeout(300);
+  await p.evaluate(()=>{ SIMR.room="hospital"; SIMR.kind="dummy"; SIMR.count=1; SIMR.start="stand"; renderSims(); }); await p.click('#mmSims .go'); await p.waitForTimeout(2500);
+  if(await p.isVisible('#helpok')) await p.click('#helpok'); await p.waitForTimeout(1500);
+  const hide=()=>p.evaluate(()=>{ for(const el of document.querySelectorAll("#log,#help")) el.style.visibility="hidden"; });
+  await p.evaluate(()=>{ CFG.norah.god=true; CFG.ctrl.fp=true; const d=enemies[0]; d.hp=d.maxHp=999; camYaw=Math.atan2(d.pos.x-player.pos.x,d.pos.z-player.pos.z); camPitch=-0.05; });
+  await p.waitForTimeout(1500); await hide(); await p.screenshot({path:'../shots/fp_idle.png'});
+  await p.evaluate(()=>{ giveItem({item:"shotgun",qty:1},true); giveItem({item:"shells",qty:8},true); wheelPick(WHEEL.indexOf("shotgun")); });
+  await p.waitForTimeout(1200); await p.keyboard.down('KeyC'); await p.waitForTimeout(900); await hide(); await p.screenshot({path:'../shots/fp_aim.png'});
+  const hp0=await p.evaluate(()=>enemies[0].hp); await p.keyboard.press('KeyF'); await p.waitForTimeout(800); const hp1=await p.evaluate(()=>enemies[0].hp); await p.keyboard.up('KeyC');
+  console.log(JSON.stringify(await p.evaluate(()=>({cam:camera.position.toArray().map(v=>+v.toFixed(2)),fov:camera.fov,bodyHidden:(()=>{ let v=0,h=0; PLV.stage.traverse(o=>{ if(o.isSkinnedMesh){ o.visible?v++:h++; } }); return {visible:v,hidden:h}; })()}))), "shot damage", (hp0-hp1).toFixed(2));
+  await p.evaluate(()=>{ CFG.ctrl.fp=false; }); await p.waitForTimeout(800); console.log("back to shoulder:", await p.evaluate(()=>{ let v=0; PLV.stage.traverse(o=>{ if(o.isSkinnedMesh&&o.visible) v++; }); return "body meshes visible "+v+", fov "+camera.fov; }));
+  console.log(errs.join('\n')||'no page errors'); await b.close(); })();

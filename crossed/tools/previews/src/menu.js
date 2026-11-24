@@ -141,7 +141,7 @@ function renderSimMenu(result){
   B.appendChild(mh("div",{class:"smCol"},[
     result||player.dead ? null : btn("Resume",closeSimMenu,"primary"),
     btn("Restart",()=>{ closeSimMenu(); startPlay(); },result||player.dead?"primary":""),
-    btn("Back to setup",()=>goMenu("setup")),
+    btn(ED.doc&&ED.doc.sim?"Back to simulations":"Back to maps",()=>goMenu(ED.doc&&ED.doc.sim?"sims":"setup")),
     btn("Edit this map",()=>{ goMenu("setup"); openBuilder(); }),
     btn("Main menu",()=>goMenu("title"))]));
   B.appendChild(mh("div",{class:"smLabel",text:"Combat options"}));
@@ -151,7 +151,8 @@ function renderSimMenu(result){
     tog("Freeze AI",()=>CFG.world.freezeAI,v=>CFG.world.freezeAI=v),
     tog("Slow motion",()=>CFG.world.timeScale<1,v=>CFG.world.timeScale=v?0.25:1),
     tog("Show hit zones",()=>CFG.world.showZones,v=>{ CFG.world.showZones=v; setZoneView(v); }),
-    tog("Reach rings",()=>CFG.debug.rings,v=>CFG.debug.rings=CFG.debug.attackLog=v)]));
+    tog("Reach rings",()=>CFG.debug.rings,v=>CFG.debug.rings=CFG.debug.attackLog=v),
+    tog("First person (test)",()=>!!CFG.ctrl.fp,v=>{ CFG.ctrl.fp=v; if(!v&&camera.fov!==60){ camera.fov=60; camera.updateProjectionMatrix(); } })]));
   B.appendChild(mh("div",{class:"smGrid"},[
     btn("Clear enemies",()=>{ clearEnemies(); log("Enemies cleared","#9a9283"); renderSimMenu(result); }),
     btn("Heal + refill",()=>{ player.hp=CFG.norah.hp; player.rounds=CFG.rev.chambers; player.spare=Math.max(player.spare,CFG.rev.spare); if(player.dead) respawn(); renderSimMenu(result); }),
