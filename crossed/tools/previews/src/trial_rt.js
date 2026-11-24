@@ -2,7 +2,7 @@
 // Its approved walk and sweep were recorded from the playground, rigged and re-weighted in Blender (smoother bends at the stump
 // joints; every separate piece blended into the surface it grows from) and exported as an ordinary skinned GLB with two clips.
 // Here it is played the plain way, with three.js's animation mixer: no per-frame posing code, no balance physics.
-const BT={url:"m/trial/brute_blender.glb", walkSpeed:1.632, sweepHit:1.883, sweepLen:4.383, loading:null};
+const BT={url:"m/trial/brute_blender.json", walkSpeed:1.632, sweepHit:1.883, sweepLen:4.383, loading:null};
 function btLoad(){ return BT.loading||(BT.loading=new Promise((res,rej)=>new THREE.GLTFLoader().load(BT.url,res,undefined,rej))); }
 class BlenderBody{
   constructor(e,type){ this.e=e; this.type=type; this.K=PVK[type]; this.ready=false; this.hits=[]; this.ctx={wantV:0}; this.clipName=null; this.ct=0; this.yaw=e.yaw||0; this.pos=e.pos.clone();
