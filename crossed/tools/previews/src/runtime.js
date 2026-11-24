@@ -182,7 +182,7 @@ function buildFromDoc(doc, forEditor){
   scene.background.set(E.sky); scene.fog.color.set(E.fogColor); scene.fog.density = forEditor ? (edPrefs.fog?E.fog:0) : E.fog;
   hemi.intensity=+E.hemi; moon.intensity=+E.moon; world.ambient = (E.dark===""||E.dark===null||E.dark===undefined) ? null : +E.dark;
   buildTerrain(doc.terrain);
-  for(const o of doc.objects) if(o.type==="floor") sbTagged(o,()=>addFloor(o.x,o.z,o.x+o.w,o.z+o.d,"#3c3c3c","#444444",{y:+o.y||0}));
+  for(const o of doc.objects) if(o.type==="floor") sbTagged(o,()=>lvBuildFloor(o));
   const B=docBounds(doc); world.bounds={x0:B.x0-1,x1:B.x1+1,z0:B.z0-1,z1:B.z1+1};
   world.spawn={x:(B.x0+B.x1)/2, z:(B.z0+B.z1)/2, yaw:Math.PI};
   for(const o of doc.objects){ if(o.type==="floor") continue; try{ sbTagged(o,()=>sbBuildObj(o)); }catch(err){ console.warn("couldn't build",o,err); } }
@@ -195,7 +195,7 @@ function sbBuildObj(o){
   switch(o.type){
     case "wall": { const mx=(o.a[0]+o.b[0])/2, mz=(o.a[1]+o.b[1])/2;
       const ops=(o.openings||[]).map(op=>({kind:op.kind||"door",at:+op.at,width:+op.width||1,sill:op.sill,top:op.top,hinge:op.hinge,side:op.side===-1?-1:1,closed:!!op.closed,locked:!!op.locked,key:op.key||""}));
-      addWall(o.a[0],o.a[1],o.b[0],o.b[1],+o.height||2.8,+o.thick||0.2,o.weak?0x8a7e6a:0x6a6a6a,ops,{tex:o.tex,texB:o.texB,scale:+o.scale||1,base:groundY(mx,mz),skirt:!!world.terrain,weak:!!o.weak}); break; }
+      addWall(o.a[0],o.a[1],o.b[0],o.b[1],+o.height||2.8,+o.thick||0.2,o.weak?0x8a7e6a:0x6a6a6a,ops,{tex:o.tex,texB:o.texB,scale:+o.scale||1,base:(o.lv?+o.lv:groundY(mx,mz)),skirt:!!world.terrain,weak:!!o.weak}); break; }
     case "block": { const b=addBox(o.x,o.z,+o.w||1,+o.d||1,+o.h||1,o.push?0x8c8c8c:0x6e6e6e,!!o.push,o.name||"",{}); if(o.search) sbContainer(o,b,o.name||"crate"); break; }
     case "pillar": addPillar(o.x,o.z,+o.r||0.4,+o.h||3,0x707070); break;
     case "corpse": addCorpse(o.x,o.z,(o.yaw||0)*D2R); break;

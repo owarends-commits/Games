@@ -57,7 +57,7 @@ j = rep(j, '''function addFloor(x0,z0,x1,z1,a="#2c2925",b="#36322c"){
   else { const t=noiseTex(a,b,4,1); t.repeat.set(w/2,d/2); mat=new THREE.MeshLambertMaterial({map:t}); }
   const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d), mat);
   m.rotation.x=-Math.PI/2; m.position.set((x0+x1)/2,y,(z0+z1)/2); world.group.add(m); world.floorRects.push({x0,z0,x1,z1,y});
-  if(y>0.05){ const sk=new THREE.Mesh(new THREE.BoxGeometry(w,y+2,d),M(0x2a2420)); sk.position.set((x0+x1)/2,y/2-1-0.01,(z0+z1)/2); world.group.add(sk); }
+  if(o.slab||LV.slab){ lvSlab(x0,z0,x1,z1,y); } else if(y>0.05){ const sk=new THREE.Mesh(new THREE.BoxGeometry(w,y+2,d),M(0x2a2420)); sk.position.set((x0+x1)/2,y/2-1-0.01,(z0+z1)/2); world.group.add(sk); }
 }''')
 # walls
 j = rep(j, 'function addWall(ax,az,bx,bz,h=3,t=0.2,col=0x4a443b,openings=[]){\n  const L=Math.hypot(bx-ax,bz-az); if(L<0.01) return;',
@@ -243,6 +243,7 @@ out.append(rd("menu.js"))
 out.append(rd("models_ui.js"))
 out.append(rd("sims.js"))
 out.append(rd("trial_rt.js"))
+out.append(rd("levels_rt.js"))
 out.append("buildPanel(); scene.fog.density = CFG.world.fog;\nsbBoot();\n</script>\n")
 html = "".join(out)
 dst = os.path.join(D, "crossed-sandbox.html")

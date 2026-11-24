@@ -226,3 +226,25 @@ These run in `combat_playground.html` on their preview's own code: each preview 
 - **Not aware of her yet**: ACROSS use their own stealth (wander, notice by sight and sound). The creatures run by their preview's code wait or wander, placed facing away from her, until they notice her: in front of them in plain sight for about a second (within 8 m, half that crouched, more with the light on), right beside them, a noise near them, or a shot. Louis and the Runner hold still where placed until they notice her the same ways.
 - **Roofs**: a roof piece that sits on the wall tops (fitted out to the walls' outer faces), drawn only from below, so the builder's top view and high fixed cameras see through it; the shoulder camera is kept just under any roof she's under. Builder: the Roof tool (U) — click a room's floor to roof it fitted to its walls, or drag a rectangle; the Room tool adds one ("With a roof"); the inspector has "Fit to the walls". Default walls are now 3.2 m so the shoulder camera has room.
 - **First person (test)**: a toggle in the pause menu. The camera at her eyes, her body hidden, what she holds still shown; aim, fire and movement as in the shoulder view.
+
+## Second floors and basements
+
+Maps can stack levels: a basement at −3.2 m, the ground floor at 0 and upstairs at +3.2 m (more either way). Code: `tools/previews/src/levels_rt.js`.
+
+- **Levels.** Every map object can carry `lv`, the height of its level's floor. A map with any `lv` or any stairs is multi-level. Heights of lights, cameras, roofs and floors are relative to their level.
+- **Floors** of a multi-level map are 0.2 m slabs. A slab's underside is the ceiling of the level below, and the shoulder camera stays under it. Floors get a hole cut over any stairwell that comes up through them.
+- **Stairs** (`{type:"stairs", x, z, w, d, dir:"+z"|"-z"|"+x"|"-x", lv, rise}`) climb from their level to the next, in the `dir` direction.
+  - They are drawn as steps, and a ramp under them sets the walking height.
+  - Downstairs, their sides and high end are walls. Upstairs, the stairwell is railed off except at the top step.
+- **Heights.** `groundY()` answers for the body being moved: the highest floor or ramp at most 0.75 m above its feet. A body downstairs never pops up onto the floor overhead.
+- **Collision per level.** Walls, doors, furniture, pillars, items and containers belong to one level. While Norah or a creature moves, the collision lists are swapped for that body's level, and the path grid is kept per level.
+  - A body changes level 30% of the way along a flight from the side it set off from.
+- **Creatures on another level** can't see Norah or reach her through the floor.
+  - One that was hunting her in the last 30 s heads for the stairs that lead towards her and climbs or descends, flight by flight. It picks her up again on her level.
+  - Damage can't reach her across floors.
+- **Builder.**
+  - A LEVEL picker at the top of the tools, with **+↑** and **+↓** to start a new level above or below.
+  - The plan and clicks only see the current level; stairs coming up from below show as DOWN.
+  - New pieces land on the current level. The 3D view hides everything above it.
+  - **Stairs** tool (J): drag along the flight from the bottom step to the top.
+- **Example map:** "Three-storey house: basement and upstairs" (preset `house3`). It has a hunting Walker downstairs, a standing one upstairs and a lurking Crawler in the basement.

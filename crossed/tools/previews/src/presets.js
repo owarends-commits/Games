@@ -270,3 +270,36 @@ function ch1HouseDoc(){
   return d;
 }
 PRESETS.unshift({key:"ch1house", name:"Chapter One: Norah's house", desc:"Built from crossed/tools/build_norah_house.py: the house, porch, yard, gravel path, car and woods. Louis hunts her from the treeline.", make(){ return ch1HouseDoc(); }});
+// ---------------------------------------------------------------- a house on three levels: basement, ground floor, upstairs
+PRESETS.push({key:"house3", name:"Three-storey house: basement and upstairs", desc:"Stairs down to a dark basement and up to two bedrooms. One ACROSS hunts the ground floor; one sleeps upstairs; a Crawler waits in the basement. Creatures that are after Norah follow her up and down the stairs.", make(){
+  const d=sbNewDoc("Three-storey house"); d.win="kill"; const O=d.objects, id=t=>sbUid(t);
+  const box=(lv,x0,z0,x1,z1,h,col,doors)=>{ const c=[[x0,z0],[x1,z0],[x1,z1],[x0,z1]];
+    for(let i=0;i<4;i++) O.push({id:id("w"),type:"wall",lv,a:c[i],b:c[(i+1)%4],height:h,thick:0.2,color:col,tex:"",openings:(doors&&doors[i])||[]}); };
+  // basement
+  O.push({id:id("f"),type:"floor",lv:-3.2,x:-5,z:-4,w:10,d:8,tex:"",colA:"#2a2a28",colB:"#30302c",y:0});
+  box(-3.2,-5,-4,5,4,3.2,"#4a4842");
+  O.push({id:id("l"),type:"light",lv:-3.2,x:1.5,y:2.7,z:-1,color:"#ffb070",intensity:0.6,dist:7});
+  for(const [x,z,h] of [[3.8,-3,1.0],[2.7,-3.2,0.8],[-3.5,-2.6,1.2],[4,1.5,0.9]]) O.push({id:id("b"),type:"block",lv:-3.2,x,z,w:1,d:1,h,color:"#5b4128",tex:"",push:h<1,name:"crate",search:x===-3.5,items:x===-3.5?[{item:"ammo",qty:6}]:[]});
+  O.push({id:id("e"),type:"enemy",lv:-3.2,kind:"across_crawl",x:3.2,z:-1.6,yaw:270,start:"lurk",hpMul:1,speedMul:1});
+  O.push({id:id("t"),type:"stairs",lv:-3.2,x:-3.8,z:2.5,w:4.8,d:1.4,dir:"+x",rise:3.2,color:"#4a3e30"});
+  // ground floor: living room at the front, kitchen at the back
+  O.push({id:id("f"),type:"floor",lv:0,x:-5,z:-4,w:10,d:8,tex:"",colA:"#3a3028",colB:"#42382e",y:0});
+  box(0,-5,-4,5,4,3.2,"#5e594f",[null,null,[{id:id("o"),kind:"door",at:2,width:1,side:1,closed:true}],[{id:id("o"),kind:"window",at:4,width:1.2,sill:0.9,top:2.1}]]);
+  O.push({id:id("w"),type:"wall",lv:0,a:[-5,0],b:[5,0],height:3.2,thick:0.15,color:"#6a6458",tex:"",openings:[{id:id("o"),kind:"gap",at:3,width:1.4},{id:id("o"),kind:"door",at:7.4,width:1,side:1,closed:false}]});
+  O.push({id:id("t"),type:"stairs",lv:0,x:-1,z:-3.85,w:4.8,d:1.4,dir:"+x",rise:3.2,color:"#5a4a38"});
+  O.push({id:id("p"),type:"prop",lv:0,asset:"couch",x:2.5,z:1.6,rot:180,scale:1,solid:"auto",push:"auto",items:[]});
+  O.push({id:id("p"),type:"prop",lv:0,asset:"table",x:-2.5,z:-1.6,rot:0,scale:1,solid:"auto",push:"auto",items:[]});
+  O.push({id:id("p"),type:"prop",lv:0,asset:"counter",x:4.3,z:-1.2,rot:270,scale:1,solid:"auto",push:"auto",search:true,items:[{item:"bandage",qty:1}]});
+  O.push({id:id("l"),type:"light",lv:0,x:0,y:2.7,z:2,color:"#ffc890",intensity:0.9,dist:9},{id:id("l"),type:"light",lv:0,x:-2,y:2.7,z:-2,color:"#ffc890",intensity:0.8,dist:8});
+  O.push({id:id("s"),type:"spawn",lv:0,x:3.2,z:3,yaw:180});
+  O.push({id:id("e"),type:"enemy",lv:0,kind:"across_stand",x:-3.5,z:-2.5,yaw:90,start:"hunting",hpMul:1,speedMul:1});
+  // upstairs: two bedrooms
+  O.push({id:id("f"),type:"floor",lv:3.2,x:-5,z:-4,w:10,d:8,tex:"",colA:"#40362c",colB:"#463c32",y:0});
+  box(3.2,-5,-4,5,4,3.0,"#6a6458",[null,null,null,[{id:id("o"),kind:"window",at:2,width:1.2,sill:0.9,top:2.1}]]);
+  O.push({id:id("w"),type:"wall",lv:3.2,a:[-5,0],b:[5,0],height:3.0,thick:0.15,color:"#7a7266",tex:"",openings:[{id:id("o"),kind:"door",at:2,width:1,side:1,closed:false}]});
+  O.push({id:id("p"),type:"prop",lv:3.2,asset:"bed_double",x:2.5,z:2.6,rot:0,scale:1,solid:"auto",push:"auto",items:[]});
+  O.push({id:id("p"),type:"prop",lv:3.2,asset:"wardrobe",x:-4.4,z:2,rot:90,scale:1,solid:"auto",push:"auto",search:true,items:[{item:"ammo",qty:6}]});
+  O.push({id:id("l"),type:"light",lv:3.2,x:0,y:2.5,z:2,color:"#ffc890",intensity:0.7,dist:8},{id:id("l"),type:"light",lv:3.2,x:-2,y:2.5,z:-2,color:"#ffc890",intensity:0.6,dist:7});
+  O.push({id:id("e"),type:"enemy",lv:3.2,kind:"across_stand",x:2.5,z:1.2,yaw:180,start:"stand",hpMul:1,speedMul:1});
+  O.push({id:id("r"),type:"roof",lv:3.2,x:-5.1,z:-4.1,w:10.2,d:8.2,y:3.0,color:"#3a3630",tex:""});
+  return d; }});

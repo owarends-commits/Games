@@ -566,7 +566,7 @@ function addFloor(x0,z0,x1,z1,a="#2c2925",b="#36322c",o={}){
   else { const t=noiseTex(a,b,4,1); t.repeat.set(w/2,d/2); mat=new THREE.MeshLambertMaterial({map:t}); }
   const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d), mat);
   m.rotation.x=-Math.PI/2; m.position.set((x0+x1)/2,y,(z0+z1)/2); world.group.add(m); world.floorRects.push({x0,z0,x1,z1,y});
-  if(y>0.05){ const sk=new THREE.Mesh(new THREE.BoxGeometry(w,y+2,d),M(0x2a2420)); sk.position.set((x0+x1)/2,y/2-1-0.01,(z0+z1)/2); world.group.add(sk); }
+  if(o.slab||LV.slab){ lvSlab(x0,z0,x1,z1,y); } else if(y>0.05){ const sk=new THREE.Mesh(new THREE.BoxGeometry(w,y+2,d),M(0x2a2420)); sk.position.set((x0+x1)/2,y/2-1-0.01,(z0+z1)/2); world.group.add(sk); }
 }
 // a wall from a to b; openings = [{at, width, kind:"door"|"window"|"gap", sill, top, hinge:"start"|"end", side:1|-1, closed}]
 function addWall(ax,az,bx,bz,h=3,t=0.2,col=0x4a443b,openings=[],wo={}){
@@ -3122,7 +3122,7 @@ function buildFromDoc(doc, forEditor){
   scene.background.set(E.sky); scene.fog.color.set(E.fogColor); scene.fog.density = forEditor ? (edPrefs.fog?E.fog:0) : E.fog;
   hemi.intensity=+E.hemi; moon.intensity=+E.moon; world.ambient = (E.dark===""||E.dark===null||E.dark===undefined) ? null : +E.dark;
   buildTerrain(doc.terrain);
-  for(const o of doc.objects) if(o.type==="floor") sbTagged(o,()=>addFloor(o.x,o.z,o.x+o.w,o.z+o.d,"#3c3c3c","#444444",{y:+o.y||0}));
+  for(const o of doc.objects) if(o.type==="floor") sbTagged(o,()=>lvBuildFloor(o));
   const B=docBounds(doc); world.bounds={x0:B.x0-1,x1:B.x1+1,z0:B.z0-1,z1:B.z1+1};
   world.spawn={x:(B.x0+B.x1)/2, z:(B.z0+B.z1)/2, yaw:Math.PI};
   for(const o of doc.objects){ if(o.type==="floor") continue; try{ sbTagged(o,()=>sbBuildObj(o)); }catch(err){ console.warn("couldn't build",o,err); } }
@@ -3135,7 +3135,7 @@ function sbBuildObj(o){
   switch(o.type){
     case "wall": { const mx=(o.a[0]+o.b[0])/2, mz=(o.a[1]+o.b[1])/2;
       const ops=(o.openings||[]).map(op=>({kind:op.kind||"door",at:+op.at,width:+op.width||1,sill:op.sill,top:op.top,hinge:op.hinge,side:op.side===-1?-1:1,closed:!!op.closed,locked:!!op.locked,key:op.key||""}));
-      addWall(o.a[0],o.a[1],o.b[0],o.b[1],+o.height||2.8,+o.thick||0.2,o.weak?0x8a7e6a:0x6a6a6a,ops,{tex:o.tex,texB:o.texB,scale:+o.scale||1,base:groundY(mx,mz),skirt:!!world.terrain,weak:!!o.weak}); break; }
+      addWall(o.a[0],o.a[1],o.b[0],o.b[1],+o.height||2.8,+o.thick||0.2,o.weak?0x8a7e6a:0x6a6a6a,ops,{tex:o.tex,texB:o.texB,scale:+o.scale||1,base:(o.lv?+o.lv:groundY(mx,mz)),skirt:!!world.terrain,weak:!!o.weak}); break; }
     case "block": { const b=addBox(o.x,o.z,+o.w||1,+o.d||1,+o.h||1,o.push?0x8c8c8c:0x6e6e6e,!!o.push,o.name||"",{}); if(o.search) sbContainer(o,b,o.name||"crate"); break; }
     case "pillar": addPillar(o.x,o.z,+o.r||0.4,+o.h||3,0x707070); break;
     case "corpse": addCorpse(o.x,o.z,(o.yaw||0)*D2R); break;
@@ -13195,11 +13195,44 @@ function ch1HouseDoc(){
   return d;
 }
 PRESETS.unshift({key:"ch1house", name:"Chapter One: Norah's house", desc:"Built from crossed/tools/build_norah_house.py: the house, porch, yard, gravel path, car and woods. Louis hunts her from the treeline.", make(){ return ch1HouseDoc(); }});
+// ---------------------------------------------------------------- a house on three levels: basement, ground floor, upstairs
+PRESETS.push({key:"house3", name:"Three-storey house: basement and upstairs", desc:"Stairs down to a dark basement and up to two bedrooms. One ACROSS hunts the ground floor; one sleeps upstairs; a Crawler waits in the basement. Creatures that are after Norah follow her up and down the stairs.", make(){
+  const d=sbNewDoc("Three-storey house"); d.win="kill"; const O=d.objects, id=t=>sbUid(t);
+  const box=(lv,x0,z0,x1,z1,h,col,doors)=>{ const c=[[x0,z0],[x1,z0],[x1,z1],[x0,z1]];
+    for(let i=0;i<4;i++) O.push({id:id("w"),type:"wall",lv,a:c[i],b:c[(i+1)%4],height:h,thick:0.2,color:col,tex:"",openings:(doors&&doors[i])||[]}); };
+  // basement
+  O.push({id:id("f"),type:"floor",lv:-3.2,x:-5,z:-4,w:10,d:8,tex:"",colA:"#2a2a28",colB:"#30302c",y:0});
+  box(-3.2,-5,-4,5,4,3.2,"#4a4842");
+  O.push({id:id("l"),type:"light",lv:-3.2,x:1.5,y:2.7,z:-1,color:"#ffb070",intensity:0.6,dist:7});
+  for(const [x,z,h] of [[3.8,-3,1.0],[2.7,-3.2,0.8],[-3.5,-2.6,1.2],[4,1.5,0.9]]) O.push({id:id("b"),type:"block",lv:-3.2,x,z,w:1,d:1,h,color:"#5b4128",tex:"",push:h<1,name:"crate",search:x===-3.5,items:x===-3.5?[{item:"ammo",qty:6}]:[]});
+  O.push({id:id("e"),type:"enemy",lv:-3.2,kind:"across_crawl",x:3.2,z:-1.6,yaw:270,start:"lurk",hpMul:1,speedMul:1});
+  O.push({id:id("t"),type:"stairs",lv:-3.2,x:-3.8,z:2.5,w:4.8,d:1.4,dir:"+x",rise:3.2,color:"#4a3e30"});
+  // ground floor: living room at the front, kitchen at the back
+  O.push({id:id("f"),type:"floor",lv:0,x:-5,z:-4,w:10,d:8,tex:"",colA:"#3a3028",colB:"#42382e",y:0});
+  box(0,-5,-4,5,4,3.2,"#5e594f",[null,null,[{id:id("o"),kind:"door",at:2,width:1,side:1,closed:true}],[{id:id("o"),kind:"window",at:4,width:1.2,sill:0.9,top:2.1}]]);
+  O.push({id:id("w"),type:"wall",lv:0,a:[-5,0],b:[5,0],height:3.2,thick:0.15,color:"#6a6458",tex:"",openings:[{id:id("o"),kind:"gap",at:3,width:1.4},{id:id("o"),kind:"door",at:7.4,width:1,side:1,closed:false}]});
+  O.push({id:id("t"),type:"stairs",lv:0,x:-1,z:-3.85,w:4.8,d:1.4,dir:"+x",rise:3.2,color:"#5a4a38"});
+  O.push({id:id("p"),type:"prop",lv:0,asset:"couch",x:2.5,z:1.6,rot:180,scale:1,solid:"auto",push:"auto",items:[]});
+  O.push({id:id("p"),type:"prop",lv:0,asset:"table",x:-2.5,z:-1.6,rot:0,scale:1,solid:"auto",push:"auto",items:[]});
+  O.push({id:id("p"),type:"prop",lv:0,asset:"counter",x:4.3,z:-1.2,rot:270,scale:1,solid:"auto",push:"auto",search:true,items:[{item:"bandage",qty:1}]});
+  O.push({id:id("l"),type:"light",lv:0,x:0,y:2.7,z:2,color:"#ffc890",intensity:0.9,dist:9},{id:id("l"),type:"light",lv:0,x:-2,y:2.7,z:-2,color:"#ffc890",intensity:0.8,dist:8});
+  O.push({id:id("s"),type:"spawn",lv:0,x:3.2,z:3,yaw:180});
+  O.push({id:id("e"),type:"enemy",lv:0,kind:"across_stand",x:-3.5,z:-2.5,yaw:90,start:"hunting",hpMul:1,speedMul:1});
+  // upstairs: two bedrooms
+  O.push({id:id("f"),type:"floor",lv:3.2,x:-5,z:-4,w:10,d:8,tex:"",colA:"#40362c",colB:"#463c32",y:0});
+  box(3.2,-5,-4,5,4,3.0,"#6a6458",[null,null,null,[{id:id("o"),kind:"window",at:2,width:1.2,sill:0.9,top:2.1}]]);
+  O.push({id:id("w"),type:"wall",lv:3.2,a:[-5,0],b:[5,0],height:3.0,thick:0.15,color:"#7a7266",tex:"",openings:[{id:id("o"),kind:"door",at:2,width:1,side:1,closed:false}]});
+  O.push({id:id("p"),type:"prop",lv:3.2,asset:"bed_double",x:2.5,z:2.6,rot:0,scale:1,solid:"auto",push:"auto",items:[]});
+  O.push({id:id("p"),type:"prop",lv:3.2,asset:"wardrobe",x:-4.4,z:2,rot:90,scale:1,solid:"auto",push:"auto",search:true,items:[{item:"ammo",qty:6}]});
+  O.push({id:id("l"),type:"light",lv:3.2,x:0,y:2.5,z:2,color:"#ffc890",intensity:0.7,dist:8},{id:id("l"),type:"light",lv:3.2,x:-2,y:2.5,z:-2,color:"#ffc890",intensity:0.6,dist:7});
+  O.push({id:id("e"),type:"enemy",lv:3.2,kind:"across_stand",x:2.5,z:1.2,yaw:180,start:"stand",hpMul:1,speedMul:1});
+  O.push({id:id("r"),type:"roof",lv:3.2,x:-5.1,z:-4.1,w:10.2,d:8.2,y:3.0,color:"#3a3630",tex:""});
+  return d; }});
 // ================================================================ the builder
 const ED = {doc:null, sel:null, selOp:null, tool:"select", view:"3d", snap:0.25, draft:null, drag:null, undo:[], redo:[], cursor:{x:0,z:0,ok:false},
   pan:{x:0,z:0}, zoom:30, orbit:{tx:0,ty:0,tz:0,yaw:0.75,pitch:0.85,dist:26}, planDirty:true, terrainImg:null, terrainDirty:true,
   helpers:new THREE.Group(), selBox:null, rebuildT:0, saveT:0, tab:"inspect", assetQ:"", assetCat:"all", thumbs:{}, preview:null, lastPick:0,
-  opts:{ roof:{height:3.2,color:"#3a3630",tex:""}, room:{roof:true}, wall:{height:3.2,thick:0.2,color:"#5e594f",tex:""}, floor:{tex:"",colA:"#2e2a26",colB:"#36322c"}, door:{width:1,closed:false,locked:false,key:""}, window:{width:1.2,sill:0.9,top:2.1}, gap:{width:1.2},
+  opts:{ roof:{height:3.2,color:"#3a3630",tex:""}, stairs:{color:"#5a4a38",rise:3.2}, room:{roof:true}, wall:{height:3.2,thick:0.2,color:"#5e594f",tex:""}, floor:{tex:"",colA:"#2e2a26",colB:"#36322c"}, door:{width:1,closed:false,locked:false,key:""}, window:{width:1.2,sill:0.9,top:2.1}, gap:{width:1.2},
     block:{h:1,color:"#5b4128",tex:"",push:true,name:"crate",search:false}, pillar:{r:0.35,h:3,color:"#5a5246"}, prop:{asset:"wardrobe",rot:0,scale:1},
     terrain:{mode:"raise",radius:3,strength:0.5,paint:1}, enemy:{kind:"across",start:"hunting"}, item:{item:"ammo",qty:6,name:"",text:""}, exit:{r:0.9,needs:""},
     light:{color:"#ffb060",intensity:1,dist:8,height:2.6}, camera:{height:2.8,fov:60,track:true}, path:{width:1.6,tex:"",color:"#6a665e"}, spawn:{}, corpse:{} } };
@@ -13215,12 +13248,12 @@ const IC = {
   prop:'<path d="M6 20V9h12v11M4 9h16M9 9V5h6v4M9 14h6"/>', terrain:'<path d="M2 19l6-9 4 5 3-4 7 8z"/>', spawn:'<circle cx="12" cy="6" r="3"/><path d="M12 9v7M8 12h8M12 16l-3 5M12 16l3 5"/>',
   enemy:'<circle cx="12" cy="7" r="3"/><path d="M12 10l-2 6M10 16l-3 5M10 16l4 5M11 12l-5 2M11 12l6-1"/>', item:'<path d="M12 3l7 9-7 9-7-9z"/>', exit:'<circle cx="12" cy="12" r="8"/><path d="M9 12h7M13 9l3 3-3 3"/>',
   light:'<circle cx="12" cy="10" r="5"/><path d="M10 17h4M10 20h4"/>', camera:'<rect x="3" y="8" width="13" height="9"/><path d="M16 11l5-3v9l-5-3"/>', corpse:'<path d="M3 16h16M5 13h6l3 3M17 13a2 2 0 1 0 0 .1"/>',
-  path:'<path d="M5 21c2-6 10-4 12-10S17 4 19 3"/><path d="M8 21c2-5 9-4 11-9"/>'
+  path:'<path d="M5 21c2-6 10-4 12-10S17 4 19 3"/><path d="M8 21c2-5 9-4 11-9"/>', stairs:'<path d="M3 20h5v-5h5v-5h5V5h3"/>'
 };
-const TOOLS=[["select","Select","V"],["wall","Wall","W"],["room","Room","R"],["floor","Floor","F"],["roof","Roof","U"],["door","Door","D"],["window","Window","N"],["gap","Opening","G"],["block","Block","B"],["pillar","Pillar","O"],
+const TOOLS=[["select","Select","V"],["wall","Wall","W"],["room","Room","R"],["floor","Floor","F"],["roof","Roof","U"],["stairs","Stairs","J"],["door","Door","D"],["window","Window","N"],["gap","Opening","G"],["block","Block","B"],["pillar","Pillar","O"],
   ["prop","Furniture","A"],["terrain","Terrain","T"],["path","Path","P"],["spawn","Norah","S"],["enemy","Enemy","Z"],["item","Item","I"],["exit","Exit","X"],["light","Light","L"],["camera","Camera","C"],["corpse","Body","K"]];
 const HINTS={select:"Click to select · drag to move · Q/E turn · Del deletes · Ctrl+D duplicates · arrows nudge",
-  wall:"Click, click, click to chain walls · double-click, right-click or Esc ends the chain", room:"Drag a rectangle: floor and four walls", floor:"Drag a rectangle of floor", roof:"Click inside a room to roof it (fitted to its walls), or drag a rectangle",
+  wall:"Click, click, click to chain walls · double-click, right-click or Esc ends the chain", room:"Drag a rectangle: floor and four walls", floor:"Drag a rectangle of floor", roof:"Click inside a room to roof it (fitted to its walls), or drag a rectangle", stairs:"Drag along the flight, from the bottom step to the top: it climbs to the next level up (pick levels at the top of the tools)",
   door:"Click on a wall to cut a door into it", window:"Click on a wall to add a window", gap:"Click on a wall to cut an open doorway", block:"Drag a rectangle: a crate, a stage, a counter. Low ones can be vaulted",
   pillar:"Click to place a pillar", prop:"Click to place the chosen furniture (ASSETS tab) · Q/E turn it before placing", terrain:"Drag to sculpt. Pick raise, lower, smooth, flatten or paint in INSPECT",
   path:"Click points along a road or trail · double-click or Esc finishes", spawn:"Click where Norah starts, drag to face her", enemy:"Click to place, drag to face it", item:"Click to drop an item on the floor",
@@ -13253,10 +13286,10 @@ function edBuildHelpers(){
       if(edCreatureKind(k)){ r=edCreature(k,o); } else if(k==="brute"||k==="dummy"){ r=buildBody(k,null); r.scale.setScalar(CFG.brute.height/1.8); }
       else { const v=k.startsWith("across:")?k.slice(7):k==="across_legless"?"crawler":"walker"; r=buildPerson(VMAP[v]||VMAP.walker, (o.x*1000+o.z*37)|0).root; if(k==="across") r.traverse(c=>{ if(c.isMesh&&c.material&&c.material.color){ c.material=c.material.clone(); c.material.color.multiplyScalar(0.7); } }); }
       r.position.set(o.x,groundY(o.x,o.z),o.z); r.rotation.y=(o.yaw||0)*D2R; tag(r,o); tag(ring(o,o.start==="hunting"?0xd84040:0xd8b040,0.42),o); tag(arrow(o,0xd84040),o); }
-    else if(o.type==="light"){ const m=new THREE.Mesh(new THREE.OctahedronGeometry(0.14,0),new THREE.MeshBasicMaterial({color:hexNum(o.color||"#ffb060")})); m.position.set(o.x,o.y??2.6,o.z); tag(m,o);
-      const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(o.x,o.y??2.6,o.z),new THREE.Vector3(o.x,groundY(o.x,o.z),o.z)]); tag(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x6a5a30})),o); }
-    else if(o.type==="camera"){ const L=o.look||[o.x,0.8,o.z-3]; const g=new THREE.Group(); const b=new THREE.Mesh(new THREE.BoxGeometry(0.22,0.16,0.3),new THREE.MeshBasicMaterial({color:0x59a6c9})); g.add(b); g.position.set(o.x,o.y??2.8,o.z); g.lookAt(L[0],L[1],L[2]); tag(g,o);
-      const lg=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(o.x,o.y??2.8,o.z),new THREE.Vector3(L[0],L[1],L[2])]); if(o.id===ED.sel) tag(new THREE.Line(lg,new THREE.LineDashedMaterial({color:0x59a6c9,dashSize:0.2,gapSize:0.15})).computeLineDistances(),o); }
+    else if(o.type==="light"){ const m=new THREE.Mesh(new THREE.OctahedronGeometry(0.14,0),new THREE.MeshBasicMaterial({color:hexNum(o.color||"#ffb060")})); m.position.set(o.x,(o.y??2.6)+lvOf(o),o.z); tag(m,o);
+      const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(o.x,(o.y??2.6)+lvOf(o),o.z),new THREE.Vector3(o.x,groundY(o.x,o.z),o.z)]); tag(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x6a5a30})),o); }
+    else if(o.type==="camera"){ const lv=lvOf(o), L0=o.look||[o.x,0.8,o.z-3], L=[L0[0],L0[1]+lv,L0[2]]; const g=new THREE.Group(); const b=new THREE.Mesh(new THREE.BoxGeometry(0.22,0.16,0.3),new THREE.MeshBasicMaterial({color:0x59a6c9})); g.add(b); g.position.set(o.x,(o.y??2.8)+lv,o.z); g.lookAt(L[0],L[1],L[2]); tag(g,o);
+      const lg=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(o.x,(o.y??2.8)+lv,o.z),new THREE.Vector3(L[0],L[1],L[2])]); if(o.id===ED.sel) tag(new THREE.Line(lg,new THREE.LineDashedMaterial({color:0x59a6c9,dashSize:0.2,gapSize:0.15})).computeLineDistances(),o); }
     else if((o.type==="prop"||o.type==="block")&&o.search){ const n=(o.items||[]).length; const m=new THREE.Mesh(new THREE.OctahedronGeometry(0.1,0),new THREE.MeshBasicMaterial({color:n?0xe8c77a:0x6a6458}));
       const c=world.containers.find(c=>c.oid===o.id); if(c){ m.position.set(c.box.x,(c.box.y0||0)+(c.box.h||1)+0.3,c.box.z); tag(m,o); } }
   }
@@ -13291,6 +13324,9 @@ function edMakeRect(tool,a,b){
   const x0=Math.min(a.x,b.x), z0=Math.min(a.z,b.z), w=Math.abs(b.x-a.x), d=Math.abs(b.z-a.z);
   if(tool==="roof"){ if(w<0.2||d<0.2){ const r=edRoofFor(a.x,a.z); if(!r){ edStatusMsg("Click inside a room (on its floor) to roof it"); return null; } return edAdd(r); }
     return edAdd(edRoofFit({type:"roof",x:x0,z:z0,w,d,y:null,color:ED.opts.roof.color,tex:ED.opts.roof.tex})); }
+  if(tool==="stairs"){ if(Math.max(w,d)<1) { edStatusMsg("Drag the length of the flight, bottom to top"); return null; } const alongX=w>=d, dir=alongX?(b.x>=a.x?"+x":"-x"):(b.z>=a.z?"+z":"-z");
+    const W=Math.max(1.2,Math.min(alongX?d:w,2.4)), cx=x0+w/2, cz=z0+d/2;
+    return edAdd({type:"stairs",x:+(alongX?x0:cx-W/2).toFixed(3),z:+(alongX?cz-W/2:z0).toFixed(3),w:+(alongX?w:W).toFixed(3),d:+(alongX?W:d).toFixed(3),dir,rise:ED.opts.stairs.rise,color:ED.opts.stairs.color}); }
   if(w<0.2||d<0.2) return null;
   const O=ED.opts, y=+(ED.doc.terrain&&ED.doc.terrain.on ? tSample(ED.doc.terrain,x0+w/2,z0+d/2) : 0).toFixed(2);
   if(tool==="block") return edAdd({type:"block",x:x0+w/2,z:z0+d/2,w,d,h:O.block.h,color:O.block.color,tex:O.block.tex,push:O.block.push,name:O.block.name,search:O.block.search,items:[]});
@@ -13351,7 +13387,7 @@ function edToolDown(p, ev, pickId, from3d){
   }
   if(t==="wall"){ const s=snapP(p,ev); if(!ED.draft||ED.draft.kind!=="wall") ED.draft={kind:"wall",a:s,b:s}; else { if(Math.hypot(s.x-ED.draft.a.x,s.z-ED.draft.a.z)>0.05){ edSnapshot(); const O=ED.opts.wall; const w=edAdd({type:"wall",a:[ED.draft.a.x,ED.draft.a.z],b:[s.x,s.z],height:O.height,thick:O.thick,color:O.color,tex:O.tex,openings:[]}); ED.draft={kind:"wall",a:s,b:s}; edChanged({inspector:true}); } } ED.planDirty=true; return true; }
   if(t==="path"){ const s=snapP(p,ev); if(!ED.draft||ED.draft.kind!=="path") ED.draft={kind:"path",pts:[[s.x,s.z]],b:s}; else ED.draft.pts.push([s.x,s.z]); ED.planDirty=true; return true; }
-  if(t==="room"||t==="floor"||t==="block"||t==="roof"){ const s=snapP(p,ev); ED.draft={kind:"rect",tool:t,a:s,b:s}; ED.drag={kind:"rect"}; return true; }
+  if(t==="room"||t==="floor"||t==="block"||t==="roof"||t==="stairs"){ const s=snapP(p,ev); ED.draft={kind:"rect",tool:t,a:s,b:s}; ED.drag={kind:"rect"}; return true; }
   if(t==="door"||t==="window"||t==="gap"){ edAddOpening(t,p); return true; }
   if(t==="terrain"){ edSnapshot(); edEnsureTerrain(); edBrush(p,true); ED.drag={kind:"terrain",last:0}; return true; }
   if(["spawn","enemy","camera"].includes(t)){ edSnapshot(); const o=edPlacePoint(t,p,ev); ED.drag={kind:"aim",o,start:p}; edChanged({inspector:true}); return true; }
@@ -13364,7 +13400,7 @@ function edToolMove(p, ev){
   if(D.kind==="rect"){ ED.draft.b=snapP(p,ev); ED.planDirty=true; }
   else if(D.kind==="terrain"){ const now=performance.now(); if(now-D.last>35){ D.last=now; edBrush(p,false); } }
   else if(D.kind==="aim"){ const o=D.o, dx=p.x-o.x, dz=p.z-o.z; if(Math.hypot(dx,dz)<0.25) return;
-    if(o.type==="camera") o.look=[+p.x.toFixed(2),+(groundY(p.x,p.z)+0.8).toFixed(2),+p.z.toFixed(2)]; else o.yaw=Math.round(Math.atan2(dx,dz)*R2D/15)*15;
+    if(o.type==="camera") o.look=[+p.x.toFixed(2),+(groundY(p.x,p.z)+0.8-lvOf(o)).toFixed(2),+p.z.toFixed(2)]; else o.yaw=Math.round(Math.atan2(dx,dz)*R2D/15)*15;
     ED.planDirty=true; edBuildHelpers(); edUpdateSelBox(); }
   else if(D.kind==="move"||D.kind==="end"){
     if(!D.moved && Math.hypot(ev.clientX-D.sx,ev.clientY-D.sy)<4) return; if(!D.moved){ D.moved=true; edSnapshotFrom(D.orig); }
@@ -13407,6 +13443,7 @@ function planHit(p){
   for(const o of os){ if(o.type==="block"&&Math.abs(p.x-o.x)<=o.w/2&&Math.abs(p.z-o.z)<=o.d/2){ const a=o.w*o.d; if(a<ba){ ba=a; best=o.id; } } }
   if(best) return best;
   for(const o of os){ if(o.type!=="path") continue; const P=o.points||[]; for(let i=0;i<P.length-1;i++){ const [ax,az]=P[i],[bx,bz]=P[i+1], dx=bx-ax, dz=bz-az, L2=dx*dx+dz*dz||1, t=clamp(((p.x-ax)*dx+(p.z-az)*dz)/L2,0,1); if(Math.hypot(ax+dx*t-p.x,az+dz*t-p.z)<(+o.width||1.6)/2) return o.id; } }
+  for(const o of os){ if(o.type==="stairs"&&p.x>=o.x&&p.x<=o.x+o.w&&p.z>=o.z&&p.z<=o.z+o.d) return o.id; }
   for(const o of os){ if(o.type!=="roof") continue; const ins=p.x>=o.x&&p.x<=o.x+o.w&&p.z>=o.z&&p.z<=o.z+o.d, edge=Math.min(Math.abs(p.x-o.x),Math.abs(p.x-o.x-o.w),Math.abs(p.z-o.z),Math.abs(p.z-o.z-o.d)); if(ins&&(edge<Math.max(0.3,tol)||ED.tool==="roof")) return o.id; }
   for(const o of os){ if(o.type==="floor"&&p.x>=o.x&&p.x<=o.x+o.w&&p.z>=o.z&&p.z<=o.z+o.d){ const a=o.w*o.d; if(a<ba){ ba=a; best=o.id; } } }
   return best;
@@ -13437,6 +13474,12 @@ function drawPlan(){
   for(const o of os) if(o.type==="path"){ g.strokeStyle=o.id===sel?selCol:sbTexAvg(o.tex,o.color||"#6a665e"); g.lineWidth=Math.max(2,(+o.width||1.6)*Z); g.lineCap="round"; g.lineJoin="round"; g.globalAlpha=0.85; g.beginPath(); (o.points||[]).forEach((q,i)=>{ const [x,z]=S(q[0],q[1]); i?g.lineTo(x,z):g.moveTo(x,z); }); g.stroke(); g.globalAlpha=1; g.lineCap="butt"; }
   for(const o of os) if(o.type==="roof"){ const [x,z]=S(o.x,o.z); g.save(); g.setLineDash([6,4]); g.strokeStyle=o.id===sel?selCol:"rgba(220,190,120,.55)"; g.lineWidth=o.id===sel?2:1.2; g.strokeRect(x+1,z+1,o.w*Z-2,o.d*Z-2); g.setLineDash([]);
     if(o.w*Z>60){ g.fillStyle="rgba(220,190,120,.6)"; g.font="10px monospace"; g.fillText(`roof ${(+o.y).toFixed(1)} m`,x+5,z+12); } g.restore(); }
+  for(const o of os) if(o.type==="stairs"){ const [x,z]=S(o.x,o.z), W=o.w*Z, D=o.d*Z, up=lvOf(o)===ED.lv, ax=o.dir[1]==="x", N=Math.max(4,Math.round((+o.rise||3.2)/0.2));
+    g.fillStyle=up?"#4a3e30":"rgba(74,62,48,.45)"; g.fillRect(x,z,W,D); g.strokeStyle=o.id===sel?selCol:"#1a1410"; g.lineWidth=o.id===sel?2:1; g.strokeRect(x,z,W,D);
+    g.strokeStyle="rgba(0,0,0,.45)"; g.lineWidth=1; g.beginPath(); for(let k=1;k<N;k++){ if(ax){ g.moveTo(x+W*k/N,z); g.lineTo(x+W*k/N,z+D); } else { g.moveTo(x,z+D*k/N); g.lineTo(x+W,z+D*k/N); } } g.stroke();
+    const cx=x+W/2, cz=z+D/2, L=(ax?W:D)*0.35, v={"+z":[0,1],"-z":[0,-1],"+x":[1,0],"-x":[-1,0]}[o.dir].map(c=>up?c:-c); g.strokeStyle="#e8c77a"; g.lineWidth=2; g.beginPath(); g.moveTo(cx-v[0]*L,cz-v[1]*L); g.lineTo(cx+v[0]*L,cz+v[1]*L);
+    g.lineTo(cx+v[0]*L-v[0]*8-v[1]*6,cz+v[1]*L-v[1]*8+v[0]*6); g.moveTo(cx+v[0]*L,cz+v[1]*L); g.lineTo(cx+v[0]*L-v[0]*8+v[1]*6,cz+v[1]*L-v[1]*8-v[0]*6); g.stroke();
+    if(Z>20){ g.fillStyle="#e8c77a"; g.font="10px monospace"; g.fillText(up?"UP":"DOWN",x+3,z+12); } }
   for(const o of os){
     if(o.type==="block"){ const [x,z]=S(o.x-o.w/2,o.z-o.d/2); g.fillStyle=sbTexAvg(o.tex,o.color||"#5b4128"); g.fillRect(x,z,o.w*Z,o.d*Z); g.strokeStyle=o.id===sel?selCol:"#1a1410"; g.lineWidth=o.id===sel?2:1; g.strokeRect(x,z,o.w*Z,o.d*Z); if(o.search) edBadge(g,x+o.w*Z,z,(o.items||[]).length); if(Z>26&&o.name){ g.fillStyle="#e8dfc8"; g.font="10px 'IBM Plex Mono',monospace"; g.fillText(o.name,x+3,z+11); } }
     else if(o.type==="pillar"){ const [x,z]=S(o.x,o.z); g.fillStyle=hexStr(o.color||"#5a5246"); g.beginPath(); g.arc(x,z,Math.max(3,(+o.r||0.4)*Z),0,7); g.fill(); g.strokeStyle=o.id===sel?selCol:"#111"; g.lineWidth=o.id===sel?2:1; g.stroke(); }
@@ -13623,7 +13666,7 @@ function edRenderInspector(){
   const P=$("pane-inspect"); if(!P) return; P.innerHTML=""; const o=selObj();
   if(!o){ edToolOptions(P); return; }
   const re=()=>edRenderInspector();
-  const head={wall:"Wall",floor:"Floor",block:"Block",pillar:"Pillar",prop:"Furniture",item:"Item on the floor",exit:"Exit",light:"Light",camera:"Fixed camera",spawn:"Norah's start",enemy:"Enemy",corpse:"Body",path:"Path"}[o.type]||o.type;
+  const head={stairs:"Stairs",wall:"Wall",floor:"Floor",block:"Block",pillar:"Pillar",prop:"Furniture",item:"Item on the floor",exit:"Exit",light:"Light",camera:"Fixed camera",spawn:"Norah's start",enemy:"Enemy",corpse:"Body",path:"Path"}[o.type]||o.type;
   P.appendChild(fHead(head, o.type==="prop"?(sbAsset(o.asset)||{}).name:null));
   const pos=()=>{ P.appendChild(fRow("X",fNum(o,"x",{step:0.05}))); P.appendChild(fRow("Z",fNum(o,"z",{step:0.05}))); };
   switch(o.type){
@@ -13649,6 +13692,11 @@ function edRenderInspector(){
       P.appendChild(fRow("Height (m)",fNum(o,"y",{step:0.05}),"Where it sits: on top of the walls. The shoulder camera stays under it; from above it's see-through."));
       P.appendChild(fRow("Colour",fColor(o,"color"))); P.appendChild(fRow("Texture",fSelect(o,"tex",sbTexOptions())));
       P.appendChild(fBtns([["Fit to the walls",()=>{ edSnapshot(); o.y=null; edRoofFit(o); edChanged({inspector:true}); }],["Remove",()=>{ edSnapshot(); ED.doc.objects=ED.doc.objects.filter(x=>x!==o); ED.sel=null; edChanged({inspector:true}); },"danger"]])); break;
+    case "stairs": pos(); P.appendChild(fRow("Width",fNum(o,"w",{step:0.1,min:0.6}))); P.appendChild(fRow("Depth",fNum(o,"d",{step:0.1,min:0.6})));
+      P.appendChild(fRow("Way up",fSelect(o,"dir",[["+z","South (+Z)"],["-z","North (−Z)"],["+x","East (+X)"],["-x","West (−X)"]])));
+      P.appendChild(fRow("Climbs (m)",fNum(o,"rise",{step:0.1,min:0.4}),`From ${LV_NAMES(lvOf(o))} (${lvOf(o).toFixed(1)} m) up to ${(lvOf(o)+(+o.rise||3.2)).toFixed(1)} m. The floor above gets a hole over it, railed off except at the top step.`));
+      P.appendChild(fRow("Colour",fColor(o,"color"))); P.appendChild(fRow("Texture",fSelect(o,"tex",sbTexOptions())));
+      P.appendChild(fBtns([["Remove",()=>{ edSnapshot(); ED.doc.objects=ED.doc.objects.filter(x=>x!==o); ED.sel=null; edChanged({inspector:true}); },"danger"]])); break;
     case "floor": pos(); P.appendChild(fRow("Width",fNum(o,"w",{step:0.25,min:0.2}))); P.appendChild(fRow("Depth",fNum(o,"d",{step:0.25,min:0.2})));
       P.appendChild(fRow("Height (m)",fNum(o,"y",{step:0.05}),"Characters stand at this height anywhere on this floor."));
       P.appendChild(fBtns([["Match the ground under it",()=>{ if(!ED.doc.terrain||!ED.doc.terrain.on) return; edSnapshot(); o.y=+tSample(ED.doc.terrain,o.x+o.w/2,o.z+o.d/2).toFixed(2); edChanged({inspector:true}); }],["Flatten the ground to it",()=>{ const T=ED.doc.terrain; if(!T||!T.on) return; edSnapshot(); tEach(T,o.x+o.w/2,o.z+o.d/2,Math.hypot(o.w,o.d)/2+2,(k,d,x,z)=>{ const inside=x>=o.x-1&&x<=o.x+o.w+1&&z>=o.z-1&&z<=o.z+o.d+1; if(inside) T.h[k]=+o.y||0; }); edChanged({terrain:true}); }]]));
@@ -14407,6 +14455,178 @@ PVK.brute2_blender={ mod:{}, body:BlenderBody, label:"Brute (Blender)", cfg:"bru
       if(d<2.7&&e.facing(toP)>0.2&&runnerHitNorah(e,28,"sweeping swing",4,1.2)){ shake=Math.max(shake,0.3); log(`${e.name}'s stump sweeps her off her feet`,"#ff7070"); } } },
   die(e){ /* tips over in its step */ } };
 if(typeof SIM_KINDS!=="undefined") SIM_KINDS.splice(SIM_KINDS.findIndex(k=>k[0]==="brute2")+1,0,["brute2_blender","Two-armed Brute · Blender trial"]);
+// ================================================================ levels: second floors and basements
+// A map is multi-level when any object carries a level (`lv`, the height of that level's floor: -3.2 basement, 0 ground,
+// 3.2 upstairs, ...) or when it has stairs. Then:
+//  - every floor is a slab (a 0.2 m thick plate; its underside is the ceiling of the level below), with holes cut over stairwells;
+//  - groundY() answers for the body being moved: the highest floor (or stair ramp) at or a little above its feet, so a body
+//    downstairs never snaps up onto the floor over its head;
+//  - walls, doors, furniture, pillars, items and containers belong to one level. While a body moves, the world's collision
+//    lists (segs, doors, boxes, circles, pickups, containers) are swapped for its level's, so walls upstairs never block or hide
+//    anything downstairs; the path grid is kept per level;
+//  - creatures on another level than Norah don't see or hear her through floors; one that was hunting her follows her by
+//    heading for the stairs, and picks her up again once it's on her level.
+const LV={multi:false, views:false, slab:false, levels:[0], ref:0, view:null, all:null, snap:{}, nav:{}, stairs:[], rise:3.2, ghost:null};
+const LV_KEYS=["segs","doors","boxes","circles","pickups","containers"];
+const lvOf=o=>+o.lv||0;
+function lvPrep(doc){
+  const set=new Set([0]); let st=false;
+  for(const o of doc.objects||[]){ set.add(lvOf(o)); if(o.type==="stairs"){ st=true; set.add(lvOf(o)); set.add(lvOf(o)+(+o.rise||LV.rise)); } }
+  LV.levels=[...set].sort((a,b)=>a-b); LV.multi=st||LV.levels.length>1; LV.stairDocs=(doc.objects||[]).filter(o=>o.type==="stairs");
+}
+const lvIndex=y=>{ let i=0; for(let k=0;k<LV.levels.length;k++) if(LV.levels[k]<=y+0.05) i=k; return i; };
+// a body changes level 30% of the way along the stairs from the side it set off from
+function lvTrack(ent){ const L=LV.levels; let i=ent._lvI??lvIndex(ent._lvY||0); const y=ent._lvY||0;
+  if(i+1<L.length && y>L[i]+0.3*(L[i+1]-L[i])) i++; else if(i>0 && y<L[i]-0.3*(L[i]-L[i-1])) i--; ent._lvI=i; }
+// ---------------------------------------------------------------- height under a point, for the body being moved
+function lvRampH(f,x,z){ const r=f.ramp; let t;
+  if(r.dir==="+z") t=(z-f.z0)/(f.z1-f.z0); else if(r.dir==="-z") t=(f.z1-z)/(f.z1-f.z0); else if(r.dir==="+x") t=(x-f.x0)/(f.x1-f.x0); else t=(f.x1-x)/(f.x1-f.x0);
+  return r.y0+r.rise*clamp(t,0,1); }
+{ const g0=groundY; groundY=function(x,z){ if(!LV.multi||!world) return g0(x,z);
+    const top=LV.ref+0.75; let best=null, low=null;
+    for(const f of world.floorRects){ if(x<f.x0||x>f.x1||z<f.z0||z>f.z1) continue; const h=f.ramp?lvRampH(f,x,z):f.y;
+      if(h<=top&&(best===null||h>best)) best=h; if(low===null||h<low) low=h; }
+    if(best!==null) return best; if(low!==null) return low;
+    const fr=world.floorRects; world.floorRects=[]; try{ return g0(x,z); } finally{ world.floorRects=fr; } }; }
+// ---------------------------------------------------------------- building
+// a floor of a multi-level map: a slab at its level, with the stairwells that come up through it cut out
+function lvBuildFloor(o){ const y=lvOf(o)+(+o.y||0);
+  if(!LV.multi){ addFloor(o.x,o.z,o.x+o.w,o.z+o.d,"#3c3c3c","#444444",{y:+o.y||0}); return; }
+  let rects=[[o.x,o.z,o.x+o.w,o.z+o.d]];
+  for(const s of LV.stairDocs){ if(Math.abs(lvOf(s)+(+s.rise||LV.rise)-y)>0.3) continue; const hx0=s.x, hz0=s.z, hx1=s.x+s.w, hz1=s.z+s.d, out=[];
+    for(const [x0,z0,x1,z1] of rects){ if(hx1<=x0||hx0>=x1||hz1<=z0||hz0>=z1){ out.push([x0,z0,x1,z1]); continue; }
+      const cx0=Math.max(x0,hx0), cx1=Math.min(x1,hx1);
+      if(hz0>z0) out.push([x0,z0,x1,hz0]); if(hz1<z1) out.push([x0,hz1,x1,z1]);
+      if(hx0>x0) out.push([x0,Math.max(z0,hz0),cx0,Math.min(z1,hz1)]); if(hx1<x1) out.push([cx1,Math.max(z0,hz0),x1,Math.min(z1,hz1)]); }
+    rects=out.filter(r=>r[2]-r[0]>0.01&&r[3]-r[1]>0.01); }
+  LV.slab=true; try{ for(const [x0,z0,x1,z1] of rects) addFloor(x0,z0,x1,z1,"#3c3c3c","#444444",{y}); } finally{ LV.slab=false; } }
+// the plate under a floor: solid to bullets and the camera, and the ceiling of the level below
+function lvSlab(x0,z0,x1,z1,y){ const w=x1-x0, d=z1-z0; const m=new THREE.Mesh(new THREE.BoxGeometry(w,0.2,d),M(0x34302a)); m.position.set((x0+x1)/2,y-0.105,(z0+z1)/2); world.group.add(m); world.blockers.push(m);
+  (world.roofs||(world.roofs=[])).push({x0,z0,x1,z1,y:y-0.21}); }
+// stairs: {type:"stairs", x, z (corner), w, d, dir: "+z"|"-z"|"+x"|"-x" (the way up), lv (bottom level), rise (default 3.2)}
+function lvBuildStairs(o){
+  const L=lvOf(o), R=+o.rise||LV.rise, U=L+R, x0=+o.x, z0=+o.z, w=Math.max(0.6,+o.w||1.4), d=Math.max(0.6,+o.d||4.8), x1=x0+w, z1=z0+d, dir=o.dir||"+z";
+  const alongZ=dir[1]==="z", len=alongZ?d:w, N=Math.max(4,Math.round(R/0.2)), col=hexNum(o.color||"#5a4a38");
+  const mat=(o.tex&&SBTEX[o.tex]&&SBTEX[o.tex].ready)?texMat(o.tex,alongZ?w:len/N,alongZ?len/N:d,o.color||"#5a4a38"):M(col);
+  for(let k=0;k<N;k++){ const h=(k+1)*R/N, a=k*len/N, b=(k+1)*len/N; let bx,bz,bw,bd;
+    if(alongZ){ bw=w; bd=b-a; bx=(x0+x1)/2; bz=dir==="+z"?z0+(a+b)/2:z1-(a+b)/2; } else { bw=b-a; bd=d; bz=(z0+z1)/2; bx=dir==="+x"?x0+(a+b)/2:x1-(a+b)/2; }
+    const m=new THREE.Mesh(new THREE.BoxGeometry(bw,h,bd),mat); m.position.set(bx,L+h/2,bz); world.group.add(m); world.blockers.push(m); }
+  world.floorRects.push({x0,z0,x1,z1,y:L,ramp:{dir,y0:L,rise:R}});
+  // the low end (where you step on) and the high end (where you step off)
+  const ends={"+z":[[x0,z0,x1,z0],[x0,z1,x1,z1]],"-z":[[x0,z1,x1,z1],[x0,z0,x1,z0]],"+x":[[x0,z0,x0,z1],[x1,z0,x1,z1]],"-x":[[x1,z0,x1,z1],[x0,z0,x0,z1]]}[dir];
+  const sides=alongZ?[[x0,z0,x0,z1],[x1,z0,x1,z1]]:[[x0,z0,x1,z0],[x0,z1,x1,z1]];
+  const seg=(s,lys)=>{ const sg={ax:s[0],az:s[1],bx:s[2],bz:s[3],t:0.08,lys,stair:true}; world.segs.push(sg); return sg; };
+  for(const s of sides) seg(s,[L,U]);
+  seg(ends[1],[L]);   /* downstairs you can't walk in under the top of the flight */
+  seg(ends[0],[U]);   /* upstairs, the stairwell is railed off except at the top step */
+  // railings round the stairwell upstairs
+  const rail=(s)=>{ const dx=s[2]-s[0], dz=s[3]-s[1], l=Math.hypot(dx,dz); const m=new THREE.Mesh(new THREE.BoxGeometry(l,0.06,0.06),M(0x3a3028)); m.position.set((s[0]+s[2])/2,U+0.92,(s[1]+s[3])/2); m.rotation.y=-Math.atan2(dz,dx); world.group.add(m);
+    const n=Math.max(2,Math.round(l/0.5)); for(let i=0;i<=n;i++){ const p=new THREE.Mesh(new THREE.BoxGeometry(0.04,0.9,0.04),M(0x3a3028)); p.position.set(s[0]+dx*i/n,U+0.45,s[1]+dz*i/n); world.group.add(p); } };
+  for(const s of [...sides,ends[0]]) rail(s);
+  const mid=(s,k)=>{ const mx=(s[0]+s[2])/2, mz=(s[1]+s[3])/2, ux={"+z":[0,1],"-z":[0,-1],"+x":[1,0],"-x":[-1,0]}[dir]; return {x:mx+ux[0]*k, z:mz+ux[1]*k}; };
+  LV.stairs.push({x0,z0,x1,z1,L,U,dir, lowIn:mid(ends[0],0.35), highIn:mid(ends[1],-0.3), lowOut:mid(ends[0],-0.6), highOut:mid(ends[1],0.6)});
+}
+// every object knows its level: the collision pieces it makes are tagged with it, and heights are read on its level
+{ const b0=sbBuildObj; sbBuildObj=function(o){ const L=lvOf(o);
+    if(o.type==="stairs"){ lvBuildStairs(o); return; }
+    const n={}; for(const k of LV_KEYS) n[k]=world[k].length; const rf=LV.ref; LV.ref=L+0.05;
+    let oo=o; if(L&&(o.type==="light"||o.type==="camera"||o.type==="roof")){ oo=Object.assign({},o,{y:(o.y??(o.type==="light"?2.6:o.type==="camera"?2.8:3.2))+L}); if(o.type==="camera") oo.look=(o.look?[o.look[0],o.look[1]+L,o.look[2]]:[o.x,0.8+L,o.z-3]); }
+    try{ b0(oo); } finally{ LV.ref=rf; for(const k of LV_KEYS) for(let i=n[k];i<world[k].length;i++) if(world[k][i].ly===undefined&&!world[k][i].lys) world[k][i].ly=L;
+      if(o.type==="spawn") world.spawn.lv=L; if(o.type==="enemy"){ const s=world.enemySpawns[world.enemySpawns.length-1]; if(s) s.lv=L; } } }; }
+{ const bf0=buildFromDoc; buildFromDoc=function(doc,forEditor){ lvPrep(doc); LV.stairs=[]; LV.views=false; LV.view=null; LV.all=null; LV.nav={}; LV.ref=forEditor?(ED.lv||0)+0.05:0;
+    bf0(doc,forEditor);
+    if(LV.multi&&!forEditor){ LV.all={}; for(const k of LV_KEYS) LV.all[k]=world[k]; LV.views=true; } }; }
+// ---------------------------------------------------------------- per-level views of the collision lists
+const lvIn=(it,L)=>it.lys?it.lys.includes(L):(it.ly===undefined?0:it.ly)===L;
+function lvSync(){ if(LV.view===null||!LV.all) return; const L=LV.levels[LV.view];
+  for(const k of LV_KEYS){ const cur=world[k], snap=LV.snap[k]; if(!snap) continue; let same=cur.length===snap.length; if(same) for(let i=0;i<cur.length;i++) if(cur[i]!==snap[i]){ same=false; break; } if(same) continue;
+    const cs=new Set(cur), ss=new Set(snap), all=LV.all[k];
+    for(const x of snap) if(!cs.has(x)){ const j=all.indexOf(x); if(j>=0) all.splice(j,1); }
+    for(const x of cur) if(!ss.has(x)){ if(x.ly===undefined&&!x.lys) x.ly=L; all.push(x); } } }
+const NAV_F=["g","cl","nx","nz","x0","z0","world","sig","t"];
+function lvUse(i){ if(!LV.views||!LV.all) return; if(i===LV.view&&world.segs!==LV.all.segs) return;
+  lvSync(); if(LV.view!==null){ const s=LV.nav[LV.view]={}; for(const f of NAV_F) s[f]=NAV[f]; }
+  const L=LV.levels[i]; for(const k of LV_KEYS){ world[k]=LV.all[k].filter(it=>lvIn(it,L)); LV.snap[k]=world[k].slice(); }
+  const s=LV.nav[i]; if(s&&s.world===world) for(const f of NAV_F) NAV[f]=s[f]; else { NAV.g=null; NAV.world=null; }
+  LV.view=i; }
+// where a creature on another level thinks Norah is: if it was after her, the far end of the stairs that lead towards her;
+// otherwise nowhere near (it can't see or hear her through the floor)
+function lvProxy(e){ const B=world.bounds, far={x:B.x1+80,z:B.z1+80};
+  const hunting=e.aware==="hunting"||e.aware==="searching"||e.aware===undefined; if(!hunting||gameTime-(e._lvSeen??-99)>30) return far;
+  const i=e._lvI, j=player._lvI, k=j>i?i+1:i-1, lo=LV.levels[Math.min(i,k)], hi=LV.levels[Math.max(i,k)];
+  let best=null, bd=1e9; for(const s of LV.stairs){ if(Math.abs(s.L-lo)>0.1||Math.abs(s.U-hi)>0.1) continue; const p=j>i?s.lowIn:s.highIn, dd=Math.hypot(p.x-e.pos.x,p.z-e.pos.z); if(dd<bd){ bd=dd; best=s; } }
+  if(!best) return far; const up=j>i, s=best, inS=e.pos.x>=s.x0-0.05&&e.pos.x<=s.x1+0.05&&e.pos.z>=s.z0-0.05&&e.pos.z<=s.z1+0.05;
+  const entry=up?s.lowOut:s.highOut, enter=up?s.lowIn:s.highIn, exit=up?s.highIn:s.lowIn;
+  // on the flight: head for its far end. Off it: head for the foot (or the head) of the stairs, and once in front of them,
+  // look straight up the flight, so a creature never lunges at the empty stairs
+  if(inS) return {x:exit.x,z:exit.z,see:true};
+  if(Math.hypot(e.pos.x-entry.x,e.pos.z-entry.z)<3&&wallsClear(e.pos.x,e.pos.z,enter.x,enter.z)) return {x:exit.x,z:exit.z,see:true};
+  return {x:entry.x,z:entry.z,see:true}; }
+// while a creature follows her towards the stairs it keeps its eyes on where it thinks she is
+{ const l0=lineOfSight; lineOfSight=function(ax,az,bx,bz,see,skipDoors){ const g=LV.ghostPt; if(g&&((Math.abs(bx-g.x)<1e-6&&Math.abs(bz-g.z)<1e-6)||(Math.abs(ax-g.x)<1e-6&&Math.abs(az-g.z)<1e-6))) return true; return l0(ax,az,bx,bz,see,skipDoors); }; }
+const lvHide=(fn)=>{ const moved=[]; for(const e of enemies){ if(e._lvI!==undefined&&e._lvI!==player._lvI){ moved.push(e); e.pos.x+=1e4; } } try{ return fn(); } finally{ for(const e of moved) e.pos.x-=1e4; } };
+function lvPlayerCtx(){ if(player._lvY===undefined){ player._lvY=world.spawn&&world.spawn.lv||0; player._lvI=lvIndex(player._lvY); } lvUse(player._lvI); LV.ref=player._lvY; }
+{ const up0=updatePlayer; updatePlayer=function(dt){ if(!LV.views) return up0(dt); lvPlayerCtx();
+    try{ return lvHide(()=>up0(dt)); } finally{ LV.ref=player._lvY; player._lvY=player.vault?player._lvY:groundY(player.pos.x,player.pos.z); lvTrack(player); lvPlayerCtx(); } }; }
+{ const w0=wpnStep; wpnStep=function(dt){ if(!LV.views) return w0(dt); lvPlayerCtx(); return lvHide(()=>w0(dt)); }; }
+{ const u0=Enemy.prototype.update; Enemy.prototype.update=function(dt){ if(!LV.views) return u0.call(this,dt);
+    if(this._lvY===undefined){ this._lvY=this._lvSpawn??player._lvY??0; this._lvI=lvIndex(this._lvY); }
+    lvUse(this._lvI); LV.ref=this._lvY; const same=this._lvI===player._lvI, px=player.pos.x, pz=player.pos.z, gb=player.grabbed;
+    if(!same){ const P=lvProxy(this); player.pos.x=P.x; player.pos.z=P.z; LV.ghost=this; LV.ghostPt=P.see?{x:player.pos.x,z:player.pos.z}:null; if(P.see) this._lvFollow=true; }
+    try{ return u0.call(this,dt); }
+    finally{ if(!same){ player.pos.x=px; player.pos.z=pz; LV.ghost=null; LV.ghostPt=null; if(player.grabbed===this&&gb!==this) player.grabbed=gb; }
+      else if(Math.hypot(px-this.pos.x,pz-this.pos.z)<16&&lineOfSight(this.pos.x,this.pos.z,px,pz,true)) this._lvSeen=gameTime;
+      LV.ref=this._lvY; this._lvY=groundY(this.pos.x,this.pos.z); lvTrack(this); lvPlayerCtx(); } }; }
+// a creature fooled into going for the stairs can't hurt her from the wrong floor
+for(const m of ["hurt","bite"]){ const f=player[m]; if(typeof f==="function") player[m]=function(...a){ if(LV.ghost) return; return f.apply(this,a); }; }
+// a new creature starts on its spawn's level (map spawns), or on Norah's (spawned from the keys)
+{ const s0=spawn; spawn=function(type,x,z,opts={}){ if(!LV.views) return s0(type,x,z,opts);
+    let ly=player._lvY??0; if(x!==undefined){ const m=world.enemySpawns.find(q=>q.x===x&&q.z===z); if(m&&m.lv!==undefined) ly=m.lv; }
+    const i=lvIndex(ly); lvUse(i); const rf=LV.ref; LV.ref=ly+0.05; let e;
+    try{ e=s0(type,x,z,opts); } finally{ LV.ref=rf; lvPlayerCtx(); }
+    if(e){ e._lvSpawn=ly; e._lvY=ly; e._lvI=i; } return e; }; }
+// play starts on the spawn's level
+{ const sp0=startPlay; startPlay=function(...a){ player._lvY=undefined; player._lvI=undefined; LV.view=null; const r=sp0.apply(this,a); if(LV.views) lvPlayerCtx(); return r; }; }
+
+// ---------------------------------------------------------------- the builder: a level switch, and a Stairs tool
+ED.lv=0;
+const LV_NAMES=v=>v===0?"Ground":v<0?(v>=-3.3?"Basement":`Basement ${Math.round(-v/3.2)}`):(v<=3.3?"Upstairs":`Floor ${Math.round(v/3.2)+1}`);
+function edLevels(){ const s=new Set([0,ED.lv]); for(const o of ED.doc.objects){ s.add(lvOf(o)); if(o.type==="stairs") s.add(lvOf(o)+(+o.rise||LV.rise)); } return [...s].sort((a,b)=>a-b); }
+// while the plan is drawn, clicked or edited, it sees only the current level's objects (plus the stairs coming up into it);
+// what's added lands on that level
+function edScoped(fn){ return function(...a){ if(ED._sc||!ED.doc) return fn.apply(this,a); const L=ED.lv, doc=ED.doc, all=doc.objects;
+    if(!L&&!all.some(o=>o.lv||o.type==="stairs")) return fn.apply(this,a);
+    const sub=all.filter(o=>lvOf(o)===L||(o.type==="stairs"&&Math.abs(lvOf(o)+(+o.rise||LV.rise)-L)<0.05)); doc.objects=sub; ED._sc=true;
+    try{ return fn.apply(this,a); }
+    finally{ ED._sc=false; if(ED.doc===doc){ const cur=doc.objects, cs=new Set(cur), ss=new Set(sub), as=new Set(all);
+        let out=all.filter(o=>!ss.has(o)||cs.has(o)); const added=cur.filter(o=>!as.has(o)); for(const o of added){ if(L&&o.lv===undefined) o.lv=L; }
+        if(added.some(o=>o.type==="spawn")) out=out.filter(o=>o.type!=="spawn"); doc.objects=out.concat(added); }
+      else if(doc.objects===sub){ /* the doc was replaced (undo/redo); the old one is gone */ } } }; }
+for(const nm of ["edToolDown","edToolMove","edToolUp","edEndChain","planHit","drawPlan","edNearestWall","edMakeRect","edRoofFit","edRoofFor","edDelete","edDuplicate"]){
+  const f=globalThis[nm]; if(typeof f==="function") globalThis[nm]=edScoped(f); }
+// new things land on the current level; heights of lights and cameras are kept relative to it
+{ const a0=edAdd; edAdd=function(o){ const L=ED.lv||0;
+    if(L&&o.lv===undefined){ o.lv=L; if(o.type==="light") o.y=+ED.opts.light.height; if(o.type==="camera"){ o.y=+ED.opts.camera.height; if(o.look) o.look[1]=0.8; } if(o.type==="floor") o.y=0; }
+    return a0(o); }; }
+// the 3D view shows the current level and those under it (what's above is hidden so you can see in)
+{ const r0=edDoRebuild; edDoRebuild=function(){ r0(); if(!world||!ED.doc) return; const L=ED.lv||0, lvById={}; for(const o of ED.doc.objects) lvById[o.id]=lvOf(o);
+    const hide=c=>{ const id=c.userData.oid; if(id!==undefined&&lvById[id]!==undefined&&lvById[id]>L+0.05) c.visible=false; };
+    for(const c of world.group.children) hide(c); for(const c of ED.helpers.children) hide(c); }; }
+function edSetLevel(v){ ED.lv=+v||0; LV.ref=ED.lv+0.05; ED.sel=null; ED.selOp=null; ED.draft=null; edLevelUI(); edRebuild(true); edRenderInspector(); ED.planDirty=true; edStatusMsg(`Building on: ${LV_NAMES(ED.lv)} (${ED.lv.toFixed(1)} m)`); }
+function edLevelUI(){ let box=$("edLvBox"); const tools=$("edTools"); if(!tools) return;
+  if(!box){ box=H("div",{id:"edLvBox",style:"flex:0 0 auto;width:96px;max-width:100%;overflow:hidden;box-sizing:border-box;display:flex;flex-direction:column;gap:2px;padding:2px;font:10px monospace;color:#b8ae98"}); }
+  if(box.parentNode!==tools||tools.firstChild!==box) tools.insertBefore(box,tools.firstChild);
+  box.innerHTML=""; box.appendChild(H("span",{text:"LEVEL",style:"line-height:10px"}));
+  const sel=H("select",{id:"edLv",title:"Which level you're building on",style:"width:100%;height:22px;font:10px monospace;box-sizing:border-box"});
+  for(const v of edLevels().reverse()) sel.appendChild(H("option",{value:String(v),text:v===0?"Ground":v>0?`Up ${Math.round(v/3.2)}`:`Down ${Math.round(-v/3.2)}`, title:`${LV_NAMES(v)} (${v.toFixed(1)} m)`}));
+  sel.value=String(ED.lv||0); sel.onchange=()=>{ edSetLevel(sel.value); sel.blur(); }; box.appendChild(sel);
+  const row=H("div",{style:"display:flex;gap:3px"}); const lv=edLevels();
+  row.appendChild(H("button",{text:"+↑",title:"Start a new level above the top one",style:"flex:1;height:16px;padding:0;font:10px monospace",onclick:()=>edSetLevel(+(lv[lv.length-1]+LV.rise).toFixed(2))}));
+  row.appendChild(H("button",{text:"+↓",title:"Start a basement under the lowest level",style:"flex:1;height:16px;padding:0;font:10px monospace",onclick:()=>edSetLevel(+(lv[0]-LV.rise).toFixed(2))}));
+  box.appendChild(row); }
+{ const i0=edInitUI; edInitUI=function(...a){ const r=i0.apply(this,a); edLevelUI(); return r; }; }
+{ const l0=edAfterLoad; edAfterLoad=function(...a){ if(ED.doc&&!edLevels().includes(ED.lv)) ED.lv=0; LV.ref=(ED.lv||0)+0.05; const r=l0.apply(this,a); edLevelUI(); return r; }; }
+{ const s0=edStatus; edStatus=function(){ s0(); const el=$("edStatus"); if(el&&ED.doc&&(ED.lv||edLevels().length>1)) el.insertAdjacentHTML("afterbegin",`<span>level <b>${LV_NAMES(ED.lv||0)}</b></span>`); }; }
 buildPanel(); scene.fog.density = CFG.world.fog;
 sbBoot();
 </script>

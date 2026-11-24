@@ -2,7 +2,7 @@
 const ED = {doc:null, sel:null, selOp:null, tool:"select", view:"3d", snap:0.25, draft:null, drag:null, undo:[], redo:[], cursor:{x:0,z:0,ok:false},
   pan:{x:0,z:0}, zoom:30, orbit:{tx:0,ty:0,tz:0,yaw:0.75,pitch:0.85,dist:26}, planDirty:true, terrainImg:null, terrainDirty:true,
   helpers:new THREE.Group(), selBox:null, rebuildT:0, saveT:0, tab:"inspect", assetQ:"", assetCat:"all", thumbs:{}, preview:null, lastPick:0,
-  opts:{ roof:{height:3.2,color:"#3a3630",tex:""}, room:{roof:true}, wall:{height:3.2,thick:0.2,color:"#5e594f",tex:""}, floor:{tex:"",colA:"#2e2a26",colB:"#36322c"}, door:{width:1,closed:false,locked:false,key:""}, window:{width:1.2,sill:0.9,top:2.1}, gap:{width:1.2},
+  opts:{ roof:{height:3.2,color:"#3a3630",tex:""}, stairs:{color:"#5a4a38",rise:3.2}, room:{roof:true}, wall:{height:3.2,thick:0.2,color:"#5e594f",tex:""}, floor:{tex:"",colA:"#2e2a26",colB:"#36322c"}, door:{width:1,closed:false,locked:false,key:""}, window:{width:1.2,sill:0.9,top:2.1}, gap:{width:1.2},
     block:{h:1,color:"#5b4128",tex:"",push:true,name:"crate",search:false}, pillar:{r:0.35,h:3,color:"#5a5246"}, prop:{asset:"wardrobe",rot:0,scale:1},
     terrain:{mode:"raise",radius:3,strength:0.5,paint:1}, enemy:{kind:"across",start:"hunting"}, item:{item:"ammo",qty:6,name:"",text:""}, exit:{r:0.9,needs:""},
     light:{color:"#ffb060",intensity:1,dist:8,height:2.6}, camera:{height:2.8,fov:60,track:true}, path:{width:1.6,tex:"",color:"#6a665e"}, spawn:{}, corpse:{} } };
@@ -18,12 +18,12 @@ const IC = {
   prop:'<path d="M6 20V9h12v11M4 9h16M9 9V5h6v4M9 14h6"/>', terrain:'<path d="M2 19l6-9 4 5 3-4 7 8z"/>', spawn:'<circle cx="12" cy="6" r="3"/><path d="M12 9v7M8 12h8M12 16l-3 5M12 16l3 5"/>',
   enemy:'<circle cx="12" cy="7" r="3"/><path d="M12 10l-2 6M10 16l-3 5M10 16l4 5M11 12l-5 2M11 12l6-1"/>', item:'<path d="M12 3l7 9-7 9-7-9z"/>', exit:'<circle cx="12" cy="12" r="8"/><path d="M9 12h7M13 9l3 3-3 3"/>',
   light:'<circle cx="12" cy="10" r="5"/><path d="M10 17h4M10 20h4"/>', camera:'<rect x="3" y="8" width="13" height="9"/><path d="M16 11l5-3v9l-5-3"/>', corpse:'<path d="M3 16h16M5 13h6l3 3M17 13a2 2 0 1 0 0 .1"/>',
-  path:'<path d="M5 21c2-6 10-4 12-10S17 4 19 3"/><path d="M8 21c2-5 9-4 11-9"/>'
+  path:'<path d="M5 21c2-6 10-4 12-10S17 4 19 3"/><path d="M8 21c2-5 9-4 11-9"/>', stairs:'<path d="M3 20h5v-5h5v-5h5V5h3"/>'
 };
-const TOOLS=[["select","Select","V"],["wall","Wall","W"],["room","Room","R"],["floor","Floor","F"],["roof","Roof","U"],["door","Door","D"],["window","Window","N"],["gap","Opening","G"],["block","Block","B"],["pillar","Pillar","O"],
+const TOOLS=[["select","Select","V"],["wall","Wall","W"],["room","Room","R"],["floor","Floor","F"],["roof","Roof","U"],["stairs","Stairs","J"],["door","Door","D"],["window","Window","N"],["gap","Opening","G"],["block","Block","B"],["pillar","Pillar","O"],
   ["prop","Furniture","A"],["terrain","Terrain","T"],["path","Path","P"],["spawn","Norah","S"],["enemy","Enemy","Z"],["item","Item","I"],["exit","Exit","X"],["light","Light","L"],["camera","Camera","C"],["corpse","Body","K"]];
 const HINTS={select:"Click to select · drag to move · Q/E turn · Del deletes · Ctrl+D duplicates · arrows nudge",
-  wall:"Click, click, click to chain walls · double-click, right-click or Esc ends the chain", room:"Drag a rectangle: floor and four walls", floor:"Drag a rectangle of floor", roof:"Click inside a room to roof it (fitted to its walls), or drag a rectangle",
+  wall:"Click, click, click to chain walls · double-click, right-click or Esc ends the chain", room:"Drag a rectangle: floor and four walls", floor:"Drag a rectangle of floor", roof:"Click inside a room to roof it (fitted to its walls), or drag a rectangle", stairs:"Drag along the flight, from the bottom step to the top: it climbs to the next level up (pick levels at the top of the tools)",
   door:"Click on a wall to cut a door into it", window:"Click on a wall to add a window", gap:"Click on a wall to cut an open doorway", block:"Drag a rectangle: a crate, a stage, a counter. Low ones can be vaulted",
   pillar:"Click to place a pillar", prop:"Click to place the chosen furniture (ASSETS tab) · Q/E turn it before placing", terrain:"Drag to sculpt. Pick raise, lower, smooth, flatten or paint in INSPECT",
   path:"Click points along a road or trail · double-click or Esc finishes", spawn:"Click where Norah starts, drag to face her", enemy:"Click to place, drag to face it", item:"Click to drop an item on the floor",
@@ -56,10 +56,10 @@ function edBuildHelpers(){
       if(edCreatureKind(k)){ r=edCreature(k,o); } else if(k==="brute"||k==="dummy"){ r=buildBody(k,null); r.scale.setScalar(CFG.brute.height/1.8); }
       else { const v=k.startsWith("across:")?k.slice(7):k==="across_legless"?"crawler":"walker"; r=buildPerson(VMAP[v]||VMAP.walker, (o.x*1000+o.z*37)|0).root; if(k==="across") r.traverse(c=>{ if(c.isMesh&&c.material&&c.material.color){ c.material=c.material.clone(); c.material.color.multiplyScalar(0.7); } }); }
       r.position.set(o.x,groundY(o.x,o.z),o.z); r.rotation.y=(o.yaw||0)*D2R; tag(r,o); tag(ring(o,o.start==="hunting"?0xd84040:0xd8b040,0.42),o); tag(arrow(o,0xd84040),o); }
-    else if(o.type==="light"){ const m=new THREE.Mesh(new THREE.OctahedronGeometry(0.14,0),new THREE.MeshBasicMaterial({color:hexNum(o.color||"#ffb060")})); m.position.set(o.x,o.y??2.6,o.z); tag(m,o);
-      const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(o.x,o.y??2.6,o.z),new THREE.Vector3(o.x,groundY(o.x,o.z),o.z)]); tag(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x6a5a30})),o); }
-    else if(o.type==="camera"){ const L=o.look||[o.x,0.8,o.z-3]; const g=new THREE.Group(); const b=new THREE.Mesh(new THREE.BoxGeometry(0.22,0.16,0.3),new THREE.MeshBasicMaterial({color:0x59a6c9})); g.add(b); g.position.set(o.x,o.y??2.8,o.z); g.lookAt(L[0],L[1],L[2]); tag(g,o);
-      const lg=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(o.x,o.y??2.8,o.z),new THREE.Vector3(L[0],L[1],L[2])]); if(o.id===ED.sel) tag(new THREE.Line(lg,new THREE.LineDashedMaterial({color:0x59a6c9,dashSize:0.2,gapSize:0.15})).computeLineDistances(),o); }
+    else if(o.type==="light"){ const m=new THREE.Mesh(new THREE.OctahedronGeometry(0.14,0),new THREE.MeshBasicMaterial({color:hexNum(o.color||"#ffb060")})); m.position.set(o.x,(o.y??2.6)+lvOf(o),o.z); tag(m,o);
+      const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(o.x,(o.y??2.6)+lvOf(o),o.z),new THREE.Vector3(o.x,groundY(o.x,o.z),o.z)]); tag(new THREE.Line(g,new THREE.LineBasicMaterial({color:0x6a5a30})),o); }
+    else if(o.type==="camera"){ const lv=lvOf(o), L0=o.look||[o.x,0.8,o.z-3], L=[L0[0],L0[1]+lv,L0[2]]; const g=new THREE.Group(); const b=new THREE.Mesh(new THREE.BoxGeometry(0.22,0.16,0.3),new THREE.MeshBasicMaterial({color:0x59a6c9})); g.add(b); g.position.set(o.x,(o.y??2.8)+lv,o.z); g.lookAt(L[0],L[1],L[2]); tag(g,o);
+      const lg=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(o.x,(o.y??2.8)+lv,o.z),new THREE.Vector3(L[0],L[1],L[2])]); if(o.id===ED.sel) tag(new THREE.Line(lg,new THREE.LineDashedMaterial({color:0x59a6c9,dashSize:0.2,gapSize:0.15})).computeLineDistances(),o); }
     else if((o.type==="prop"||o.type==="block")&&o.search){ const n=(o.items||[]).length; const m=new THREE.Mesh(new THREE.OctahedronGeometry(0.1,0),new THREE.MeshBasicMaterial({color:n?0xe8c77a:0x6a6458}));
       const c=world.containers.find(c=>c.oid===o.id); if(c){ m.position.set(c.box.x,(c.box.y0||0)+(c.box.h||1)+0.3,c.box.z); tag(m,o); } }
   }
@@ -94,6 +94,9 @@ function edMakeRect(tool,a,b){
   const x0=Math.min(a.x,b.x), z0=Math.min(a.z,b.z), w=Math.abs(b.x-a.x), d=Math.abs(b.z-a.z);
   if(tool==="roof"){ if(w<0.2||d<0.2){ const r=edRoofFor(a.x,a.z); if(!r){ edStatusMsg("Click inside a room (on its floor) to roof it"); return null; } return edAdd(r); }
     return edAdd(edRoofFit({type:"roof",x:x0,z:z0,w,d,y:null,color:ED.opts.roof.color,tex:ED.opts.roof.tex})); }
+  if(tool==="stairs"){ if(Math.max(w,d)<1) { edStatusMsg("Drag the length of the flight, bottom to top"); return null; } const alongX=w>=d, dir=alongX?(b.x>=a.x?"+x":"-x"):(b.z>=a.z?"+z":"-z");
+    const W=Math.max(1.2,Math.min(alongX?d:w,2.4)), cx=x0+w/2, cz=z0+d/2;
+    return edAdd({type:"stairs",x:+(alongX?x0:cx-W/2).toFixed(3),z:+(alongX?cz-W/2:z0).toFixed(3),w:+(alongX?w:W).toFixed(3),d:+(alongX?W:d).toFixed(3),dir,rise:ED.opts.stairs.rise,color:ED.opts.stairs.color}); }
   if(w<0.2||d<0.2) return null;
   const O=ED.opts, y=+(ED.doc.terrain&&ED.doc.terrain.on ? tSample(ED.doc.terrain,x0+w/2,z0+d/2) : 0).toFixed(2);
   if(tool==="block") return edAdd({type:"block",x:x0+w/2,z:z0+d/2,w,d,h:O.block.h,color:O.block.color,tex:O.block.tex,push:O.block.push,name:O.block.name,search:O.block.search,items:[]});
@@ -154,7 +157,7 @@ function edToolDown(p, ev, pickId, from3d){
   }
   if(t==="wall"){ const s=snapP(p,ev); if(!ED.draft||ED.draft.kind!=="wall") ED.draft={kind:"wall",a:s,b:s}; else { if(Math.hypot(s.x-ED.draft.a.x,s.z-ED.draft.a.z)>0.05){ edSnapshot(); const O=ED.opts.wall; const w=edAdd({type:"wall",a:[ED.draft.a.x,ED.draft.a.z],b:[s.x,s.z],height:O.height,thick:O.thick,color:O.color,tex:O.tex,openings:[]}); ED.draft={kind:"wall",a:s,b:s}; edChanged({inspector:true}); } } ED.planDirty=true; return true; }
   if(t==="path"){ const s=snapP(p,ev); if(!ED.draft||ED.draft.kind!=="path") ED.draft={kind:"path",pts:[[s.x,s.z]],b:s}; else ED.draft.pts.push([s.x,s.z]); ED.planDirty=true; return true; }
-  if(t==="room"||t==="floor"||t==="block"||t==="roof"){ const s=snapP(p,ev); ED.draft={kind:"rect",tool:t,a:s,b:s}; ED.drag={kind:"rect"}; return true; }
+  if(t==="room"||t==="floor"||t==="block"||t==="roof"||t==="stairs"){ const s=snapP(p,ev); ED.draft={kind:"rect",tool:t,a:s,b:s}; ED.drag={kind:"rect"}; return true; }
   if(t==="door"||t==="window"||t==="gap"){ edAddOpening(t,p); return true; }
   if(t==="terrain"){ edSnapshot(); edEnsureTerrain(); edBrush(p,true); ED.drag={kind:"terrain",last:0}; return true; }
   if(["spawn","enemy","camera"].includes(t)){ edSnapshot(); const o=edPlacePoint(t,p,ev); ED.drag={kind:"aim",o,start:p}; edChanged({inspector:true}); return true; }
@@ -167,7 +170,7 @@ function edToolMove(p, ev){
   if(D.kind==="rect"){ ED.draft.b=snapP(p,ev); ED.planDirty=true; }
   else if(D.kind==="terrain"){ const now=performance.now(); if(now-D.last>35){ D.last=now; edBrush(p,false); } }
   else if(D.kind==="aim"){ const o=D.o, dx=p.x-o.x, dz=p.z-o.z; if(Math.hypot(dx,dz)<0.25) return;
-    if(o.type==="camera") o.look=[+p.x.toFixed(2),+(groundY(p.x,p.z)+0.8).toFixed(2),+p.z.toFixed(2)]; else o.yaw=Math.round(Math.atan2(dx,dz)*R2D/15)*15;
+    if(o.type==="camera") o.look=[+p.x.toFixed(2),+(groundY(p.x,p.z)+0.8-lvOf(o)).toFixed(2),+p.z.toFixed(2)]; else o.yaw=Math.round(Math.atan2(dx,dz)*R2D/15)*15;
     ED.planDirty=true; edBuildHelpers(); edUpdateSelBox(); }
   else if(D.kind==="move"||D.kind==="end"){
     if(!D.moved && Math.hypot(ev.clientX-D.sx,ev.clientY-D.sy)<4) return; if(!D.moved){ D.moved=true; edSnapshotFrom(D.orig); }
@@ -210,6 +213,7 @@ function planHit(p){
   for(const o of os){ if(o.type==="block"&&Math.abs(p.x-o.x)<=o.w/2&&Math.abs(p.z-o.z)<=o.d/2){ const a=o.w*o.d; if(a<ba){ ba=a; best=o.id; } } }
   if(best) return best;
   for(const o of os){ if(o.type!=="path") continue; const P=o.points||[]; for(let i=0;i<P.length-1;i++){ const [ax,az]=P[i],[bx,bz]=P[i+1], dx=bx-ax, dz=bz-az, L2=dx*dx+dz*dz||1, t=clamp(((p.x-ax)*dx+(p.z-az)*dz)/L2,0,1); if(Math.hypot(ax+dx*t-p.x,az+dz*t-p.z)<(+o.width||1.6)/2) return o.id; } }
+  for(const o of os){ if(o.type==="stairs"&&p.x>=o.x&&p.x<=o.x+o.w&&p.z>=o.z&&p.z<=o.z+o.d) return o.id; }
   for(const o of os){ if(o.type!=="roof") continue; const ins=p.x>=o.x&&p.x<=o.x+o.w&&p.z>=o.z&&p.z<=o.z+o.d, edge=Math.min(Math.abs(p.x-o.x),Math.abs(p.x-o.x-o.w),Math.abs(p.z-o.z),Math.abs(p.z-o.z-o.d)); if(ins&&(edge<Math.max(0.3,tol)||ED.tool==="roof")) return o.id; }
   for(const o of os){ if(o.type==="floor"&&p.x>=o.x&&p.x<=o.x+o.w&&p.z>=o.z&&p.z<=o.z+o.d){ const a=o.w*o.d; if(a<ba){ ba=a; best=o.id; } } }
   return best;
@@ -240,6 +244,12 @@ function drawPlan(){
   for(const o of os) if(o.type==="path"){ g.strokeStyle=o.id===sel?selCol:sbTexAvg(o.tex,o.color||"#6a665e"); g.lineWidth=Math.max(2,(+o.width||1.6)*Z); g.lineCap="round"; g.lineJoin="round"; g.globalAlpha=0.85; g.beginPath(); (o.points||[]).forEach((q,i)=>{ const [x,z]=S(q[0],q[1]); i?g.lineTo(x,z):g.moveTo(x,z); }); g.stroke(); g.globalAlpha=1; g.lineCap="butt"; }
   for(const o of os) if(o.type==="roof"){ const [x,z]=S(o.x,o.z); g.save(); g.setLineDash([6,4]); g.strokeStyle=o.id===sel?selCol:"rgba(220,190,120,.55)"; g.lineWidth=o.id===sel?2:1.2; g.strokeRect(x+1,z+1,o.w*Z-2,o.d*Z-2); g.setLineDash([]);
     if(o.w*Z>60){ g.fillStyle="rgba(220,190,120,.6)"; g.font="10px monospace"; g.fillText(`roof ${(+o.y).toFixed(1)} m`,x+5,z+12); } g.restore(); }
+  for(const o of os) if(o.type==="stairs"){ const [x,z]=S(o.x,o.z), W=o.w*Z, D=o.d*Z, up=lvOf(o)===ED.lv, ax=o.dir[1]==="x", N=Math.max(4,Math.round((+o.rise||3.2)/0.2));
+    g.fillStyle=up?"#4a3e30":"rgba(74,62,48,.45)"; g.fillRect(x,z,W,D); g.strokeStyle=o.id===sel?selCol:"#1a1410"; g.lineWidth=o.id===sel?2:1; g.strokeRect(x,z,W,D);
+    g.strokeStyle="rgba(0,0,0,.45)"; g.lineWidth=1; g.beginPath(); for(let k=1;k<N;k++){ if(ax){ g.moveTo(x+W*k/N,z); g.lineTo(x+W*k/N,z+D); } else { g.moveTo(x,z+D*k/N); g.lineTo(x+W,z+D*k/N); } } g.stroke();
+    const cx=x+W/2, cz=z+D/2, L=(ax?W:D)*0.35, v={"+z":[0,1],"-z":[0,-1],"+x":[1,0],"-x":[-1,0]}[o.dir].map(c=>up?c:-c); g.strokeStyle="#e8c77a"; g.lineWidth=2; g.beginPath(); g.moveTo(cx-v[0]*L,cz-v[1]*L); g.lineTo(cx+v[0]*L,cz+v[1]*L);
+    g.lineTo(cx+v[0]*L-v[0]*8-v[1]*6,cz+v[1]*L-v[1]*8+v[0]*6); g.moveTo(cx+v[0]*L,cz+v[1]*L); g.lineTo(cx+v[0]*L-v[0]*8+v[1]*6,cz+v[1]*L-v[1]*8-v[0]*6); g.stroke();
+    if(Z>20){ g.fillStyle="#e8c77a"; g.font="10px monospace"; g.fillText(up?"UP":"DOWN",x+3,z+12); } }
   for(const o of os){
     if(o.type==="block"){ const [x,z]=S(o.x-o.w/2,o.z-o.d/2); g.fillStyle=sbTexAvg(o.tex,o.color||"#5b4128"); g.fillRect(x,z,o.w*Z,o.d*Z); g.strokeStyle=o.id===sel?selCol:"#1a1410"; g.lineWidth=o.id===sel?2:1; g.strokeRect(x,z,o.w*Z,o.d*Z); if(o.search) edBadge(g,x+o.w*Z,z,(o.items||[]).length); if(Z>26&&o.name){ g.fillStyle="#e8dfc8"; g.font="10px 'IBM Plex Mono',monospace"; g.fillText(o.name,x+3,z+11); } }
     else if(o.type==="pillar"){ const [x,z]=S(o.x,o.z); g.fillStyle=hexStr(o.color||"#5a5246"); g.beginPath(); g.arc(x,z,Math.max(3,(+o.r||0.4)*Z),0,7); g.fill(); g.strokeStyle=o.id===sel?selCol:"#111"; g.lineWidth=o.id===sel?2:1; g.stroke(); }
@@ -426,7 +436,7 @@ function edRenderInspector(){
   const P=$("pane-inspect"); if(!P) return; P.innerHTML=""; const o=selObj();
   if(!o){ edToolOptions(P); return; }
   const re=()=>edRenderInspector();
-  const head={wall:"Wall",floor:"Floor",block:"Block",pillar:"Pillar",prop:"Furniture",item:"Item on the floor",exit:"Exit",light:"Light",camera:"Fixed camera",spawn:"Norah's start",enemy:"Enemy",corpse:"Body",path:"Path"}[o.type]||o.type;
+  const head={stairs:"Stairs",wall:"Wall",floor:"Floor",block:"Block",pillar:"Pillar",prop:"Furniture",item:"Item on the floor",exit:"Exit",light:"Light",camera:"Fixed camera",spawn:"Norah's start",enemy:"Enemy",corpse:"Body",path:"Path"}[o.type]||o.type;
   P.appendChild(fHead(head, o.type==="prop"?(sbAsset(o.asset)||{}).name:null));
   const pos=()=>{ P.appendChild(fRow("X",fNum(o,"x",{step:0.05}))); P.appendChild(fRow("Z",fNum(o,"z",{step:0.05}))); };
   switch(o.type){
@@ -452,6 +462,11 @@ function edRenderInspector(){
       P.appendChild(fRow("Height (m)",fNum(o,"y",{step:0.05}),"Where it sits: on top of the walls. The shoulder camera stays under it; from above it's see-through."));
       P.appendChild(fRow("Colour",fColor(o,"color"))); P.appendChild(fRow("Texture",fSelect(o,"tex",sbTexOptions())));
       P.appendChild(fBtns([["Fit to the walls",()=>{ edSnapshot(); o.y=null; edRoofFit(o); edChanged({inspector:true}); }],["Remove",()=>{ edSnapshot(); ED.doc.objects=ED.doc.objects.filter(x=>x!==o); ED.sel=null; edChanged({inspector:true}); },"danger"]])); break;
+    case "stairs": pos(); P.appendChild(fRow("Width",fNum(o,"w",{step:0.1,min:0.6}))); P.appendChild(fRow("Depth",fNum(o,"d",{step:0.1,min:0.6})));
+      P.appendChild(fRow("Way up",fSelect(o,"dir",[["+z","South (+Z)"],["-z","North (−Z)"],["+x","East (+X)"],["-x","West (−X)"]])));
+      P.appendChild(fRow("Climbs (m)",fNum(o,"rise",{step:0.1,min:0.4}),`From ${LV_NAMES(lvOf(o))} (${lvOf(o).toFixed(1)} m) up to ${(lvOf(o)+(+o.rise||3.2)).toFixed(1)} m. The floor above gets a hole over it, railed off except at the top step.`));
+      P.appendChild(fRow("Colour",fColor(o,"color"))); P.appendChild(fRow("Texture",fSelect(o,"tex",sbTexOptions())));
+      P.appendChild(fBtns([["Remove",()=>{ edSnapshot(); ED.doc.objects=ED.doc.objects.filter(x=>x!==o); ED.sel=null; edChanged({inspector:true}); },"danger"]])); break;
     case "floor": pos(); P.appendChild(fRow("Width",fNum(o,"w",{step:0.25,min:0.2}))); P.appendChild(fRow("Depth",fNum(o,"d",{step:0.25,min:0.2})));
       P.appendChild(fRow("Height (m)",fNum(o,"y",{step:0.05}),"Characters stand at this height anywhere on this floor."));
       P.appendChild(fBtns([["Match the ground under it",()=>{ if(!ED.doc.terrain||!ED.doc.terrain.on) return; edSnapshot(); o.y=+tSample(ED.doc.terrain,o.x+o.w/2,o.z+o.d/2).toFixed(2); edChanged({inspector:true}); }],["Flatten the ground to it",()=>{ const T=ED.doc.terrain; if(!T||!T.on) return; edSnapshot(); tEach(T,o.x+o.w/2,o.z+o.d/2,Math.hypot(o.w,o.d)/2+2,(k,d,x,z)=>{ const inside=x>=o.x-1&&x<=o.x+o.w+1&&z>=o.z-1&&z<=o.z+o.d+1; if(inside) T.h[k]=+o.y||0; }); edChanged({terrain:true}); }]]));
