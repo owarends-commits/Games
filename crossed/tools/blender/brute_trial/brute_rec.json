@@ -1,0 +1,11 @@
+{
+ "model": "brute_twoarm_m01",
+ "bones": 132,
+ "walkFrames": 89,
+ "walkLen": 1.467,
+ "walkSpeed": 1.632,
+ "loopErr": 0.193,
+ "sweepLen": 4.383,
+ "sweepHit": 1.883,
+ "verts": 6927
+}
