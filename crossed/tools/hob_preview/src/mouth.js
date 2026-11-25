@@ -29,7 +29,7 @@ const snakeEyeTex=canvasTex(256,128,(g,w,h)=>{ const gr=g.createRadialGradient(6
 function setupMouthArm(){
   let skinPatch=lidMat&&lidMat.map; const img=skinMat&&skinMat.map&&skinMat.map.image;
   if(img&&img.width){ const c=document.createElement('canvas'); c.width=c.height=256; const g=c.getContext('2d'); const W=img.width, Hh=img.height; g.drawImage(img,0.02*W,0.52*Hh,0.2*W,0.2*Hh,0,0,256,256); skinPatch=new THREE.CanvasTexture(c); skinPatch.wrapS=skinPatch.wrapT=THREE.MirroredRepeatWrapping; skinPatch.repeat.set(2,1); } MA.armMat=new THREE.MeshPhongMaterial({map:skinPatch,color:0xf6e6bc,specular:0x9a9a60,shininess:110,side:THREE.DoubleSide});
-  MA.boneMat=new THREE.MeshPhongMaterial({color:0xe9dcb8,specular:0x8a8a6a,shininess:90});
+  MA.boneMat=new THREE.MeshPhongMaterial({color:0xcbb98e,specular:0x8a8a6a,shininess:90});
   MA.fleshMat=new THREE.MeshPhongMaterial({color:0xe0b49a,specular:0x7a6050,shininess:80,side:THREE.DoubleSide});
   MA.bileMat=new THREE.MeshPhongMaterial({color:0xb6b22a,specular:0xffffcc,shininess:140,transparent:true,opacity:0.9});
   MA.foamMat=new THREE.MeshPhongMaterial({color:0xf0ecc0,specular:0xffffff,shininess:60,transparent:true,opacity:0.92});
@@ -37,10 +37,10 @@ function setupMouthArm(){
   MA.tube=new Tube(40,14,MA.armMat,8); MA.root.add(MA.tube.m);
   // the hand: a long bony palm and five three-jointed fingers with knuckles
   const hand=new THREE.Group(); MA.root.add(hand); MA.hand=hand; MA.fingers=[]; const handIn=new THREE.Group(); handIn.scale.setScalar(1.7); hand.add(handIn);
-  const palmM=new THREE.Mesh(new THREE.BoxGeometry(0.46,0.1,0.42),MA.armMat); palmM.position.z=0.21; handIn.add(palmM);
-  for(let f=0;f<5;f++){ const thumb=f===4, x=thumb?0.27:-0.18+f*0.12, base=new THREE.Group(); base.position.set(x,0,thumb?0.12:0.42); if(thumb) base.rotation.y=0.9; handIn.add(base); const segs=[];
-    let par=base; for(const [L,r] of (thumb?[[0.2,0.05],[0.17,0.045],[0.13,0.04]]:[[0.28,0.05],[0.22,0.044],[0.17,0.038]])){ const j=new THREE.Group(); par.add(j);
-      const kn=new THREE.Mesh(new THREE.SphereGeometry(r*1.35,10,8),MA.boneMat); j.add(kn); const bn=new THREE.Mesh(new THREE.CylinderGeometry(r*0.8,r,L,8),MA.armMat); bn.rotation.x=Math.PI/2; bn.position.z=L/2; j.add(bn);
+  const palmM=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.14,0.46),MA.armMat); palmM.position.z=0.21; handIn.add(palmM);
+  for(let f=0;f<5;f++){ const thumb=f===4, x=thumb?0.27:-0.18+f*0.12, base=new THREE.Group(); base.position.set(x,0,thumb?0.12:0.42); base.rotation.y=thumb?0.9:(f-1.5)*0.26; handIn.add(base); const segs=[];
+    let par=base; for(const [L,r] of (thumb?[[0.17,0.075],[0.14,0.068],[0.11,0.06]]:[[0.23,0.075],[0.18,0.066],[0.14,0.057]])){ const j=new THREE.Group(); par.add(j);
+      const kn=new THREE.Mesh(new THREE.SphereGeometry(r*1.02,10,8),MA.boneMat); j.add(kn); const bn=new THREE.Mesh(new THREE.CylinderGeometry(r*0.8,r,L,8),MA.armMat); bn.rotation.x=Math.PI/2; bn.position.z=L/2; j.add(bn);
       const nx=new THREE.Group(); nx.position.z=L; j.add(nx); segs.push(j); par=nx; }
     const claw=new THREE.Mesh(new THREE.ConeGeometry(0.03,0.09,6),MA.boneMat); claw.rotation.x=Math.PI/2; claw.position.z=0.04; par.add(claw); MA.fingers.push({segs,thumb}); }
   // the snake eye on the forearm: a yellow slit eye under two heavy, shiny lids
@@ -89,11 +89,11 @@ function poseArm(t,dt,ctx,s,aim,o={}){ MA.root.visible=true; MA.on=true; const m
   ctx.sMouth=sMouth; s=Math.min(s,path.len); const N=MA.tube.N, pts=[], rad=[];
   for(let i=0;i<=N;i++){ const u=s*i/N, p=path.at(u), outK=sat((u-sMouth)/1.2)*sat((s-u)/0.8);
     const tg=path.tan(u), side=tg.clone().cross(UP).normalize(); p.addScaledVector(side,wav*0.22*outK*Math.sin(u*2.3-t*3.1)); p.y+=wav*0.12*outK*Math.sin(u*1.7-t*2.3+1);
-    pts.push(p); rad.push(0.21+0.2*sat((s-u)/1.8)+0.035*Math.sin(u*9)); }
+    pts.push(p); rad.push((0.21+0.2*sat((s-u)/1.8)+0.035*Math.sin(u*9))*(0.55+0.45*sat((s-u)/0.35))); }
   MA.tube.set(pts,rad); MA.pts=pts;
   // the hand at the tip
   const tip=pts[N], tg=pts[N].clone().sub(pts[N-2]).normalize(); MA.hand.position.copy(tip); const m=new THREE.Matrix4(), upv=o.palmUp?UP.clone():UP.clone().negate();
-  const x=upv.clone().cross(tg).normalize(), y=tg.clone().cross(x); m.makeBasis(x,y.negate(),tg); MA.hand.quaternion.setFromRotationMatrix(m); MA.hand.rotateZ(Math.PI);
+  const x=upv.clone().cross(tg).normalize(), y=tg.clone().cross(x).normalize(); m.makeBasis(x,y,tg); MA.hand.quaternion.setFromRotationMatrix(m).normalize();
   const curlK=o.curl??0.25; MA.fingers.forEach((f,fi)=>{ const jig=0.08*Math.sin(t*6+fi); f.segs.forEach((j,k)=>{ j.rotation.x=(f.thumb?0.7:1)*curlK*[0.8,1.15,1.0][k]+jig*(1-curlK); }); });
   // the eye, on top of the forearm 1.8 m back from the hand
   const ue=Math.max(0,s-1.8), ei=Math.round(ue/s*N), ep=pts[ei].clone(), et=path.tan(ue), en=UP.clone().sub(et.clone().multiplyScalar(et.y)).normalize();

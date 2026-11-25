@@ -251,8 +251,8 @@ def drape(root,nrm,length,segs=18,wob=0.0):
     for i in range(segs):
         d=(d*0.55+Vector((0,0,-1))*0.45+Vector((math.sin(i*1.3+wob)*0.08,math.cos(i*0.9+wob)*0.05,0))).normalized()
         q=push_out(p+d*seg)
-        if q.z<0.06:
-            q.z=0.06; pts.append(q.copy()); pts+= [q.copy()]*(segs-i-1); return pts
+        if q.z<0.55:   # hair ends above the floor: it's fixed to the head, so floor-length strands would swing out as rods
+            q.z=max(q.z,0.55); pts.append(q.copy()); pts+= [q.copy()]*(segs-i-1); return pts
         d=(q-p).normalized() if (q-p).length>1e-6 else d; p=q; pts.append(p.copy())
     return pts
 def ribbon(pts,r0,u0):
@@ -275,7 +275,7 @@ for p,nn in capv:
     if any((p-c[0]).length<0.16 for c in clumps): continue
     clumps.append((p,nn))
 for p,nn in clumps:
-    L=random.uniform(2.2,3.2); wob=random.random()*6; centre=drape(p,nn,L,18,wob)
+    L=random.uniform(1.5,2.5); wob=random.random()*6; centre=drape(p,nn,L,18,wob)
     for s_ in range(random.randint(3,5)):
         off=Vector((random.uniform(-0.06,0.06),random.uniform(-0.06,0.06),random.uniform(-0.03,0.03)))
         own=drape(push_out(p+off),nn,L*random.uniform(0.85,1.05),18,wob+random.uniform(-0.6,0.6))
