@@ -75,3 +75,26 @@ The model is `crossed/assets/characters/lowpoly/bosses/hob/hob.glb` (see the REA
 
 ## Earlier concepts, superseded
 Before the model was found, a stand-in "Old Hob" was prototyped: Bellemood fused with four ACROSS from the pews. That included an Offertory transformation, censer and sermon attacks, and a hearth-furnace idea. The real model replaced all of it. Bellemood driving the giant is what carried over.
+
+## Rework (2026-11-25, user direction)
+The model is rebuilt from the rigged Hob in Blender by `crossed/tools/blender/hob_v2/` (the original `hob.glb` is untouched). The preview loads it as `hob_preview/m/bosses/hob/hob2.glb`; add `?old` to the preview's address for the old model.
+
+- **Sharper:**
+  - The texture atlas goes from 1024 to 2048, with the paint sharpened.
+  - Generated pores, fine veins and grime are added on the skin, plus a normal map.
+  - Seams are welded and the mesh gets one subdivision level.
+  - The face is still the placeholder.
+- **Fetal body:**
+  - Skinny, with a hunched, curled spine.
+  - Long, bony forearms, fingers and back legs; the hands stay planted on the floor.
+  - The ribs jut out over a thinner torso. The vertebrae run along the spine and cap the rib tops.
+  - The butt sits on the end of the torso with no gap.
+- **Removed:** the shoulder blades, the toad bumps on the back legs, the old hair panels, the hand tongues and the palm eyes.
+- **Translucent torso:** coiled guts and organ sacs squirm behind thin skin, harder while it retches.
+- **Hair:** long, greasy, stringy clumps hanging over the head and across the left side of the face. Wet black.
+- **The mouth arm** (`hob_preview/src/mouth.js`):
+  - **Look:** a giant arm with the body's cream skin, glossy with bile, and a long bony five-fingered hand. A closed, snake-like yellow eye sits on the forearm; it opens when it spots Norah. Smaller flesh-coloured arms branch off it, reaching away and grasping.
+  - **Normally swallowed:** to grab, the gut convulses and the Hob retches. Bile and foam spit from its gut, the jaw unhinges, and it coughs the arm up while bile and foam pour from its mouth onto the floor, leaving a puddle. Each push of the arm brings another gush.
+  - **The grab:** it replaces the old one-handed grabs. The Hob keeps crawling on both hands while the arm searches with its eye shut. The eye snaps open on seeing her, the arm lunges, catches her, and reels her back to its mouth.
+  - **Escape:** break free, or shoot the eye, which bursts; the arm recoils, drops her and is swallowed. If she doesn't escape, it bites, then swallows the arm back down.
+- **Preview animations:** 1 crawl, 2 fast crawl, 3 screech, 4 mouth-arm grab (bite), 5 mouth-arm grab (eye shot), 6 throne grab.

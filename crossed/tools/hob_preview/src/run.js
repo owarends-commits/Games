@@ -3,9 +3,18 @@ const loader=new THREE.GLTFLoader(); const load=k=>new Promise((res,rej)=>loader
 let nora=null, cur="crawl", t=0, ctx={}, camMode="side", slow=false, playAll=false, boneHelp=null;
 const orbit={yaw:0.9,pitch:0.3,drag:null};
 function setupHob(g){ const group=new THREE.Group(); group.rotation.y=Math.PI/2; scene.add(group); group.add(g.scene);
-  let mesh=null; g.scene.traverse(o=>{ if(o.isSkinnedMesh) mesh=o; }); mesh.frustumCulled=false;
+  let mesh=null, ins=null; g.scene.traverse(o=>{ if(!o.isSkinnedMesh) return; if(/insides/i.test(o.name)||(o.morphTargetInfluences&&o.morphTargetInfluences.length)) ins=o; else if(!mesh||o.geometry.attributes.position.count>mesh.geometry.attributes.position.count) mesh=o; }); mesh.frustumCulled=false;
   const geo=mesh.geometry; geo.computeVertexNormals(); const n=geo.attributes.position.count; geo.setAttribute("color",new THREE.BufferAttribute(new Float32Array(n*3).fill(1),3));
   skinMat=new THREE.MeshLambertMaterial({map:mesh.material.map,skinning:true,vertexColors:true,side:THREE.DoubleSide}); if(skinMat.map) skinMat.map.encoding=THREE.LinearEncoding; mesh.material=skinMat;
+  // the reworked Hob (hob2.glb): the thin torso skin (flagged in uv2.x) is translucent over its insides; the hair (uv2.y far out) is wet and black
+  { const f2=geo.attributes.uv2, I=geo.index; if(f2&&I&&ins){ const a=I.array, body=[], thin=[], hair=[];
+      for(let t=0;t<a.length;t+=3){ const v=[a[t],a[t+1],a[t+2]]; const isH=v.some(i=>Math.abs(f2.getY(i))>2), isT=!isH&&v.every(i=>f2.getX(i)>0.5); (isH?hair:isT?thin:body).push(a[t],a[t+1],a[t+2]); }
+      const all=new (a.constructor)(a.length); all.set(body,0); all.set(thin,body.length); all.set(hair,body.length+thin.length); geo.setIndex(new THREE.BufferAttribute(all,1)); geo.clearGroups();
+      geo.addGroup(0,body.length,0); geo.addGroup(body.length,thin.length,1); geo.addGroup(body.length+thin.length,hair.length,2);
+      const thinMat=new THREE.MeshLambertMaterial({map:skinMat.map,skinning:true,vertexColors:true,side:THREE.DoubleSide,transparent:true,opacity:0.6,depthWrite:false});
+      const hairMat=new THREE.MeshPhongMaterial({color:0x0d0b09,specular:0x6a6a66,shininess:95,skinning:true,side:THREE.DoubleSide});
+      mesh.material=[skinMat,thinMat,hairMat];
+      ins.frustumCulled=false; ins.material=new THREE.MeshPhongMaterial({map:ins.material.map,color:0xffffff,specular:0x664444,shininess:70,skinning:true,morphTargets:true}); } }
   // the tongue wears the Hob's own skin: a patch of the atlas cut from where the torso's skin is mapped
   { const uv=geo.attributes.uv, f2=geo.attributes.uv2, us=[], vs=[]; for(let i=0;i<n;i++) if(f2&&f2.getX(i)>0.9){ us.push(uv.getX(i)); vs.push(uv.getY(i)); } us.sort((a,b)=>a-b); vs.sort((a,b)=>a-b);
     const img=skinMat.map&&skinMat.map.image; let tmap=null; if(img&&us.length){ const cu=us[us.length>>1], cv=vs[vs.length>>1], W=img.width, Hh=img.height, c=document.createElement("canvas"); c.width=c.height=128; const g2=c.getContext("2d");
@@ -19,12 +28,12 @@ function setupHob(g){ const group=new THREE.Group(); group.rotation.y=Math.PI/2;
   const bins={}; for(const i of idx){ const k=Math.round(P.getZ(i)*4); (bins[k]=bins[k]||[]).push(P.getY(i)); } const cy={}; for(const k in bins){ const a=bins[k]; cy[k]=(Math.min(...a)+Math.max(...a))/2; }
   const D=new Float32Array(idx.length*3), Z=new Float32Array(idx.length), Ang=new Float32Array(idx.length);
   idx.forEach((i,k)=>{ const x=P.getX(i), y=P.getY(i), z=P.getZ(i), c=cy[Math.round(z*4)]; let dx=x, dy=y-c; const L=Math.hypot(dx,dy)||1; D[3*k]=dx/L; D[3*k+1]=dy/L; Z[k]=z; Ang[k]=Math.atan2(dx,dy); });
-  H={group,mesh,B,bind,base,bodyIdx:Int32Array.from(idx),bodyDir:D,bodyZ:Z,bodyA:Ang,bodyW:Float32Array.from(bw)};
+  H={group,mesh,ins,sq:0,B,bind,base,bodyIdx:Int32Array.from(idx),bodyDir:D,bodyZ:Z,bodyA:Ang,bodyW:Float32Array.from(bw)};
   // the mouth inside: dark, so an open jaw shows a throat instead of the back of the face
   const throat=new THREE.Mesh(new THREE.SphereGeometry(0.42,16,12),new THREE.MeshLambertMaterial({color:0x2a0504,side:THREE.DoubleSide})); throat.position.set(0,0.6-B.head.position.y-B.root.position.y,0.05-B.head.position.z-B.root.position.z); throat.scale.set(1.15,0.75,1); B.head.add(throat);
   const sh=blob(); sh.scale.set(3.2,1,11); H.shadow=sh;
-  boneHelp=new THREE.SkeletonHelper(g.scene); boneHelp.visible=false; scene.add(boneHelp); setupPalms(); setupCross(); setupFaceEyes(); }
-function start(a){ cur=a; t=0; ctx={}; for(const q of fx) scene.remove(q.m); fx.length=0; clearGore(); for(const s of ["L","R"]){ tongues[s].visible=false; if(palm[s]) palm[s].open=0; } for(const L of lumps){ L.amp=0; } if(nora) nora.gs=null;
+  boneHelp=new THREE.SkeletonHelper(g.scene); boneHelp.visible=false; scene.add(boneHelp); setupPalms(); for(const s of ["L","R"]) palm[s].sock.visible=false; setupCross(); setupFaceEyes(); setupMouthArm(); }
+function start(a){ cur=a; t=0; ctx={}; for(const q of fx) scene.remove(q.m); fx.length=0; clearGore(); for(const s of ["L","R"]){ tongues[s].visible=false; if(palm[s]) palm[s].open=0; } for(const L of lumps){ L.amp=0; } if(nora) nora.gs=null; hideMouthArm();
   A[a].start(ctx); for(const b of document.querySelectorAll(".anim")) b.setAttribute("aria-pressed",String(b.dataset.a===a)); document.getElementById("hName").textContent=A[a].name; }
 function poseHer(n){ const show=!!n; nora.group.scale.set(1,1,1); if(!show) gun.visible=false; nora.group.visible=nora.shadow.visible=show; if(!show) return;
   let J; const k=n.k||0; if(n.pose==="walk"){ const s=Math.sin(n.ph*2*Math.PI), c=Math.cos(n.ph*2*Math.PI); J=NP.stand(); J.lLx=-0.4*s; J.lRx=0.4*s; J.kL=0.1+0.5*Math.max(0,c); J.kR=0.1+0.5*Math.max(0,-c); J.aLx=0.35*s; J.aRx=-0.35*s; J.eL=J.eR=0.4; J.sp=0.08; J.ny=1.1*(n.look||0); J.syaw=0.35*(n.look||0); J.hd=0.02*Math.abs(c); }
@@ -37,10 +46,11 @@ function poseHer(n){ const show=!!n; nora.group.scale.set(1,1,1); if(!show) gun.
 function frame(dtReal){
   if(!H||!nora) return;
   if(hold>0){ hold-=Math.min(0.05,dtReal); renderer.render(scene,cam); return; }
-  const dt=Math.min(0.05,dtReal)*(slow?0.25:1); t+=dt; ctx.tongues=null; ctx.palm=null; ctx.dropY=ctx.dropY; ctx.frantic=false; ctx.lumpK=ctx.lumpK??1; ctx.slosh=0;
+  const dt=Math.min(0.05,dtReal)*(slow?0.25:1); t+=dt; ctx.tongues=null; ctx.palm=null; ctx.dropY=ctx.dropY; ctx.frantic=false; ctx.lumpK=ctx.lumpK??1; ctx.slosh=0; ctx.squirm=1; ctx.cam=null;
   resetBones(); A[cur].step(t,dt,ctx); groundLegs(); H.group.updateMatrixWorld(true);
   skin(t,dt,ctx); H.group.updateMatrixWorld(true);
-  for(const s of ["L","R"]){ const E=ctx.palm&&ctx.palm[s]; updatePalm(s,E,dt); const b=palmOut(s); drawTongue(s,b.p,b.d,tonguePath(s,t),1,t,0.6); }   /* the tongues: always out, always visible */
+  /* the hand tongues are gone (rework 2026-11-25); the insides squirm behind the thin torso skin */
+  if(H.ins&&H.ins.morphTargetInfluences){ H.sq+=dt*2.2*(ctx.squirm||1); const f=H.ins.morphTargetInfluences; f[0]=0.5+0.5*Math.sin(H.sq); f[1]=0.5+0.5*Math.sin(H.sq*1.37+1.2); }
   poseHer(ctx.her); H.shadow.position.set(H.group.position.x-3.3,0.006,0);
   placeCross(); stepCross(t,dt,ctx.flare||0); stepFx(dt); stepGore(dt);
   if(cueT>0){ cueT-=dt; if(cueT<=0) document.getElementById("cue").style.opacity=0; }
@@ -57,6 +67,7 @@ function frame(dtReal){
   else p=new V3(cx+Math.sin(orbit.yaw)*11*Math.cos(orbit.pitch),1.0+Math.sin(orbit.pitch)*11,Math.cos(orbit.yaw)*11*Math.cos(orbit.pitch));
   shake=Math.max(0,shake-dtReal*0.5); p.x+=(Math.random()-.5)*shake; p.y+=(Math.random()-.5)*shake;
   punch=Math.max(0,punch-dtReal*3.5); const fov=38-7*punch; if(Math.abs(cam.fov-fov)>0.01){ cam.fov=fov; cam.updateProjectionMatrix(); }
+  if(ctx.cam&&camMode==="side"){ p=ctx.cam.p.clone(); look=ctx.cam.look.clone(); p.x+=(Math.random()-.5)*shake; p.y+=(Math.random()-.5)*shake; }
   if(camMode==="pov"){ shake=0; } cam.position.copy(p); cam.lookAt(look); renderer.render(scene,cam); }
 let last=performance.now();
 function loop(now){ requestAnimationFrame(loop); const w=canvas.clientWidth, h=canvas.clientHeight; if(canvas.width!==Math.round(w*renderer.getPixelRatio())||canvas.height!==Math.round(h*renderer.getPixelRatio())){ renderer.setSize(w,h,false); cam.aspect=w/Math.max(1,h); cam.updateProjectionMatrix(); }
@@ -69,6 +80,6 @@ canvas.addEventListener("pointerdown",e=>{ orbit.drag={x:e.clientX,y:e.clientY,y
 addEventListener("pointermove",e=>{ if(!orbit.drag||camMode!=="three") return; orbit.yaw=orbit.drag.yaw-(e.clientX-orbit.drag.x)*0.01; orbit.pitch=clamp(orbit.drag.pitch+(e.clientY-orbit.drag.y)*0.006,0.02,1.3); });
 addEventListener("pointerup",()=>orbit.drag=null);
 addEventListener("keydown",e=>{ if(e.metaKey||e.ctrlKey||e.altKey) return; const i="123456".indexOf(e.key); if(i>=0){ playAll=false; start(ORDER[i]); } });
-(async()=>{ try{ const [hg,ng]=await Promise.all([load("m/bosses/hob/hob_rigged.json"),load("m/cast/norah.json")]); setupHob(hg); nora=makeChar(ng); document.getElementById("load").hidden=true; start(cur); requestAnimationFrame(loop); }
+(async()=>{ try{ const [hg,ng]=await Promise.all([load(/[?&]old\b/.test(location.search)?"m/bosses/hob/hob_rigged.json":"m/bosses/hob/hob2.glb"),load("m/cast/norah.json")]); setupHob(hg); nora=makeChar(ng); document.getElementById("load").hidden=true; start(cur); requestAnimationFrame(loop); }
   catch(e){ document.getElementById("load").textContent="Couldn't load the models: "+(e&&e.message||e); console.error(e); } })();
 window.__hp={frame:(d)=>frame(d),start,get ctx(){return ctx;},get t(){return t;},get H(){return H;},cam,setCam:m=>camMode=m};

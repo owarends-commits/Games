@@ -69,20 +69,44 @@ for s in "LR":
         b0=J[f'finger_{s}{f}_0']; D[f'finger_{s}{f}_0']=D['hand_'+s].copy()
         for j in (1,2): D[f'finger_{s}{f}_{j}']=D['hand_'+s]+(J[f'finger_{s}{f}_{j}']-b0)*0.4
 D['spine1']=Vector((0,0,0.35)); D['spine2']=Vector((0,0.1,0.55)); D['spine3']=Vector((0,0.15,0.28))
-for s in "LR": D['leg_'+s]=Vector((0,0.15,0.2)); fl=(J['foot_'+s]-J['leg_'+s])*0.3; D['foot_'+s]=Vector((0,0.15+fl.y,0))
+for s in "LR": D['leg_'+s]=D['spine3'].copy(); fl=(J['foot_'+s]-J['leg_'+s])*0.3; D['foot_'+s]=Vector((0,0.15+fl.y,0))
 SP=[J['root'],J['spine1'],J['spine2'],J['spine3'],J['spine3']+Vector((0,1.4,-0.1))]
 def axis_at(y):
     for a,b in zip(SP,SP[1:]):
         if y<=b.y or b is SP[-1]: u=max(0,min(1,(y-a.y)/(b.y-a.y))); return a.lerp(b,u)
 def seg_radial(p,a,b):
     ab=b-a; u=max(0,min(1,(p-a).dot(ab)/ab.length_squared)); c=a+ab*u; return p-c
+def thin_f(y,k):
+    f=0.84 if k in rib_isl else 0.66; tp=max(0.0,min(1.0,(y-4.3)/1.0)); return f+(1-f)*tp*tp*(3-2*tp)
+tv=[M.vertices[i].co for i in range(len(isl)) if isl[i]==torso_isl]
+vert_isl={}
+for k in range(n):
+    if ikind[k]!='spine' or not (25<=size[k]<=60): continue
+    P=[M.vertices[i].co for i in range(len(isl)) if isl[i]==k]; c=sum(P,Vector())/len(P)
+    if abs(c.x)>0.15 or c.z<1.3: continue
+    top=max((p.z for p in tv if abs(p.x)<0.18 and abs(p.y-c.y)<0.12),default=None)
+    if top is None: continue
+    ry=[M.vertices[i].co.y for i in range(len(isl)) if isl[i] in rib_isl]; inr=min(ry)-0.1<=c.y<=max(ry)+0.1
+    ax=axis_at(c.y); f=thin_f(c.y,rib_isl[0] if inr else torso_isl); vert_isl[k]=Vector((0,0,(top-ax.z)*(f-1)-0.02))
+rep['vertebrae']=len(vert_isl)
+vert_big={}
+for k in vert_isl:
+    P=[M.vertices[i].co for i in range(len(isl)) if isl[i]==k]; c=sum(P,Vector())/len(P); ry=[M.vertices[i].co.y for i in range(len(isl)) if isl[i] in rib_isl]
+    if min(ry)-0.1<=c.y<=max(ry)+0.1: vert_big[k]=c
+butt_isl=set()
+for k in range(n):
+    if not (80<=size[k]<=100): continue
+    P=[M.vertices[i].co for i in range(len(isl)) if isl[i]==k]; c=sum(P,Vector())/len(P)
+    if abs(c.x)<0.1 and 6.7<c.y<7.6: butt_isl.add(k)
+rep['butt']=len(butt_isl)
 newco=[]
 for i,v in enumerate(M.vertices):
     p=v.co.copy(); w=Wv[i]; d=Vector((0,0,0))
     for b,x in w.items(): d+=D.get(b,Vector((0,0,0)))*x
     k=isl[i]; ws=sum(x for b,x in w.items() if b.startswith('spine') or b=='root')
     if ws>0 and p.y>1.25 and (k==torso_isl or k in rib_isl):
-        c=axis_at(p.y); r=p-c; f=0.84 if k in rib_isl else 0.66; tp=max(0.0,min(1.0,(p.y-4.3)/1.0)); f=f+(1-f)*tp*tp*(3-2*tp); d+=-r*(1-f)*ws
+        c=axis_at(p.y); r=p-c; f=0.84 if k in rib_isl else 0.66; tp=max(0.0,min(1.0,(p.y-4.3)/1.0)); f=f+(1-f)*tp*tp*(3-2*tp)
+        d+=-r*(1-f)*ws
     wa=sum(x for b,x in w.items() if b.split('_')[0] in('shoulder','elbow','hand'))
     if wa>0 and ikind[k]=='arm':
         s='R' if p.x>0 else 'L'; r1=seg_radial(p,J['shoulder_'+s],J['elbow_'+s]); r2=seg_radial(p,J['elbow_'+s],J['hand_'+s]); r=r1 if r1.length<r2.length else r2; d+=-r*0.24*wa
@@ -93,6 +117,10 @@ for i,v in enumerate(M.vertices):
     if wf>0 and ikind[k]=='finger':
         b=max((b for b in w if b.startswith('finger')),key=w.get); nb=b[:-1]+str(min(2,int(b[-1])+1)); a=J[b]; c=J[nb] if nb!=b else J[b]+(J[b]-J[b[:-1]+'1'])
         d+=-seg_radial(p,a,c)*0.2*wf
+    if k in butt_isl: d=D['spine3'].copy()
+    if k in vert_isl:
+        d+=vert_isl[k]
+        if k in vert_big: d+=(p-vert_big[k])*0.35
     newco.append(p+d)
 for v,p in zip(M.vertices,newco): v.co=p
 bpy.context.view_layer.objects.active=arm; bpy.ops.object.mode_set(mode='EDIT')
@@ -127,6 +155,7 @@ def _iy(k):
     ys=[M.vertices[i].co.y for i in range(len(isl)) if isl[i]==k]; return min(ys),max(ys),sum(ys)/len(ys)
 bump_isl=set(k for k in bump_isl if _iy(k)[0]>4.6 and _iy(k)[1]<7.1 and size[k]<=40)
 rep['bumps_removed']=len(bump_isl)
+# the loose band round the butt: a thin ring just behind the torso's end, standing off the hips (user: no gap at the butt)
 kill=[v for v in bm.verts if (v[L] in hair_isl and v[L]!=cap) or v[L] in blade_isl or v[L] in bump_isl]
 bmesh.ops.delete(bm,geom=kill,context='VERTS'); rep["hair_curtain_verts_removed"]=len(kill)
 # the torso's faces get their own (thin, translucent) material
@@ -253,6 +282,12 @@ for p,nn in clumps:
         pts=[push_out(a.lerp(b,min(0.85,(i/18)*1.2))) for i,(a,b) in enumerate(zip(own,centre))]
         ribbon(pts,random.uniform(0.014,0.024),0.5625+random.random()*0.12); nstr+=1
 bm.to_mesh(hd); bm.free()
+# hair is flagged in the second UV channel (v=5), so a game loading one material can still tell it apart (the torso is flagged in u)
+names=[l.name for l in M.uv_layers]; hd.uv_layers[0].name=names[0]
+if len(names)>1:
+    l2=hd.uv_layers.new(name=names[1])
+    for d in l2.data: d.uv=(0.0,5.0)
+rep['uv_layers']=names
 ho=bpy.data.objects.new("hair",hd); bpy.context.scene.collection.objects.link(ho)
 hm=bpy.data.materials.new("hair_wet"); hm.use_nodes=True; bs=hm.node_tree.nodes["Principled BSDF"]; t=hm.node_tree.nodes.new('ShaderNodeTexImage'); t.image=cimg
 mix=hm.node_tree.nodes.new('ShaderNodeMix'); mix.data_type='RGBA'; mix.blend_type='MULTIPLY'; mix.inputs['Factor'].default_value=1.0; mix.inputs[7].default_value=(0.22,0.2,0.18,1)
@@ -269,5 +304,8 @@ bpy.ops.object.select_all(action='DESELECT')
 # keep the insides' shape keys: join hair into the body, keep insides as its own skinned mesh (shape keys can't merge across meshes)
 ho.select_set(True); body.select_set(True); bpy.context.view_layer.objects.active=body; bpy.ops.object.join()
 bpy.ops.wm.save_as_mainfile(filepath=BLEND)
+# for the game: one material on the body (one skinned mesh); the torso and hair are split out at load time by their flags
+for p in body.data.polygons: p.material_index=0
+while len(body.data.materials)>1: body.data.materials.pop(index=len(body.data.materials)-1)
 bpy.ops.export_scene.gltf(filepath=OUT, export_format='GLB', export_skins=True, export_morph=True, export_animations=False, export_yup=True, export_image_format='AUTO')
 print("REPORT", rep)

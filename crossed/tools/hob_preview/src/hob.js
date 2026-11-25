@@ -278,7 +278,7 @@ A.grabL={ name:"Grab · left hand", len:10.5, start(ctx){ ctx.x0=-6; ctx.heart=1
   step(t,dt,ctx){ chaseGrab(t,dt,ctx,"L",{side:-1.6,catchZ:1.6,lead:1.3,catchAt:5.4,tSign:-1}); } };
 A.grabR={ name:"Grab · right hand", len:10.5, start(ctx){ ctx.x0=-6; ctx.heart=1.3; },
   step(t,dt,ctx){ chaseGrab(t,dt,ctx,"R",{side:1.45,catchZ:2.0,lead:1.3,catchAt:5.4,tSign:1}); } };
-const ORDER=["crawl","fast","screech","grabL","grabR","throne"];
+const ORDER=["crawl","fast","screech","mouth","mouthEsc","throne"];
 // ---------------------------------------------------------------- the back legs rest on the floor: after posing, their lowest points are measured
 // and each leg is tipped about the hip until they touch the boards: never through them, never floating
 let legProbe=null;

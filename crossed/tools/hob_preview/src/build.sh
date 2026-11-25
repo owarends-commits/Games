@@ -5,7 +5,7 @@ D=$(cd "$(dirname "$0")" && pwd)
 {
   printf '<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'
   cat "$D/head.html"
-  cat "$D/scene.js" "$D/engine.js" "$D/hob.js" "$D/run.js"
+  cat "$D/scene.js" "$D/engine.js" "$D/hob.js" "$D/mouth.js" "$D/run.js"
   printf '\n</script>\n</body></html>\n'
 } > "$D/../index.html"
 echo "wrote $D/../index.html"

@@ -11,7 +11,7 @@ def light(loc,e,size,col=(1,1,1)):
 light((4,-6,6),2600,4,(1,0.9,0.78)); light((-6,-2,3),900,5,(0.7,0.8,1)); light((0,9,6),1800,4)
 cam=bpy.data.cameras.new("c"); co=bpy.data.objects.new("c",cam); sc.collection.objects.link(co); sc.camera=co
 sc.render.engine='CYCLES'; sc.cycles.device='CPU'; sc.cycles.samples=SPP; sc.cycles.use_denoising=True; sc.render.resolution_x=W; sc.render.resolution_y=H
-VIEWS={"front":((0,-9.5,1.7),(0,0,1.3),35),"34front":((-6.5,-6.5,3.2),(0,1.6,1.1),35),"side":((11,3,2.2),(0,3.3,1.0),28),"34back":((6,11,4.5),(0,3.5,0.9),30),"face":((0.4,-4.6,1.9),(0,-0.6,1.6),40)}
+VIEWS={"front":((0,-9.5,1.7),(0,0,1.3),35),"34front":((-6.5,-6.5,3.2),(0,1.6,1.1),35),"side":((11,3,2.2),(0,3.3,1.0),28),"34back":((6,11,4.5),(0,3.5,0.9),30),"face":((0.4,-4.6,1.9),(0,-0.6,1.6),40),"spine":((3.4,1.6,3.6),(0,3.6,1.6),32),"hips":((3.2,9.4,2.2),(0,6.2,0.9),35)}
 only=A[5].split(",") if len(A)>5 else list(VIEWS)
 for k in only:
     loc,look,lens=VIEWS[k]; co.location=loc; cam.lens=lens; co.rotation_euler=(Vector(look)-Vector(loc)).to_track_quat('-Z','Y').to_euler()
