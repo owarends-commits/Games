@@ -98,3 +98,21 @@ The model is rebuilt from the rigged Hob in Blender by `crossed/tools/blender/ho
   - **The grab:** it replaces the old one-handed grabs. The Hob keeps crawling on both hands while the arm searches with its eye shut. The eye snaps open on seeing her, the arm lunges, catches her, and reels her back to its mouth.
   - **Escape:** break free, or shoot the eye, which bursts; the arm recoils, drops her and is swallowed. If she doesn't escape, it bites, then swallows the arm back down.
 - **Preview animations:** 1 crawl, 2 fast crawl, 3 screech, 4 mouth-arm grab (bite), 5 mouth-arm grab (eye shot), 6 throne grab.
+
+### Mouth-arm grab, escape and swallow (2026-11-26, user direction)
+- **The reach:**
+  - When the palm eye opens, the arm doesn't lunge straight away. It snakes slowly towards Norah for about 3 s, a wave rolling down it and the palm held up with its eye on her, while she backs off.
+  - Then it snatches: the arm arcs up and over and comes down onto her. The palm lands on her front and the long fingers clamp round her side and back; it never passes through her.
+  - It lifts her and hauls her back to its mouth.
+- **The cheek cross:** a burning brand on the Hob's lower right cheek, big enough to spot.
+  - Two shots to it while she's held break the grab.
+  - The recoil: the arm spasms open and drops her. The Hob writhes and thrashes on the floor, the arm flailing, then sucks the arm back into its mouth and crawls after her again.
+- **Rules for the game:**
+  - She can escape the grab this way only twice per encounter. A third grab kills her: she's swallowed.
+  - If she's under 25% health when it grabs her, she's swallowed too.
+  - **Assumption, to confirm:** a grab with no cross shots still ends in the bite (heavy damage, then it drops her), not death.
+- **Swallowed:** it feeds her into its unhinged jaw head first with the hand, swallowing the arm with her.
+  - Three gulps carry her shape down the throat into the translucent gut.
+  - There she squirms against the stretched, bruising skin; the organs are hidden while she fills the space.
+  - The gut churns and convulses and bile drips from its mouth while her shape darkens and shrinks away.
+- **Preview clips:** 4 grab, ending in the bite · 5 grab, escaped with two shots to the cheek cross · 6 grab, swallowed · 7 throne grab.

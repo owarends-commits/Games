@@ -68,6 +68,7 @@ function skin(t,dt,ctx){ const g=H.mesh.geometry, P=g.attributes.position, C=g.a
   const qv=0.012*(ctx.frantic?2.5:1);
   for(let k=0;k<idx.length;k++){ const i=idx[k], z=Z[k], a=A[k]; let s=pulse*(0.6+0.4*Math.sin(z*1.3-t*3*hr)), bruise=0;
     for(const L of lumps){ const dz=z-L.z, da=wrap(a-L.a)*0.7, e=Math.exp(-(dz*dz+da*da)/(L.r*L.r)); if(e<0.01) continue; const h=e*(L.amp+qv*Math.sin(t*37+L.r*50)); s+=h; bruise+=e*L.amp*6; }
+    if(ctx.bulge){ const dz=z-ctx.bulge.z, e=Math.exp(-dz*dz/0.7); if(e>0.01){ s+=ctx.bulge.amp*e*(0.8+0.2*Math.sin(a*2+t*7)+0.12*Math.sin(t*19+z*3)); bruise+=e*ctx.bulge.amp*1.2; } }   /* her, swallowed, stretching the skin */
     s*=H.bodyW[k]; P.setXYZ(i,B[3*i]+D[3*k]*s,B[3*i+1]+D[3*k+1]*s,B[3*i+2]); bruise*=H.bodyW[k]; const c=1-Math.min(0.55,bruise*0.8), r_=Math.min(1,bruise); C.setXYZ(i,c*(1-0.05*r_),c*(1-0.35*r_),c*(1-0.25*r_)); }
   P.needsUpdate=true; C.needsUpdate=true; g.computeVertexNormals(); }
 
@@ -278,7 +279,7 @@ A.grabL={ name:"Grab · left hand", len:10.5, start(ctx){ ctx.x0=-6; ctx.heart=1
   step(t,dt,ctx){ chaseGrab(t,dt,ctx,"L",{side:-1.6,catchZ:1.6,lead:1.3,catchAt:5.4,tSign:-1}); } };
 A.grabR={ name:"Grab · right hand", len:10.5, start(ctx){ ctx.x0=-6; ctx.heart=1.3; },
   step(t,dt,ctx){ chaseGrab(t,dt,ctx,"R",{side:1.45,catchZ:2.0,lead:1.3,catchAt:5.4,tSign:1}); } };
-const ORDER=["crawl","fast","screech","mouth","mouthEsc","throne"];
+const ORDER=["crawl","fast","screech","mouth","mouthEsc","digest","throne"];
 // ---------------------------------------------------------------- the back legs rest on the floor: after posing, their lowest points are measured
 // and each leg is tipped about the hip until they touch the boards: never through them, never floating
 let legProbe=null;

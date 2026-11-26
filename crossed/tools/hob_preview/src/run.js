@@ -41,12 +41,12 @@ function poseHer(n){ const show=!!n; nora.group.scale.set(1,1,1); if(!show) gun.
   else if(n.pose==="backstep") J=NP.backstep(n.ph);
   else if(n.pose==="scramble"){ J=NP.lie(t,1,1); } else if(n.pose==="dragged"){ J=NP.stumble(); J.sp=-0.5; J.aLx=-1.2; J.aRx=-1.0; J.lLx=-0.6; J.lRx=-0.3; } else if(n.pose==="fall") J=mix(NP.held(t),NP.lie(t,1,0.3),ss(k)); else J=NP.stand();
   applyPose(nora,J); const w=m2w(n.m); nora.group.position.copy(w); nora.group.rotation.set(0,(n.pose==="walk"||n.pose==="held"||n.pose==="fall")&&!n.faceIt?Math.PI/2:-Math.PI/2,0);
-  if(n.pose==="dragged") nora.group.rotateX(-0.55*ss(k*4)); const sq=n.squash||0; nora.group.scale.set(1-0.08*sq,1+0.03*sq,1-0.08*sq);   /* crushed in the fist */ if(n.pose==="fall"||n.pose==="scramble") nora.group.rotateX(-(n.pose==="scramble"?1:ss(k))*Math.PI/2); retarget(nora);
+  if(n.pose==="dragged") nora.group.rotateX(-0.55*ss(k*4)); const sq=n.squash||0; nora.group.scale.set(1-0.08*sq,1+0.03*sq,1-0.08*sq);   /* crushed in the fist */ if(n.pose==="fall"||n.pose==="scramble") nora.group.rotateX(-(n.pose==="scramble"?1:ss(k))*Math.PI/2); if(n.post) n.post(nora); retarget(nora);
   gun.visible=!!n.aim; if(n.aim){ nora.group.updateMatrixWorld(true); gun.position.copy(tipOf(nora,"R")); gun.lookAt(n.aim); } }
 function frame(dtReal){
   if(!H||!nora) return;
   if(hold>0){ hold-=Math.min(0.05,dtReal); renderer.render(scene,cam); return; }
-  const dt=Math.min(0.05,dtReal)*(slow?0.25:1); t+=dt; ctx.tongues=null; ctx.palm=null; ctx.dropY=ctx.dropY; ctx.frantic=false; ctx.lumpK=ctx.lumpK??1; ctx.slosh=0; ctx.squirm=1; ctx.cam=null;
+  const dt=Math.min(0.05,dtReal)*(slow?0.25:1); t+=dt; ctx.tongues=null; ctx.palm=null; ctx.dropY=ctx.dropY; ctx.frantic=false; ctx.lumpK=ctx.lumpK??1; ctx.slosh=0; ctx.squirm=1; ctx.cam=null; ctx.bulge=null;
   resetBones(); A[cur].step(t,dt,ctx); groundLegs(); H.group.updateMatrixWorld(true);
   skin(t,dt,ctx); H.group.updateMatrixWorld(true);
   /* the hand tongues are gone (rework 2026-11-25); the insides squirm behind the thin torso skin */
@@ -79,7 +79,7 @@ tog("oSlow",on=>slow=on); tog("oAll",on=>{ playAll=on; if(on) start(ORDER[0]); }
 canvas.addEventListener("pointerdown",e=>{ orbit.drag={x:e.clientX,y:e.clientY,yaw:orbit.yaw,pitch:orbit.pitch}; });
 addEventListener("pointermove",e=>{ if(!orbit.drag||camMode!=="three") return; orbit.yaw=orbit.drag.yaw-(e.clientX-orbit.drag.x)*0.01; orbit.pitch=clamp(orbit.drag.pitch+(e.clientY-orbit.drag.y)*0.006,0.02,1.3); });
 addEventListener("pointerup",()=>orbit.drag=null);
-addEventListener("keydown",e=>{ if(e.metaKey||e.ctrlKey||e.altKey) return; const i="123456".indexOf(e.key); if(i>=0){ playAll=false; start(ORDER[i]); } });
+addEventListener("keydown",e=>{ if(e.metaKey||e.ctrlKey||e.altKey) return; const i="1234567".indexOf(e.key); if(i>=0){ playAll=false; start(ORDER[i]); } });
 (async()=>{ try{ const [hg,ng]=await Promise.all([load(/[?&]old\b/.test(location.search)?"m/bosses/hob/hob_rigged.json":"m/bosses/hob/hob2.glb"),load("m/cast/norah.json")]); setupHob(hg); nora=makeChar(ng); document.getElementById("load").hidden=true; start(cur); requestAnimationFrame(loop); }
   catch(e){ document.getElementById("load").textContent="Couldn't load the models: "+(e&&e.message||e); console.error(e); } })();
 window.__hp={frame:(d)=>frame(d),start,get ctx(){return ctx;},get t(){return t;},get H(){return H;},cam,setCam:m=>camMode=m};

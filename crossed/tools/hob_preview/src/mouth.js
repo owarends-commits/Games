@@ -56,8 +56,16 @@ function setupMouthArm(){
   MA.kids=[]; for(let i=0;i<6;i++){ const tb=new Tube(10,7,MA.fleshMat,2); MA.root.add(tb.m); const cl=new THREE.Group(); MA.root.add(cl);
     for(let f=0;f<3;f++){ const fg=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.02,0.16,5),MA.fleshMat); fg.rotation.x=Math.PI/2; const piv=new THREE.Group(); piv.rotation.y=(f-1)*0.5; fg.position.z=0.08; piv.add(fg); cl.add(piv); }
     MA.kids.push({tb,cl,at:0.18+i*0.11,side:i%2?1:-1,ph:i*1.9,len:0.95+0.2*Math.sin(i*2.3)}); cl.scale.setScalar(1.2); }
+  // the cross on its lower cheek (user, 2026-11-26): a burning brand, easy to see; two shots to it break the grab
+  { resetBones(); H.group.updateMatrixWorld(true); const B=H.base, n=B.length/3, tx=0.4, ty=0.82; let best=null, bz=-1e9;
+    for(let i=0;i<n;i++){ const x=B[3*i], y=B[3*i+1], z=B[3*i+2]; if(Math.abs(x-tx)<0.08&&Math.abs(y-ty)<0.08&&z>bz){ bz=z; best=new V3(x,y,z); } }
+    const P=best||new V3(tx,ty,1.0), nrm=new V3(0.35,-0.05,1).normalize(); const g=new THREE.Group(); const mat=new THREE.MeshPhongMaterial({color:0x2a0603,emissive:0xff4a10,emissiveIntensity:1.2,shininess:20});
+    const bar=(w,h)=>{ const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,0.04),mat); g.add(m); return m; }; bar(0.1,0.5).position.y=-0.03; bar(0.36,0.1).position.y=0.09;
+    const scar=new THREE.Mesh(new THREE.CircleGeometry(0.36,24),new THREE.MeshLambertMaterial({color:0x3a1208,transparent:true,opacity:0.55,depthWrite:false})); scar.position.z=-0.015; g.add(scar);
+    const wp=m2w(P.clone().addScaledVector(nrm,0.012)); H.B.head.add(g); g.position.copy(H.B.head.worldToLocal(wp)); g.lookAt(m2w(P.clone().addScaledVector(nrm,2)));
+    MA.cheekCross=g; MA.cheekMat=mat; }
   MA.drops=[]; MA.puddle=null; hideMouthArm(); }
-function hideMouthArm(){ if(!MA.root) return; MA.root.visible=false; for(const d of MA.drops) d.m.parent&&d.m.parent.remove(d.m); MA.drops.length=0; if(MA.puddle){ scene.remove(MA.puddle); MA.puddle=null; } if(MA.eyes) for(const E of MA.eyes){ E.wound.visible=false; E.ball.visible=true; } MA.on=false; }
+function hideMouthArm(){ if(!MA.root) return; MA.root.visible=false; if(H&&H.ins) H.ins.visible=true; if(H&&H.mesh){ const th=[].concat(H.mesh.material)[1]; if(th&&th.transparent) th.opacity=0.6; } if(MA.hand) MA.hand.visible=true; for(const d of MA.drops) d.m.parent&&d.m.parent.remove(d.m); MA.drops.length=0; if(MA.puddle){ scene.remove(MA.puddle); MA.puddle=null; } if(MA.eyes) for(const E of MA.eyes){ E.wound.visible=false; E.ball.visible=true; } MA.on=false; }
 // where the mouth is: between the lips (half on the head, half on the jaw), and the way out of it
 function mouthM(){ H.group.updateMatrixWorld(true); const a=w2m(H.B.head.localToWorld(H.B.head.worldToLocal(m2w(new V3(0,0.66,1.05))).clone())); return a; }
 function mouthNow(ctx){ if(!ctx.mo){ resetBones(); H.group.updateMatrixWorld(true); ctx.mo={h:H.B.head.worldToLocal(m2w(new V3(0,0.66,1.0))), j:H.B.jaw.worldToLocal(m2w(new V3(0,0.46,1.0)))}; }
@@ -131,15 +139,24 @@ function gripFrame(C,n0){ const n=new V3(n0.x,0,n0.z).normalize(), side=n.clone(
 const ease=(a,b,dt,k)=>a+(b-a)*(1-Math.exp(-dt*k));
 // ---------------------------------------------------------------- the grab: cough up, search, spot, rear back, lunge, catch, reel in; then bite or the eye-shot escape
 function mouthGrab(t,dt,ctx,variant){
-  const T={retch:1.2,cough:2.7,search:3.5,spot:4.6,rear:4.95,lunge:5.15,catch:5.75,reel:6.0,bite:8.6,shot:7.1,done:10.4};
-  const relT=variant==="bite"?T.bite+0.55:T.shot+0.15;
+  const T={retch:1.2,cough:2.7,search:3.5,spot:4.6,rear:4.95,lunge:8.2,catch:8.65,reel:8.9,bite:11.4,shot:10.0,shot2:10.75,done:13.2,writhe:2.1,suck:0.8};   /* rear..lunge: the long slow snaking reach */
+  const relT=variant==="esc"?T.shot2+0.1:variant==="digest"?T.bite+1.5:T.bite+0.55;
   // the body keeps coming: a steady crawl, slower while it retches and while it hauls her in
-  const slowK=t>T.retch&&t<T.search?0.5:t>T.catch?0.65:1; ctx.cx=(ctx.cx??0)+dt*slowK; const X=crawl(ctx.cx,dt,ctx,2.8,0); H.group.position.x=X;
+  const slowK=variant==="digest"&&t>T.bite?0:variant==="esc"&&t>T.shot&&t<relT+T.writhe+T.suck*0.6?0.15:variant==="esc"&&t>=relT+T.writhe+T.suck*0.6?1.3:t>T.retch&&t<T.search?0.5:t>T.rear&&t<T.lunge?0.35:t>T.catch?0.65:1; ctx.cx=(ctx.cx??0)+dt*slowK; const X=crawl(ctx.cx,dt,ctx,2.8,0); H.group.position.x=X;
   const k=ss((t-T.retch)/0.4)*(1-ss((t-T.search)/0.6))+(t>relT&&t<T.done?0.8*(1-ss((t-relT)/1.4)):0);
-  const jaw=ss((t-T.retch-0.5)/1.0)*(1-ss((t-T.done+0.6)/0.6))*(variant==="bite"&&t>T.bite&&t<T.bite+0.3?1-ss((t-T.bite)/0.1):1);
-  retch(t,k,jaw,ctx); H.group.updateMatrixWorld(true);
+  let jaw=ss((t-T.retch-0.5)/1.0)*(1-ss((t-T.done+0.6)/0.6))*(variant==="bite"&&t>T.bite&&t<T.bite+0.3?1-ss((t-T.bite)/0.1):1);
+  if(variant==="digest"&&t>T.bite-0.6){ const d=t-T.bite; jaw=d<2.4?1+0.55*ss((d+0.6)/0.6):d<6?Math.max(0.15,1.55-0.9*ss((d-2.4)/1.2))*(1+0.2*Math.max(0,Math.sin(d*5))):0.25+0.15*Math.max(0,Math.sin(d*2.3)); }
+  retch(t,k,jaw,ctx);
+  if(variant==="esc"&&t>T.shot-0.05){ // each hit on the cross: it flinches and shrieks; then it writhes on its belly
+    const h1=Math.exp(-Math.pow((t-T.shot-0.12)/0.12,2)), h2=Math.exp(-Math.pow((t-T.shot2-0.12)/0.12,2)), w=t>relT&&t<relT+T.writhe?(ctx.writhe??1):0, d=t-relT;
+    H.B.head.quaternion.premultiply(qE(-0.35*(h1+h2)-0.2*w*Math.abs(Math.sin(d*7)),0.3*w*Math.sin(d*9.5),0.25*w*Math.sin(d*6.4))); H.B.jaw.quaternion.premultiply(qE(0.6*(h1+h2)+0.5*w,0,0));
+    H.B.root.quaternion.premultiply(qE(0,0.22*w*Math.sin(d*5.3),0.32*w*Math.sin(d*7.9))); H.B.spine1.quaternion.premultiply(qE(0.1*w*Math.sin(d*11),0.25*w*Math.sin(d*6.1),0)); H.B.spine2.quaternion.premultiply(qE(0,-0.3*w*Math.sin(d*6.1+1),0.2*w*Math.sin(d*8)));
+    H.B.root.position.y+=0.12*w*Math.abs(Math.sin(d*8.3)); ctx.frantic=w>0.2; ctx.lumpK=1+1.5*w; ctx.pulseK=1+2*w; ctx.heart=1.3+2*w; ctx.flare=Math.max(h1,h2)*3+w; }
+  if(MA.cheekMat) MA.cheekMat.emissiveIntensity=1.0+0.25*Math.sin(t*17)+0.15*Math.sin(t*41)+(ctx.flare||0)*0.8;
+  H.group.updateMatrixWorld(true);
   const her=ctx.herW=ctx.herW||new V3(H.group.position.x+6.6,0,0.35); const mo=mouthNow(ctx), sM=ctx.sMouth||5;
   const herC=()=>w2m(her).add(new V3(0,1.02,0)), nTo=(C)=>{ const v=mo.clone().sub(C); v.y=0; return v.normalize(); };
+  if(variant==="digest"&&t>=T.bite&&ctx.Cend) return digest(t,dt,ctx,T,mo);
   ctx.S=ctx.S??0; ctx.A=ctx.A||mo.clone().add(new V3(0,0.4,2)); let sT=0, aT=null, o={eye:0,curl:0.3,look:null,full:false};
   if(t<T.retch){ ctx.phase="crawls after her · the arm is swallowed"; }
   else if(t<T.cough){ ctx.phase="its gut convulses · it retches · bile spits from its gut · the jaw unhinges"; gutSpit(dt,60*k,ctx); if(t>T.cough-0.6) pour(mo,dt,90,ctx); }
@@ -147,33 +164,73 @@ function mouthGrab(t,dt,ctx,variant){
   else if(t<T.spot){ sT=sM+2.4+0.35*Math.sin((t-T.search)*2); aT=mo.clone().add(new V3(Math.sin(t*1.5)*1.6,0.45+0.3*Math.sin(t*2.1),3.0)); pour(mo,dt,30,ctx); o.curl=0.35; o.palmAt=herC(); o.palmK=ss((t-T.search)/0.6); ctx.phase="the arm searches · its eyes still shut"; }
   else if(t<T.lunge){ // the eye snaps open; the arm draws back and up, gathering itself
     o.eye=ss((t-T.spot)/0.12); o.look=herC(); const r=ss((t-T.spot)/(T.rear-T.spot)); sT=sM+2.4-0.9*r; aT=mo.clone().add(new V3(0,0.9+0.9*r,2.2-0.6*r)).lerp(herC(),0.15); o.curl=0.2-0.35*r; o.palmAt=herC();
-    ctx.phase="the eye in its palm snaps open, and the eyes along the arm · the arm draws back"; if(!ctx.sp1){ ctx.sp1=1; camPunch(0.4); } }
+    ctx.phase="the eye in its palm snaps open, and the eyes along the arm · the arm draws back"; if(!ctx.sp1){ ctx.sp1=1; camPunch(0.4); }
+    if(t>=T.rear){ // the long reach: the arm snakes slowly towards her, a wave rolling down it, the palm's eye fixed on her
+      const u=ss((t-T.rear)/(T.lunge-T.rear)), C=herC(), dist=mo.distanceTo(C), n=nTo(C), side=n.clone().cross(UP).normalize();
+      sT=sM+1.5+(dist-0.2)*u; aT=C.clone().addScaledVector(n,0.9+1.6*(1-u)).add(new V3(0,0.25+0.55*(1-u)+0.2*Math.sin(t*1.7),0)).addScaledVector(side,0.6*Math.sin(t*1.3)*(1-0.6*u));
+      o.wave=1.8; o.curl=-0.15+0.1*Math.sin(t*2.2); ctx.creep=1; ctx.phase="it watches her · the arm snakes slowly towards her"; } }
   else if(t<T.catch){ // the lunge: up and over, then down onto her, the hand turning into the grip, fingers spread wide
     const u=(t-T.lunge)/(T.catch-T.lunge); const C=herC(); o.grip={C,n:nTo(C)}; o.gripK=ss(u*1.25); o.full=u>0.55; o.eye=1; o.look=C; o.curl=-0.2+0.15*u; o.palmAt=C; o.palmK=1-ss(u*1.6);
     sT=sM+1.5+((ctx.lastLen||sM+5)-sM-1.5)*easeOut(u); aT=gripFrame(C,nTo(C)).W; pour(mo,dt,140,ctx); ctx.phase="it lunges · up and over and down onto her"; }
   else if(t<relT){ // caught: the fingers clamp round her; it lifts her and hauls her to its mouth
     if(!ctx.C0){ ctx.C0=herC(); ctx.Cend=mo.clone().add(nTo(ctx.C0).negate().multiplyScalar(1.15)).add(new V3(0,0.15,0)); shake=0.25; camPunch(0.5); }
-    const e=ss((t-T.reel)/((variant==="bite"?T.bite:T.shot+0.6)-T.reel)), lift=0.45*ss((t-T.catch)/0.5);
+    const e=ss((t-T.reel)/((variant==="esc"?T.shot2+0.6:T.bite)-T.reel)), lift=0.45*ss((t-T.catch)/0.5);
     const C=ctx.C0.clone().lerp(ctx.Cend,variant==="esc"?Math.min(e,0.55):e).add(new V3(0.05*Math.sin(t*13),lift+0.35*Math.sin(Math.PI*e)+0.04*Math.sin(t*9),0.06*Math.sin(t*11)));
     ctx.Ccur=C; o.grip={C,n:nTo(C)}; o.gripK=1; o.full=true; o.eye=1; o.look=C; o.curl=1.15*ss((t-T.catch)/0.22); aT=gripFrame(C,nTo(C)).W; sT=999;
-    pour(mo,dt,20,ctx); ctx.phase=variant==="esc"&&t>T.shot-0.6?"she twists round and aims at its eye":"its fingers clamp round her · it hauls her to its mouth"; }
+    pour(mo,dt,20,ctx); ctx.phase=variant==="esc"&&t>T.shot-0.6?(t<T.shot2?"she aims at the cross on its cheek · one shot":"a second shot into the cross"):"its fingers clamp round her · it hauls her to its mouth"; }
+  else if(variant==="esc"){ const d=t-relT;
+    if(d<T.writhe){ // the cross burns: it drops her, the arm spasms open and flails, the body writhes on the floor
+      if(!ctx.Lrel) ctx.Lrel=ctx.lastLen||sM+3; sT=ctx.Lrel*(0.75+0.1*Math.sin(d*9)); aT=mo.clone().add(new V3(2.2*Math.sin(d*6.3),0.9+0.8*Math.sin(d*8.7),1.6+0.9*Math.cos(d*5.1))); o.curl=-0.25+0.5*Math.abs(Math.sin(d*11)); o.eye=0.3; o.wave=2.6;
+      ctx.writhe=1-ss((d-T.writhe+0.5)/0.5); ctx.phase="the cross burns · it drops her and writhes on the floor, the arm flailing"; pour(mo,dt,40,ctx); }
+    else { const r=ss((d-T.writhe)/T.suck); sT=(ctx.Lrel||sM+3)*0.8*(1-r); aT=mo.clone().add(new V3(0,0.3,1.2)); o.curl=0.2; o.eye=0; ctx.phase=r<1?"it sucks the arm back into its mouth":"it comes after her again"; if(r<0.9) pour(mo,dt,90,ctx); } }
   else { // let go; the arm is swallowed back down, gagging
     const r=ss((t-relT)/1.3); if(!ctx.Lrel) ctx.Lrel=ctx.lastLen||sM+3; sT=ctx.Lrel*(1-r); aT=ctx.A.clone(); o.curl=-0.1; o.eye=variant==="esc"?0:1-r; pour(mo,dt,60*(1-r),ctx);
     ctx.phase=variant==="esc"?"the eye bursts · the arm spasms open and is swallowed back down":"it swallows the arm back down, gagging"; }
-  if(aT){ if(t<T.lunge||t>=relT){ ctx.A.x=ease(ctx.A.x,aT.x,dt,6); ctx.A.y=ease(ctx.A.y,aT.y,dt,6); ctx.A.z=ease(ctx.A.z,aT.z,dt,6); } else ctx.A.copy(aT); }
-  ctx.S=t>=T.lunge&&t<relT?sT:ease(ctx.S,sT,dt,t>=relT?5:7);
+  const cr=t>=T.rear&&t<T.lunge, ar=cr?1.6:6;
+  if(aT){ if(t<T.lunge||t>=relT){ ctx.A.x=ease(ctx.A.x,aT.x,dt,ar); ctx.A.y=ease(ctx.A.y,aT.y,dt,ar); ctx.A.z=ease(ctx.A.z,aT.z,dt,ar); } else ctx.A.copy(aT); }
+  ctx.S=t>=T.lunge&&t<relT?sT:ease(ctx.S,sT,dt,t>=relT?5:cr?1.8:7);
   if(ctx.S>0.05){ const R=poseArm(t,dt,ctx,Math.min(ctx.S,999),ctx.A,o); if(t<relT) ctx.lastLen=Math.min(ctx.S,R.len); }
   else { MA.root.visible=false; if(!ctx.sMouth){ poseArm(t,dt,ctx,0.01,mo.clone().add(new V3(0,0,3)),{}); MA.root.visible=false; } }
   stepBile(dt);
   // Norah
   let pose="walk", hp=her.clone(), look=0;
-  if(t<T.catch-0.05){ her.x+=dt*(t<T.spot?0.55:0.9); hp=her.clone(); pose=t<T.spot?"walk":"backstep"; look=1; }
+  if(t<T.catch-0.05){ her.x+=dt*(t<T.spot?0.55:t<T.rear?0.9:0.32); hp=her.clone(); pose=t<T.spot?"walk":"backstep"; look=1; }
   else if(t<relT){ const C=m2w(ctx.Ccur||herC()); hp=new V3(C.x,Math.max(0,C.y-1.02),C.z); her.copy(hp); pose=variant==="esc"&&t>T.shot-0.6?"held":"dragged"; }
   else if(variant==="bite"){ if(!ctx.bit){ ctx.bit=1; shake=0.5; camPunch(0.9); hitStop(0.12); blood(m2w(mo),40,3.2,0.08); } her.y=Math.max(0,her.y-dt*3); hp=her.clone(); pose="fall"; }
-  else { her.y=Math.max(0,her.y-dt*3); her.x+=dt*(t>T.shot+1.0?1.6:0); hp=her.clone(); pose=t<T.shot+1.0?"fall":"walk"; }
-  if(variant==="esc"&&t>=T.shot&&!ctx.shotDone){ ctx.shotDone=1; const ew=MA.eye.getWorldPosition(new V3()); fireAt(ew,true); blood(ew,30,2.4,0.06); for(let i=0;i<14;i++) bile(w2m(ew),new V3((Math.random()-.5)*2,Math.random()*2,(Math.random()-.5)*2),0.03,false); MA.armEyes[0].ball.visible=false; MA.armEyes[0].wound.visible=true; shake=0.35; hitStop(0.1); }
-  ctx.her={m:w2m(hp),pose,ph:t*1.1,look,k:ss((t-relT)/0.5),aim:pose==="held"?MA.eye.getWorldPosition(new V3()):null,faceIt:pose==="held"||pose==="dragged"||pose==="backstep"};
+  else { her.y=Math.max(0,her.y-dt*3.5); const d=t-relT; her.x+=dt*(d>0.9?2.2:0); hp=her.clone(); pose=d<0.9?"fall":"walk"; }
+  if(variant==="esc"){ for(const [ts,key] of [[T.shot,"s1"],[T.shot2,"s2"]]) if(t>=ts&&!ctx[key]){ ctx[key]=1; const cw=MA.cheekCross.getWorldPosition(new V3()); fireAt(cw,true); blood(cw,22,2.2,0.06); embers(cw,18,2.4); shake=0.35; hitStop(0.09); camPunch(0.6); } }
+  ctx.her={m:w2m(hp),pose,ph:t*1.1,look,k:ss((t-relT)/0.5),aim:pose==="held"?MA.cheekCross.getWorldPosition(new V3()):null,faceIt:pose==="held"||pose==="dragged"||pose==="backstep"};
   const hw=m2w(mo), hwp=hp.clone(), mid=hw.clone().lerp(hwp,0.45), span=Math.max(4,Math.abs(hwp.x-hw.x)); ctx.camS=ctx.camS||mid.clone(); ctx.camS.lerp(mid,Math.min(1,dt*2.5));
-  ctx.cam={p:new V3(ctx.camS.x+1.2,2.6+0.12*span,4.8+0.75*span),look:new V3(ctx.camS.x-0.3,1.1,0)}; }
-A.mouth={ name:"Mouth arm grab · the bite", len:11.5, start(ctx){ ctx.x0=-4; ctx.heart=1.3; hideMouthArm(); }, step(t,dt,ctx){ mouthGrab(t,dt,ctx,"bite"); } };
-A.mouthEsc={ name:"Mouth arm grab · shot in the eye", len:10.5, start(ctx){ ctx.x0=-4; ctx.heart=1.3; hideMouthArm(); }, step(t,dt,ctx){ mouthGrab(t,dt,ctx,"esc"); } };
+  ctx.cam={p:new V3(ctx.camS.x+1.2,2.6+0.12*span,4.8+0.75*span),look:new V3(ctx.camS.x-0.3,1.1,0)};
+  if(variant==="esc"&&t>T.shot-1.0&&t<relT+0.6){ const k2=ss((t-T.shot+1.0)/0.5)*(1-ss((t-relT-0.1)/0.5)); const cp=m2w(mo.clone().add(new V3(3.4,1.0,5.2))), cl=m2w(mo.clone().add(new V3(0.3,0.3,0.6)));
+    ctx.cam.p.lerp(cp,k2); ctx.cam.look.lerp(cl,k2); } }
+A.mouth={ name:"Mouth arm grab · the bite", len:14.2, start(ctx){ ctx.x0=-4; ctx.heart=1.3; hideMouthArm(); }, step(t,dt,ctx){ mouthGrab(t,dt,ctx,"bite"); } };
+A.mouthEsc={ name:"Mouth arm grab · two shots to the cheek cross", len:16, start(ctx){ ctx.x0=-4; ctx.heart=1.3; hideMouthArm(); }, step(t,dt,ctx){ mouthGrab(t,dt,ctx,"esc"); } };
+
+// ---------------------------------------------------------------- swallowed: fed in head first, down the throat into the gut, digested
+function noraFade(k){ if(typeof nora==="undefined"||!nora) return; nora.group.traverse(m=>{ if(!m.isMesh) return; for(const mt of [].concat(m.material)){ if(!mt.userData.o0) mt.userData.o0={tr:mt.transparent,op:mt.opacity,c:mt.color?mt.color.clone():null};
+    const o=mt.userData.o0; mt.transparent=k<0.999||o.tr; mt.opacity=o.op*k; if(o.c&&mt.color) mt.color.copy(o.c).lerp(new THREE.Color(0.32,0.12,0.08),Math.min(1,(1-k)*1.6)); mt.needsUpdate=true; } }); }
+function digest(t,dt,ctx,T,mo){ const d=t-T.bite, feedE=1.5, gulpE=3.6;
+  // the way down, from the bones as they are now: mouth, throat (head), neck (root), chest (spine1), gut (between spine1 and spine2)
+  const sp1=bonePosM("spine1"), sp2=bonePosM("spine2"), GUT=[mo.clone().add(new V3(0,0,-0.45)),bonePosM("head").add(new V3(0,-0.25,0.2)),bonePosM("root").add(new V3(0,-0.1,0)),sp1.clone().add(new V3(0,-0.12,0)),sp1.clone().lerp(sp2,0.6).add(new V3(0,-0.12,0))];
+  // where she is: pushed into the mouth by the hand, then gulped down in three swallows, then lying in the gut
+  let C, head, sc=0.76, pose="scramble";
+  if(d<feedE){ const e=ss(d/feedE); C=ctx.Cend.clone().lerp(GUT[0],e); head=GUT[1].clone(); sc=1-0.24*e; ctx.phase="its jaw unhinges as wide as it goes · the hand feeds her in, head first"; }
+  else if(d<gulpE){ const g=(d-feedE)/(gulpE-feedE)*4, gi=Math.min(3,Math.floor(g)), ge=ss((g-gi)/0.7); C=GUT[gi].clone().lerp(GUT[gi+1],ge); head=GUT[Math.min(4,gi+1)].clone().add(new V3(0,0,-0.5));
+    H.B.head.quaternion.premultiply(qE(-0.22*Math.sin(Math.PI*Math.min(1,(g-gi)/0.7)),0,0)); if(ge>0.05&&ge<0.2&&!ctx["g"+gi]){ ctx["g"+gi]=1; shake=0.18; } ctx.phase="it gulps · her shape slides down its throat into its gut"; }
+  else { const e=d-gulpE; C=GUT[4].clone().add(new V3(0.04*Math.sin(e*2.1),0.03*Math.sin(e*3.1),0.15*Math.sin(e*0.9))); head=C.clone().add(new V3(0.35*Math.sin(e*0.6),0.15*Math.cos(e*0.8),-0.9)); sc=0.76-0.34*ss(e/6);
+    noraFade(1-ss((e-2.0)/4.5)); ctx.phase=e<2.4?"she struggles inside its gut, squirming against the skin":"the gut churns · it convulses · she darkens and shrinks away inside it"; }
+  if(H.ins) H.ins.visible=d<feedE+0.8;
+  const thin=[].concat(H.mesh.material)[1]; if(thin&&thin.transparent) thin.opacity=0.6-0.22*ss((d-feedE)/1.0);   /* the stretched skin thins: her shape shows through */   /* her body takes the space: the organs would hide her */
+  ctx.bulge={z:C.z,amp:d<feedE?0:0.32*(sc/0.76)*(d<gulpE?1:1-0.6*ss((d-gulpE-2)/5))};
+  // the gut works: squirming, swellings, heartbeat, convulsions, bile from the mouth
+  const conv=d>gulpE?Math.max(0,Math.sin((d-gulpE)*2.2))**4:0; retch(t,0.25+0.6*conv,0,ctx); ctx.squirm=d>feedE?4.5:2; ctx.lumpK=1.8; ctx.heart=2.4; ctx.frantic=d>gulpE&&d<gulpE+3;
+  if(d>gulpE) pour(mo,dt,12+50*conv,ctx); if(d>gulpE+0.5&&Math.random()<dt*0.8) gutSpit(dt,40,ctx);
+  // the arm goes in with her, still holding, then is swallowed
+  if(d<feedE){ const R=poseArm(t,dt,ctx,999,gripFrame(C,new V3(0,0,1)).W,{grip:{C,n:new V3(0,0,1)},gripK:1,full:true,eye:1,curl:1.1}); }
+  else { ctx.S=ease(ctx.S||5,0,dt,5); if(ctx.S>0.1){ poseArm(t,dt,ctx,ctx.S,mo.clone().add(new V3(0,-0.2,1.5)),{curl:0.6,eye:0}); MA.hand.visible=false; } else MA.root.visible=false; }
+  stepBile(dt);
+  const cw=m2w(C), hw=m2w(head), wig=d>gulpE?Math.sin(d*7)*0.25*(1-ss((d-gulpE-2)/4)):0;
+  ctx.her={m:w2m(cw),pose,ph:t*1.4,k:1,post:(nr)=>{ const g=nr.group, dir=hw.clone().sub(cw).normalize(); g.scale.setScalar(sc); g.position.copy(cw).addScaledVector(dir,-0.85*sc); g.lookAt(g.position.clone().add(dir)); g.rotateX(Math.PI/2); g.rotateY(wig); }};
+  const look=cw.clone(); look.y=Math.max(0.9,look.y); ctx.camS=ctx.camS||look.clone(); ctx.camS.lerp(look,Math.min(1,dt*1.8)); ctx.cam={p:ctx.camS.clone().add(new V3(1.6,1.7,5.6)),look:ctx.camS.clone()}; }
+A.digest={ name:"Mouth arm grab · swallowed", len:21, start(ctx){ ctx.x0=-4; ctx.heart=1.3; hideMouthArm(); noraFade(1); if(typeof nora!=="undefined"&&nora) nora.group.scale.setScalar(1); }, step(t,dt,ctx){ mouthGrab(t,dt,ctx,"digest"); } };
