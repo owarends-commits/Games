@@ -3,7 +3,9 @@
 Builds the reworked Hob from the rigged preview Hob (`crossed/tools/hob_preview/m/bosses/hob/hob_rigged.json`). The original `hob.glb` is not edited. The design is in `crossed/docs/project/hob-boss.md`.
 
 ```
-python3 tex_sharpen.py hob_tex0.png out/hob2_col.png out/hob2_bump.png out/hob2_nrm.png
+python3 face_uv.py                                   # the face's UV footprint -> face_uv.json
+python3 face_fill.py hob_tex0.png face_uv.json hob_tex0_face.png   # skin over the photo background at the cheeks
+python3 tex_sharpen.py hob_tex0_face.png out/hob2_col.png out/hob2_bump.png out/hob2_nrm.png
 python3 hob_v2.py -- hob_rigged.gltf out/hob2_col.png out/hob2_nrm.png out/hob2.glb out/hob2.blend
 python3 stills.py -- out/hob2.glb out/new          # front, 3/4 front, side, 3/4 back, face
 python3 turntable.py -- out/hob2.glb tt turn 960 540 14 120
