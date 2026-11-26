@@ -894,17 +894,21 @@ function setupMouthArm(){
       const kn=new THREE.Mesh(new THREE.SphereGeometry(r*1.02,10,8),MA.boneMat); j.add(kn); const bn=new THREE.Mesh(new THREE.CylinderGeometry(r*0.8,r,L,8),MA.armMat); bn.rotation.x=Math.PI/2; bn.position.z=L/2; j.add(bn);
       const nx=new THREE.Group(); nx.position.z=L; j.add(nx); segs.push(j); par=nx; }
     const claw=new THREE.Mesh(new THREE.ConeGeometry(0.03,0.09,6),MA.boneMat); claw.rotation.x=Math.PI/2; claw.position.z=0.04; par.add(claw); MA.fingers.push({segs,thumb}); }
-  // the snake eye on the forearm: a yellow slit eye under two heavy, shiny lids
-  const eye=new THREE.Group(); MA.root.add(eye); MA.eye=eye; const ball=new THREE.Mesh(new THREE.SphereGeometry(0.19,24,16),new THREE.MeshPhongMaterial({map:snakeEyeTex,shininess:120,specular:0xffffff})); ball.rotation.y=-Math.PI/2; eye.add(ball); MA.ball=ball;
-  const lid=(up)=>{ const g=new THREE.Group(); const m=new THREE.Mesh(new THREE.SphereGeometry(0.21,24,10,0,Math.PI*2,up?0:Math.PI/2,Math.PI/2),MA.armMat); m.rotation.z=Math.PI/2; g.add(m); eye.add(g); return g; };
-  MA.lidU=lid(true); MA.lidD=lid(false); const rim=new THREE.Mesh(new THREE.TorusGeometry(0.21,0.05,8,24),MA.armMat); rim.rotation.y=Math.PI/2; eye.add(rim);
-  MA.wound=new THREE.Mesh(new THREE.SphereGeometry(0.12,12,8),new THREE.MeshLambertMaterial({color:0x4a0606})); MA.wound.visible=false; eye.add(MA.wound);
+  // the snake eyes: the main one in the palm (user, 2026-11-26), three more scattered along the arm. Yellow slit eyes under
+  // heavy, shiny lids; all shut while it searches, all snapping open when it spots her
+  const makeEye=(parent,r)=>{ const g=new THREE.Group(); parent.add(g); const ball=new THREE.Mesh(new THREE.SphereGeometry(r,24,16),new THREE.MeshPhongMaterial({map:snakeEyeTex,shininess:120,specular:0xffffff})); ball.rotation.y=Math.PI/2; const piv=new THREE.Group(); piv.rotation.x=Math.PI/2; piv.add(ball); g.add(piv);   /* turned about its look axis: the slit stands upright between the lids */   /* the iris (texture u 0.25) faces the eye's look axis, +x */
+    const lid=(up)=>{ const q=new THREE.Group(); const m=new THREE.Mesh(new THREE.SphereGeometry(r*1.12,24,10,Math.PI/2,Math.PI,up?0:Math.PI/2,Math.PI/2),MA.armMat); q.add(m); g.add(q); return q; };   /* upper / lower lid over the front (+x) of the eye */
+    const lidU=lid(true), lidD=lid(false); const rim=new THREE.Mesh(new THREE.TorusGeometry(r*1.12,r*0.27,8,24),MA.armMat); rim.rotation.y=Math.PI/2; g.add(rim);
+    const wound=new THREE.Mesh(new THREE.SphereGeometry(r*0.92,12,8),new THREE.MeshLambertMaterial({color:0x4a0606})); wound.visible=false; g.add(wound); return {g,ball,lidU,lidD,wound}; };
+  MA.palmEye=makeEye(handIn,0.085); MA.palmEye.g.position.set(0,-0.05,0.21); MA.palmEye.g.rotation.z=-Math.PI/2;   /* its look axis (x) straight out of the palm (-y) */   // facing out of the palm
+  MA.armEyes=[[0.95,0.5],[2.15,-1.9],[3.35,2.5]].map(([d,ang])=>Object.assign(makeEye(MA.root,0.095),{d,ang}));
+  MA.eyes=[MA.palmEye,...MA.armEyes]; MA.eye=MA.armEyes[0].g;   /* the one she can shoot while the palm is pressed against her */
   // the small arms: thin flesh arms off the big one, reaching away, each with a little three-fingered claw
   MA.kids=[]; for(let i=0;i<6;i++){ const tb=new Tube(10,7,MA.fleshMat,2); MA.root.add(tb.m); const cl=new THREE.Group(); MA.root.add(cl);
     for(let f=0;f<3;f++){ const fg=new THREE.Mesh(new THREE.CylinderGeometry(0.012,0.02,0.16,5),MA.fleshMat); fg.rotation.x=Math.PI/2; const piv=new THREE.Group(); piv.rotation.y=(f-1)*0.5; fg.position.z=0.08; piv.add(fg); cl.add(piv); }
-    MA.kids.push({tb,cl,at:0.18+i*0.11,side:i%2?1:-1,ph:i*1.9,len:1.7+0.35*Math.sin(i*2.3)}); cl.scale.setScalar(2.2); }
+    MA.kids.push({tb,cl,at:0.18+i*0.11,side:i%2?1:-1,ph:i*1.9,len:0.95+0.2*Math.sin(i*2.3)}); cl.scale.setScalar(1.2); }
   MA.drops=[]; MA.puddle=null; hideMouthArm(); }
-function hideMouthArm(){ if(!MA.root) return; MA.root.visible=false; for(const d of MA.drops) d.m.parent&&d.m.parent.remove(d.m); MA.drops.length=0; if(MA.puddle){ scene.remove(MA.puddle); MA.puddle=null; } if(MA.wound) MA.wound.visible=false; if(MA.ball) MA.ball.visible=true; MA.on=false; }
+function hideMouthArm(){ if(!MA.root) return; MA.root.visible=false; for(const d of MA.drops) d.m.parent&&d.m.parent.remove(d.m); MA.drops.length=0; if(MA.puddle){ scene.remove(MA.puddle); MA.puddle=null; } if(MA.eyes) for(const E of MA.eyes){ E.wound.visible=false; E.ball.visible=true; } MA.on=false; }
 // where the mouth is: between the lips (half on the head, half on the jaw), and the way out of it
 function mouthM(){ H.group.updateMatrixWorld(true); const a=w2m(H.B.head.localToWorld(H.B.head.worldToLocal(m2w(new V3(0,0.66,1.05))).clone())); return a; }
 function mouthNow(ctx){ if(!ctx.mo){ resetBones(); H.group.updateMatrixWorld(true); ctx.mo={h:H.B.head.worldToLocal(m2w(new V3(0,0.66,1.0))), j:H.B.jaw.worldToLocal(m2w(new V3(0,0.46,1.0)))}; }
@@ -944,23 +948,29 @@ function poseArm(t,dt,ctx,s,aim,o={}){ MA.root.visible=true; MA.on=true; const m
   ctx.sMouth=sMouth; if(o.full) s=path.len; s=Math.min(s,path.len); const N=MA.tube.N, pts=[], rad=[];
   for(let i=0;i<=N;i++){ const u=s*i/N, p=path.at(u), outK=sat((u-sMouth)/1.2)*sat((s-u)/0.8);
     const tg=path.tan(u), side=tg.clone().cross(UP).normalize(); p.addScaledVector(side,wav*0.22*outK*Math.sin(u*2.3-t*3.1)); p.y+=wav*0.12*outK*Math.sin(u*1.7-t*2.3+1);
-    pts.push(p); rad.push((0.21+0.2*sat((s-u)/1.8)+0.035*Math.sin(u*9))*(0.55+0.45*sat((s-u)/0.35))); }
+    pts.push(p); rad.push((0.12+0.1*sat((s-u)/1.8)+0.02*Math.sin(u*9))*(0.7+0.3*sat((s-u)/0.35))); }
   MA.tube.set(pts,rad); MA.pts=pts;
   // the hand at the tip
   const tip=pts[N], tg=pts[N].clone().sub(pts[N-2]).normalize(); MA.hand.position.copy(tip); const m=new THREE.Matrix4(), upv=o.palmUp?UP.clone():UP.clone().negate();
-  const x=upv.clone().cross(tg).normalize(), y=tg.clone().cross(x).normalize(); m.makeBasis(x,y,tg); const qT=new Q4().setFromRotationMatrix(m).normalize();
+  const x=upv.clone().cross(tg).normalize(), y=tg.clone().cross(x).normalize(); m.makeBasis(x,y,tg); let qT=new Q4().setFromRotationMatrix(m).normalize();
+  if(o.palmAt){ // the palm held up toward her, fingers splayed upward, so the palm's eye is what looks at her
+    const nP=tip.clone().sub(o.palmAt); nP.y=0; nP.normalize(); const Z=UP.clone().multiplyScalar(0.86).addScaledVector(nP,-0.5).normalize(), Y=nP.clone().sub(Z.clone().multiplyScalar(nP.dot(Z))).normalize(), X=Y.clone().cross(Z).normalize();
+    const qP=new Q4().setFromRotationMatrix(new THREE.Matrix4().makeBasis(X,Y,Z)).normalize(); qT=qT.clone().slerp(qP,o.palmK??1); }
   if(G&&gk>0.01){ const qG=new Q4().setFromRotationMatrix(new THREE.Matrix4().makeBasis(G.n.clone().cross(G.side).normalize(),G.n,G.side)).normalize(); MA.hand.quaternion.copy(qT).slerp(qG,ss(gk)); } else MA.hand.quaternion.copy(qT);
   const curlK=o.curl??0.25; MA.fingers.forEach((f,fi)=>{ const jig=0.08*Math.sin(t*6+fi)*(1-sat(curlK)); f.segs.forEach((j,k)=>{ j.rotation.x=(f.thumb?0.75:1)*curlK*[0.75,1.2,1.05][k]+jig; }); });
   // the eye, on top of the forearm 1.8 m back from the hand
   const ue=Math.max(0,s-1.8), ei=Math.round(ue/s*N), ep=pts[ei].clone(), et=path.tan(ue), en=UP.clone().sub(et.clone().multiplyScalar(et.y)).normalize();
-  MA.eye.position.copy(ep.addScaledVector(en,rad[ei]*0.75)); const em=new THREE.Matrix4(), ex=et.clone().cross(en).normalize(); em.makeBasis(et,en,ex); MA.eye.quaternion.setFromRotationMatrix(em);
-  const open=o.eye??0; MA.lidU.rotation.z=-1.25*open; MA.lidD.rotation.z=1.25*open; MA.eye.visible=s-1.8>sMouth-0.2;
-  if(o.look&&open>0.2){ const q=MA.eye.getWorldQuaternion(new Q4()).invert(), d=m2w(o.look).sub(MA.eye.getWorldPosition(new V3())).applyQuaternion(q).normalize(); MA.ball.rotation.set(0,Math.atan2(-d.z,d.x),Math.asin(clamp(d.y,-1,1))*0.6); }
+  const open=o.eye??0;
+  for(const E of MA.armEyes){ const u=Math.max(0,s-E.d), ei=Math.min(N,Math.round(u/s*N)), et=path.tan(u), up0=UP.clone().sub(et.clone().multiplyScalar(et.y)).normalize(), bx=et.clone().cross(up0);
+    const en=up0.clone().multiplyScalar(Math.cos(E.ang)).addScaledVector(bx,Math.sin(E.ang)).normalize(); E.g.position.copy(pts[ei]).addScaledVector(en,rad[ei]*0.8);
+    E.g.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(et,en,et.clone().cross(en).normalize())); E.g.visible=u>sMouth+0.2; }
+  for(const E of MA.eyes){ E.lidU.rotation.z=1.3*open; E.lidD.rotation.z=-1.3*open;
+    if(o.look&&open>0.2&&E.ball.visible){ E.g.updateMatrixWorld(true); const q=E.ball.parent.getWorldQuaternion(new Q4()).invert(), d=m2w(o.look).sub(E.g.getWorldPosition(new V3())).applyQuaternion(q).normalize(); E.ball.rotation.set(0,Math.PI/2+clamp(Math.atan2(-d.z,d.x),-0.9,0.9),Math.asin(clamp(d.y,-1,1))*0.6); } }
   // the small arms: off the forearm and upper arm, reaching away from where the big one goes, grasping at the air
   for(const k of MA.kids){ const u=s*k.at+s*0.25, show=u>sMouth+0.3&&s>sMouth+1.2; k.tb.m.visible=k.cl.visible=show; if(!show) continue;
     const i0=Math.round(u/s*N), base=pts[i0].clone(), at=path.tan(u), side=at.clone().cross(UP).normalize().multiplyScalar(k.side), back=at.clone().negate();
     const unf=sat((s-sMouth-1.2)/1.4), dirk=side.clone().multiplyScalar(0.8).add(back.multiplyScalar(0.5)).add(new V3(0,0.45,0)).normalize(), L=k.len*unf, P2=[], R2=[];
-    for(let j=0;j<=10;j++){ const v=j/10, w=Math.sin(t*4+k.ph+v*3)*0.12*v; P2.push(base.clone().addScaledVector(dirk,L*v).addScaledVector(side,w).add(new V3(0,-0.25*v*v*L+0.08*Math.sin(t*5+k.ph)*v,0))); R2.push(0.1*(1-0.6*v)+0.015); }
+    for(let j=0;j<=10;j++){ const v=j/10, w=Math.sin(t*4+k.ph+v*3)*0.12*v; P2.push(base.clone().addScaledVector(dirk,L*v).addScaledVector(side,w).add(new V3(0,-0.25*v*v*L+0.08*Math.sin(t*5+k.ph)*v,0))); R2.push(0.045*(1-0.6*v)+0.008); }
     k.tb.set(P2,R2); k.cl.position.copy(P2[10]); k.cl.lookAt(m2w(P2[10].clone().add(P2[10].clone().sub(P2[8])))); k.cl.quaternion.premultiply(H.group.getWorldQuaternion(new Q4()).invert());
     const g=0.4+0.4*Math.sin(t*7+k.ph); k.cl.children.forEach((pv,f)=>{ pv.rotation.x=g; }); }
   return {tip, sMouth, len:path.len}; }
@@ -985,12 +995,12 @@ function mouthGrab(t,dt,ctx,variant){
   if(t<T.retch){ ctx.phase="crawls after her · the arm is swallowed"; }
   else if(t<T.cough){ ctx.phase="its gut convulses · it retches · bile spits from its gut · the jaw unhinges"; gutSpit(dt,60*k,ctx); if(t>T.cough-0.6) pour(mo,dt,90,ctx); }
   else if(t<T.search){ const u=ss((t-T.cough)/0.75); sT=sM-0.4+2.4*u; aT=mo.clone().add(new V3(Math.sin(t*1.3)*1.0,0.6,2.6)); pour(mo,dt,220*(1-u*0.5),ctx); gutSpit(dt,25,ctx); o.curl=0.5; ctx.phase="it coughs the arm up · bile and foam pour from its mouth"; }
-  else if(t<T.spot){ sT=sM+2.4+0.35*Math.sin((t-T.search)*2); aT=mo.clone().add(new V3(Math.sin(t*1.5)*1.6,0.45+0.3*Math.sin(t*2.1),3.0)); pour(mo,dt,30,ctx); o.curl=0.35; ctx.phase="the arm searches · its eye still shut"; }
+  else if(t<T.spot){ sT=sM+2.4+0.35*Math.sin((t-T.search)*2); aT=mo.clone().add(new V3(Math.sin(t*1.5)*1.6,0.45+0.3*Math.sin(t*2.1),3.0)); pour(mo,dt,30,ctx); o.curl=0.35; o.palmAt=herC(); o.palmK=ss((t-T.search)/0.6); ctx.phase="the arm searches · its eyes still shut"; }
   else if(t<T.lunge){ // the eye snaps open; the arm draws back and up, gathering itself
-    o.eye=ss((t-T.spot)/0.12); o.look=herC(); const r=ss((t-T.spot)/(T.rear-T.spot)); sT=sM+2.4-0.9*r; aT=mo.clone().add(new V3(0,0.9+0.9*r,2.2-0.6*r)).lerp(herC(),0.15); o.curl=0.2-0.35*r;
-    ctx.phase="the snake eye snaps open · the arm draws back"; if(!ctx.sp1){ ctx.sp1=1; camPunch(0.4); } }
+    o.eye=ss((t-T.spot)/0.12); o.look=herC(); const r=ss((t-T.spot)/(T.rear-T.spot)); sT=sM+2.4-0.9*r; aT=mo.clone().add(new V3(0,0.9+0.9*r,2.2-0.6*r)).lerp(herC(),0.15); o.curl=0.2-0.35*r; o.palmAt=herC();
+    ctx.phase="the eye in its palm snaps open, and the eyes along the arm · the arm draws back"; if(!ctx.sp1){ ctx.sp1=1; camPunch(0.4); } }
   else if(t<T.catch){ // the lunge: up and over, then down onto her, the hand turning into the grip, fingers spread wide
-    const u=(t-T.lunge)/(T.catch-T.lunge); const C=herC(); o.grip={C,n:nTo(C)}; o.gripK=ss(u*1.25); o.full=u>0.55; o.eye=1; o.look=C; o.curl=-0.2+0.15*u;
+    const u=(t-T.lunge)/(T.catch-T.lunge); const C=herC(); o.grip={C,n:nTo(C)}; o.gripK=ss(u*1.25); o.full=u>0.55; o.eye=1; o.look=C; o.curl=-0.2+0.15*u; o.palmAt=C; o.palmK=1-ss(u*1.6);
     sT=sM+1.5+((ctx.lastLen||sM+5)-sM-1.5)*easeOut(u); aT=gripFrame(C,nTo(C)).W; pour(mo,dt,140,ctx); ctx.phase="it lunges · up and over and down onto her"; }
   else if(t<relT){ // caught: the fingers clamp round her; it lifts her and hauls her to its mouth
     if(!ctx.C0){ ctx.C0=herC(); ctx.Cend=mo.clone().add(nTo(ctx.C0).negate().multiplyScalar(1.15)).add(new V3(0,0.15,0)); shake=0.25; camPunch(0.5); }
@@ -1012,7 +1022,7 @@ function mouthGrab(t,dt,ctx,variant){
   else if(t<relT){ const C=m2w(ctx.Ccur||herC()); hp=new V3(C.x,Math.max(0,C.y-1.02),C.z); her.copy(hp); pose=variant==="esc"&&t>T.shot-0.6?"held":"dragged"; }
   else if(variant==="bite"){ if(!ctx.bit){ ctx.bit=1; shake=0.5; camPunch(0.9); hitStop(0.12); blood(m2w(mo),40,3.2,0.08); } her.y=Math.max(0,her.y-dt*3); hp=her.clone(); pose="fall"; }
   else { her.y=Math.max(0,her.y-dt*3); her.x+=dt*(t>T.shot+1.0?1.6:0); hp=her.clone(); pose=t<T.shot+1.0?"fall":"walk"; }
-  if(variant==="esc"&&t>=T.shot&&!ctx.shotDone){ ctx.shotDone=1; const ew=MA.eye.getWorldPosition(new V3()); fireAt(ew,true); blood(ew,30,2.4,0.06); for(let i=0;i<14;i++) bile(w2m(ew),new V3((Math.random()-.5)*2,Math.random()*2,(Math.random()-.5)*2),0.03,false); MA.ball.visible=false; MA.wound.visible=true; shake=0.35; hitStop(0.1); }
+  if(variant==="esc"&&t>=T.shot&&!ctx.shotDone){ ctx.shotDone=1; const ew=MA.eye.getWorldPosition(new V3()); fireAt(ew,true); blood(ew,30,2.4,0.06); for(let i=0;i<14;i++) bile(w2m(ew),new V3((Math.random()-.5)*2,Math.random()*2,(Math.random()-.5)*2),0.03,false); MA.armEyes[0].ball.visible=false; MA.armEyes[0].wound.visible=true; shake=0.35; hitStop(0.1); }
   ctx.her={m:w2m(hp),pose,ph:t*1.1,look,k:ss((t-relT)/0.5),aim:pose==="held"?MA.eye.getWorldPosition(new V3()):null,faceIt:pose==="held"||pose==="dragged"||pose==="backstep"};
   const hw=m2w(mo), hwp=hp.clone(), mid=hw.clone().lerp(hwp,0.45), span=Math.max(4,Math.abs(hwp.x-hw.x)); ctx.camS=ctx.camS||mid.clone(); ctx.camS.lerp(mid,Math.min(1,dt*2.5));
   ctx.cam={p:new V3(ctx.camS.x+1.2,2.6+0.12*span,4.8+0.75*span),look:new V3(ctx.camS.x-0.3,1.1,0)}; }
